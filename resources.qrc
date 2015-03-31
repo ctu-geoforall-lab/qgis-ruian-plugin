@@ -2,5 +2,7 @@
     <qresource prefix="/plugins/VFRImporter" >
         <file>files/icon.png</file>
 		<file>files/search.png</file>
+		<file>files/check.png</file>
+		<file>files/uncheck.png</file>
     </qresource>
 </RCC>

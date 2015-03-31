@@ -44,20 +44,23 @@ class MainApp(QtGui.QDialog):
         self.ui.view.setVisible(True)
         self.ui.view.setCornerButtonEnabled(False)
         path = os.path.join(os.path.dirname(__file__), 'files','obce_cr.csv')
-        self.model = self.create_model(path)
-        self.ui.view.setModel(self.model)
+        self.model, self.proxy = self.create_model(path)
+        self.ui.view.setModel(self.proxy)
         self.ui.view.horizontalHeader().setStretchLastSection(True)
         
 
         # SIGNAL/SLOTS CONNECTION
-        self.ui.search_string.textChanged.connect(self.search)
-        self.ui.search.clicked.connect(self.check)
+        self.ui.search.textChanged.connect(self.search)
+        self.ui.check.clicked.connect(lambda: self.check(0))
+        self.ui.uncheck.clicked.connect(lambda: self.check(1))
+        self.ui.advanced.clicked.connect(self.advanced)
+        self.ui.buttonBox.accepted.connect(self.start_import)
 
 
 
     # filtering tableview
     def search(self, text):
-        self.model.setFilterRegExp(QtCore.QRegExp(text, QtCore.Qt.CaseInsensitive))
+        self.proxy.setFilterRegExp(QtCore.QRegExp(text, QtCore.Qt.CaseInsensitive))
 
 
     # create model-view
@@ -74,6 +77,7 @@ class MainApp(QtGui.QDialog):
                     for word in line.split(','):
                         word = u'{}'.format(word.decode('utf-8'))
                         header.append(word)
+                    firts_line = False
                 else:
                     for word in line.split(','):
                         word = u'{}'.format(word.decode('utf-8'))
@@ -83,22 +87,40 @@ class MainApp(QtGui.QDialog):
                         item.setEditable(False)
                         items.append(item)
                     items[0].setCheckable(True)
-                    model.appendRow(items)
-                firts_line = False        
+                    model.appendRow(items)        
                 
         model.setHorizontalHeaderLabels(header)
         proxy = QtGui.QSortFilterProxyModel()
         proxy.setFilterKeyColumn(1)
         proxy.setSourceModel(model)
-        return proxy
+        return model, proxy
 
 
-    def check(self):
+    def check(self, state):
+        rows = self.proxy.rowCount()
+        for row in xrange(0,rows):
+            proxy_idx = self.proxy.index(row,0)
+            model_idx = self.proxy.mapToSource(proxy_idx)
+            item = self.model.itemFromIndex(model_idx)
+            if item.isCheckable():
+                if state == 0:
+                    item.setCheckState(QtCore.Qt.Checked)
+                elif state == 1:
+                    item.setCheckState(QtCore.Qt.Unchecked)
+
+    def advanced(self):
+        if self.ui.advanced.arrowType() == 4:
+            self.ui.advanced.setArrowType(QtCore.Qt.DownArrow)
+        elif self.ui.advanced.arrowType() == 2:
+            self.ui.advanced.setArrowType(QtCore.Qt.RightArrow)
+                
+
+    def start_import(self):
         rows = self.model.rowCount()
         for row in xrange(0,rows):
-            index = self.model.index(row,0)
-            data = self.model.data(index)
-            print data
+            code = self.model.item(row,0)
+            if code.checkState() == 2:
+                print code.text()
 
 
 
