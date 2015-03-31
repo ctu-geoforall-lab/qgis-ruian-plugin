@@ -5,5 +5,4 @@ Cílem tohoto projektu je vytvoření pluginu pro QGIS, pomocí kterého by bylo
 
 Autor
 -------
-
 -  `Jan Klíma <https://github.com/janklima>`_
