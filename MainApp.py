@@ -24,8 +24,6 @@ import os
 # Import the PyQt and QGIS libraries
 from PyQt4 import QtCore, QtGui
 from qgis.core import *
-# Initialize Qt resources from file resources.py
-from resources import *
 #Import python GUI
 from ui_MainApp import Ui_MainApp
 
@@ -47,20 +45,21 @@ class MainApp(QtGui.QDialog):
         self.model, self.proxy = self.create_model(path)
         self.ui.view.setModel(self.proxy)
         self.ui.view.horizontalHeader().setStretchLastSection(True)
-        
+
+        # set up widgets
+        self.ui.search.addItems(["Obec", "ORP", "Okres", "Kraj"])
+        self.ui.search.setEditable(True)
+        self.ui.search.clearEditText()
+        self.ui.advanced.hide()
 
         # SIGNAL/SLOTS CONNECTION
-        self.ui.search.textChanged.connect(self.search)
+        self.ui.search.activated.connect(self.search_column)
+        self.ui.search.editTextChanged.connect(self.search)
         self.ui.check.clicked.connect(lambda: self.check(0))
         self.ui.uncheck.clicked.connect(lambda: self.check(1))
-        self.ui.advanced.clicked.connect(self.advanced)
+        self.ui.more.clicked.connect(self.advanced)
         self.ui.buttonBox.accepted.connect(self.start_import)
 
-
-
-    # filtering tableview
-    def search(self, text):
-        self.proxy.setFilterRegExp(QtCore.QRegExp(text, QtCore.Qt.CaseInsensitive))
 
 
     # create model-view
@@ -96,6 +95,16 @@ class MainApp(QtGui.QDialog):
         return model, proxy
 
 
+    # filtering tableview
+    def search_column(self, column):
+        self.ui.search.clearEditText()
+        self.proxy.setFilterKeyColumn(column+1)
+
+    def search(self, text):
+        self.proxy.setFilterRegExp(QtCore.QRegExp(text, QtCore.Qt.CaseInsensitive))
+
+
+    #check or uncheck items in qtableview
     def check(self, state):
         rows = self.proxy.rowCount()
         for row in xrange(0,rows):
@@ -108,13 +117,17 @@ class MainApp(QtGui.QDialog):
                 elif state == 1:
                     item.setCheckState(QtCore.Qt.Unchecked)
 
+    #show advance option
     def advanced(self):
-        if self.ui.advanced.arrowType() == 4:
-            self.ui.advanced.setArrowType(QtCore.Qt.DownArrow)
-        elif self.ui.advanced.arrowType() == 2:
-            self.ui.advanced.setArrowType(QtCore.Qt.RightArrow)
+        if self.ui.more.arrowType() == 4:
+            self.ui.more.setArrowType(QtCore.Qt.DownArrow)
+            self.ui.advanced.show()
+        elif self.ui.more.arrowType() == 2:
+            self.ui.more.setArrowType(QtCore.Qt.RightArrow)
+            self.ui.advanced.hide()
                 
 
+    # run importing data
     def start_import(self):
         rows = self.model.rowCount()
         for row in xrange(0,rows):

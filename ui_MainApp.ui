@@ -7,15 +7,15 @@
     <x>0</x>
     <y>0</y>
     <width>601</width>
-    <height>444</height>
+    <height>471</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>VFRImporter</string>
   </property>
   <property name="windowIcon">
-   <iconset>
-    <normaloff>files/icon.png</normaloff>files/icon.png</iconset>
+   <iconset resource="resources.qrc">
+    <normaloff>:/icon.png</normaloff>:/icon.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
@@ -23,7 +23,7 @@
      <item>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <widget class="QLabel" name="driver_lab">
+        <widget class="QLabel" name="output">
          <property name="text">
           <string>Výstup:</string>
          </property>
@@ -33,7 +33,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="ds">
+        <widget class="QPushButton" name="set">
          <property name="text">
           <string>Spojení</string>
          </property>
@@ -65,7 +65,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="ds_string">
+        <widget class="QLineEdit" name="datasource">
          <property name="minimumSize">
           <size>
            <width>301</width>
@@ -96,7 +96,7 @@
        </property>
        <property name="icon">
         <iconset resource="resources.qrc">
-         <normaloff>:/plugins/VFRImporter/files/check.png</normaloff>:/plugins/VFRImporter/files/check.png</iconset>
+         <normaloff>:/check.png</normaloff>:/check.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -134,7 +134,7 @@
        </property>
        <property name="icon">
         <iconset resource="resources.qrc">
-         <normaloff>:/plugins/VFRImporter/files/uncheck.png</normaloff>:/plugins/VFRImporter/files/uncheck.png</iconset>
+         <normaloff>:/uncheck.png</normaloff>:/uncheck.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -166,22 +166,36 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="search"/>
+      <widget class="QComboBox" name="search">
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <italic>true</italic>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="editable">
+        <bool>false</bool>
+       </property>
+       <property name="duplicatesEnabled">
+        <bool>false</bool>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
    <item>
-    <widget class="QTableView" name="view"/>
-   </item>
-   <item>
-    <widget class="QCheckBox" name="state">
-     <property name="text">
-      <string>Importovat stát</string>
+    <widget class="QTableView" name="view">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>176</height>
+      </size>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QToolButton" name="advanced">
+    <widget class="QToolButton" name="more">
      <property name="text">
       <string>Pokročilé</string>
      </property>
@@ -197,6 +211,25 @@
      <property name="arrowType">
       <enum>Qt::RightArrow</enum>
      </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="advanced" native="true">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>100</height>
+      </size>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_4">
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Zde bude pokročilé nastavení importu</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
    <item>
