@@ -6,19 +6,19 @@
 # This file should be included when you package your plugin.# Mandatory items:
 
 [general]
-name=VFRImporter
+name=Nástroj pro práci s daty RUIAN
 qgisMinimumVersion=2.0
-description=Tool for import RUIAN data
+description=Nástroj umožňuje importovat data RUIAN do mnoha formátů včetně databází a následně s nimi pracovat. Pro práci s daty RUIAN je nutná instalace knihovny GDAL/OGR vyšší než 1.11.
 version=0.1
 author=Jan Klima
 email=honzi.klima@gmail.com
 
 # changelog=
-tags=VFR, RUIAN
+tags=VFR, VDP, RUIAN
 homepage=
 tracker=
 repository=
-icon=icon.png
+icon=files/icon.png
 experimental=True
 deprecated=False
 

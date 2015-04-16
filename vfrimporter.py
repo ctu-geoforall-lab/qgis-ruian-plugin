@@ -20,37 +20,27 @@
  *                                                                         *
  ***************************************************************************/
 """
-# Import the PyQt and QGIS libraries
+# Import the PyQt, QGIS libraries and classes
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
-# Initialize Qt resources from file resources_rc.py
 from resources_rc import *
-# Import Main dialog source
 from MainApp import MainApp
+
 
 class VFRImporter:
 
     def __init__(self, iface):
-        # save reference to the QGIS interface
         self.iface = iface
 
-
     def initGui(self):
-        # Create action that will start plugin configuration
-        self.action = QAction(QIcon(':/icon.png'),'Tool for import RUIAN data', self.iface.mainWindow())
-        # connect the action to the run method
-        QObject.connect(self.action, SIGNAL("triggered()"), self.run)
-        # Add toolbar button and menu item
+        self.action = QAction(QIcon(':/icon.png'),u'Nástroj pro práci s daty RUIAN', self.iface.mainWindow())
         self.iface.addToolBarIcon(self.action)
+        QObject.connect(self.action, SIGNAL("triggered()"), self.run)
         
-    
     def unload(self):
-        # Remove plugin icon
         self.iface.removeToolBarIcon(self.action)
 
     def run(self):
-        #create and show main dialog
         dlg = MainApp(self.iface)
         dlg.show()
-        result = dlg.exec_()

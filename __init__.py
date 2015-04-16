@@ -19,33 +19,8 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
- This script initializes the plugin, making it known to QGIS.
 """
 
-def name():
-    return "VFRImporter"
-
-
-def description():
-    return "Tool for import RUIAN data"
-
-
-def version():
-    return "Version 0.1"
-
-
-def icon():
-    return "icon.png"
-
-
-def qgisMinimumVersion():
-    return "2.0"
-
-def author():
-    return "Jan Klima"
-
-"""This is called when the plugin gets loaded to QGIS"""
 def classFactory(iface):
-    # Import VFRImporter class from vfrimporter file
     from vfrimporter import VFRImporter
     return VFRImporter(iface)
