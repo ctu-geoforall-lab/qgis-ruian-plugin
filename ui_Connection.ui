@@ -10,10 +10,19 @@
     <height>284</height>
    </rect>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>420</width>
+    <height>284</height>
+   </size>
+  </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
+   <property name="sizeConstraint">
+    <enum>QLayout::SetDefaultConstraint</enum>
+   </property>
    <item>
     <layout class="QHBoxLayout" name="layout">
      <item>

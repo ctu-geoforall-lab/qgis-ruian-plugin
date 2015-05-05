@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_Connection.ui'
 #
-# Created: Sun Apr 12 17:35:12 2015
+# Created: Tue May  5 18:19:40 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -27,7 +27,9 @@ class Ui_Connection(object):
     def setupUi(self, Connection):
         Connection.setObjectName(_fromUtf8("Connection"))
         Connection.resize(420, 284)
+        Connection.setMinimumSize(QtCore.QSize(420, 284))
         self.verticalLayout_2 = QtGui.QVBoxLayout(Connection)
+        self.verticalLayout_2.setSizeConstraint(QtGui.QLayout.SetDefaultConstraint)
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
         self.layout = QtGui.QHBoxLayout()
         self.layout.setObjectName(_fromUtf8("layout"))

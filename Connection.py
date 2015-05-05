@@ -35,6 +35,7 @@ class Connection(QtGui.QDialog):
 		self.iface = iface
 		self.driverName = driverName
 		self.parent = parent
+		self.setFixedSize(400, 284)
 
 		# Set up the user interface from Designer.
 		self.ui = Ui_Connection()
@@ -64,6 +65,7 @@ class Connection(QtGui.QDialog):
 		password = self.ui.password.text()
 		passwordh = self.ui.password.displayText()
 
+		self.setCursor(QtCore.Qt.WaitCursor)
 		connString = '{}:host={} port={} dbname={} user={} password={}'.format(db,host,port,dbname,user,password)
 		connList = [host,port,dbname,user,password]
 		driver = ogr.GetDriverByName(str(self.driverName))
@@ -71,14 +73,18 @@ class Connection(QtGui.QDialog):
 
 		if capability is None:
 			self.iface.messageBar().pushMessage(u"K databázi {} se nepodařilo připojit".format(dbname), level=QgsMessageBar.CRITICAL, duration=5)
+			self.setCursor(QtCore.Qt.ArrowCursor)
 			return
 		if self.ui.save.isChecked():
-			if name =='': name = 'default'
-			self.save_connection(name,connList)
-			self.iface.messageBar().pushMessage(u'Připojení k databázi {} bylo úspěšné (uloženo)'.format(dbname), level=QgsMessageBar.INFO, duration=5)
-			self.parent.ui.driverBox.setToolTip('{}:host={} port={} dbname={} user={} password={}'.format(db,host,port,dbname,user,passwordh))
-			self.parent.option['driver'] = self.driverName
-			self.parent.option['datasource'] = connString
+			if name =='': name = dbname
+			reply = QtGui.QMessageBox.question(self, u'Uložení hesla', u"Opravdu chcete uložit heslo? To bude uloženo ve formě prostého textu. Pokud heslo nechcete z bezpečnostních důvodů ukládat, opusťtě tuto nabídku a změňte nastavení",QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.Yes)
+			if reply == QtGui.QMessageBox.Yes:
+				self.save_connection(name,connList)
+				self.iface.messageBar().pushMessage(u'Připojení k databázi {} bylo úspěšné (uloženo)'.format(dbname), level=QgsMessageBar.INFO, duration=5)
+				self.parent.ui.driverBox.setToolTip('{}:host={} port={} dbname={} user={} password={}'.format(db,host,port,dbname,user,passwordh))
+				self.parent.option['driver'] = self.driverName
+				self.parent.option['datasource'] = connString
+			else: return
 		else:
 			self.iface.messageBar().pushMessage(u'Připojení k databázi {} bylo úspěšné'.format(dbname), level=QgsMessageBar.INFO, duration=5)
 			self.parent.ui.driverBox.setToolTip('{}:host={} port={} dbname={} user={} password={}'.format(db,host,port,dbname,user,passwordh))

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_MainApp.ui'
 #
-# Created: Mon Apr 13 20:07:30 2015
+# Created: Fri Apr 17 22:01:49 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -50,6 +50,12 @@ class Ui_MainApp(object):
         self.driverBox.setFrame(True)
         self.driverBox.setObjectName(_fromUtf8("driverBox"))
         self.horizontalLayout.addWidget(self.driverBox)
+        self.overwrite = QtGui.QCheckBox(MainApp)
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.overwrite.setFont(font)
+        self.overwrite.setObjectName(_fromUtf8("overwrite"))
+        self.horizontalLayout.addWidget(self.overwrite)
         spacerItem = QtGui.QSpacerItem(368, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
         self.verticalLayout_4.addLayout(self.horizontalLayout)
@@ -144,8 +150,9 @@ class Ui_MainApp(object):
         QtCore.QMetaObject.connectSlotsByName(MainApp)
 
     def retranslateUi(self, MainApp):
-        MainApp.setWindowTitle(_translate("MainApp", "Import dat RUIAN", None))
+        MainApp.setWindowTitle(_translate("MainApp", "Import dat RÚIAN", None))
         self.driver_lbl.setText(_translate("MainApp", "Výstup ", None))
+        self.overwrite.setText(_translate("MainApp", "vymazat data RÚIAN", None))
         self.check.setToolTip(_translate("MainApp", "<html><head/><body><p>Přidat vše</p></body></html>", None))
         self.check.setText(_translate("MainApp", "...", None))
         self.uncheck.setToolTip(_translate("MainApp", "<html><head/><body><p>Odebrat vše</p></body></html>", None))
