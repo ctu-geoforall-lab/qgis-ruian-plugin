@@ -7,8 +7,8 @@
                              -------------------
         begin                : 2015-03-16
         git sha              : $Format:%
-        copyright            : (C) 2015 by Jan Klima
-        email                : honzi.klima@gmail.com
+        copyright            : (C) 2015 by Jan Klima (C) 2016 by Dennis Dvořák
+        email                : honzi.klima@gmail.com; dennis.dvorak@email.cz
  ***************************************************************************/
 
 /***************************************************************************
@@ -22,6 +22,8 @@
 """
 # Import the PyQt, QGIS libraries and classes
 import os
+import sys
+
 #import subprocess
 from PyQt4 import QtCore, QtGui
 from qgis.core import *
@@ -30,7 +32,7 @@ from osgeo import ogr, gdal
 from Connection import Connection
 from ui_MainApp import Ui_MainApp
 import time
-
+from gdal_vfr.vfr4ogr import VfrOgr
 
 class MainApp(QtGui.QDialog):
 
@@ -38,7 +40,8 @@ class MainApp(QtGui.QDialog):
         QtGui.QDialog.__init__(self)
         self.iface = iface
         self.driverTypes = {'PostgreSQL':'PG','MSSQLSpatial':'MSSQL','SQLite':'sqlite','ESRI Shapefile':'shp','GPKG':'gpkg','Nepodporuje':0}
-        self.driverNames = ['PostgreSQL','MSSQLSpatial','SQLite','GPKG', 'ESRI Shapefile', 'Nepodporuje']
+        self.driverNames = ['SQLite']
+        #'PostgreSQL','MSSQLSpatial','SQLite','GPKG', 'ESRI Shapefile', 'Nepodporuje'
         self.missDrivers = []
         self.option = {'driver':None, 'datasource':None, 'layers':[], 'layers_name':[], 'overwrite':False}
 
@@ -245,9 +248,8 @@ class MainApp(QtGui.QDialog):
         	self.importThread.start()
     
     # update progress status
-    def set_status(self, num, tot, text):
-    	self.progress.setLabelText(u'Import ' + str(num) + ' z ' + str(tot) + ' (' + text + ')')
-    	print text
+    def set_status(self, num, tot, text, operation):
+    	self.progress.setLabelText(u'{0} {1} z {2} ({3})'.format(operation, num, tot, text))
 
     # terminate import
     def import_close(self):
@@ -270,19 +272,30 @@ class MainApp(QtGui.QDialog):
 
 
 class ImportThread(QtCore.QThread):
-	importEnd = QtCore.pyqtSignal()
- 	importStat = QtCore.pyqtSignal(int,int,str)
+    importEnd = QtCore.pyqtSignal()
+    importStat = QtCore.pyqtSignal(int,int,str,str)
 
-	def __init__(self, option):
-  		QtCore.QThread.__init__(self)
-  		self.layers = option['layers_name']
- 
- 	def run(self):
- 		n = len(self.layers)
- 		i = 1
-  		for l in self.layers:
-   			time.sleep(1)
-   			self.importStat.emit(i, n, l)
-   			i += 1
-   		self.importEnd.emit()
-  		
+    def __init__(self, option):
+        QtCore.QThread.__init__(self)
+        self.layers = option['layers']
+
+    def run(self):
+        # create convertor
+        os.environ['DATA_DIR'] = os.environ['HOMEPATH'] if sys.platform.startswith('win') else os.environ['HOME']
+        ogr = VfrOgr(frmt='SQLite', dsn=os.path.join(os.environ['DATA_DIR'], 'ruian.db'), overwrite=True, geom_name='OriginalniHranice')
+
+        n = len(self.layers)
+        i = 1
+        for l in self.layers:
+            filename = 'OB_{}_UKSH'.format(l)
+            QtCore.qDebug('\n (VFR) Processing file: {}'.format(filename))
+            # download
+            ogr.reset()
+            self.importStat.emit(i, n, l, "Download")
+            ogr.download([filename])
+            # import
+            self.importStat.emit(i, n, l, "Import")
+            ogr.run(True if i > 1 else False)
+            i += 1
+        
+        self.importEnd.emit()

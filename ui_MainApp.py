@@ -162,3 +162,4 @@ class Ui_MainApp(object):
         self.import_btn.setText(_translate("MainApp", "Importovat", None))
 
 import resources_rc
+
