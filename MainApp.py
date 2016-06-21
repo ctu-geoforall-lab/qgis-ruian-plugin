@@ -153,6 +153,7 @@ class MainApp(QtGui.QDialog):
             if not connString:
                 self.ui.driverBox.setCurrentIndex(0)
                 return 0
+            os.connString = connString;
 
             driver = ogr.GetDriverByName(str(driverName))
             capability = driver.TestCapability(ogr._ogr.ODrCCreateDataSource)
@@ -282,7 +283,8 @@ class ImportThread(QtCore.QThread):
     def run(self):
         # create convertor
         os.environ['DATA_DIR'] = os.environ['HOMEPATH'] if sys.platform.startswith('win') else os.environ['HOME']
-        ogr = VfrOgr(frmt='SQLite', dsn=os.path.join(os.environ['DATA_DIR'], 'ruian.db'), overwrite=True, geom_name='OriginalniHranice')
+#        ogr = VfrOgr(frmt='SQLite', dsn=os.path.join(os.environ['DATA_DIR'], 'blablalba.db'), overwrite=True, geom_name='OriginalniHranice')
+        ogr = VfrOgr(frmt='SQLite', dsn=os.connString, overwrite=True, geom_name='OriginalniHranice')
 
         n = len(self.layers)
         i = 1
