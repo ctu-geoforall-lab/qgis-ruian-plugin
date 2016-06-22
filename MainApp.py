@@ -239,6 +239,9 @@ class MainApp(QtGui.QDialog):
             	self.option['layers'].append(code)
             	self.option['layers_name'].append(name)
 
+        self.option['file_type'] = 'UKSH' # TODO (#3): self.ui.type_time...
+        self.option['data_dir'] = None # TODO (#3): self.ui.data_dir.text()
+
         if not self.option['layers']:
             self.iface.messageBar().pushMessage(u"Nejsou vybrána žádná data pro import.", level=QgsMessageBar.INFO, duration=5)
             return
@@ -319,16 +322,25 @@ class ImportThread(QtCore.QThread):
         QtCore.QThread.__init__(self)
         self.layers = option['layers']
         self.datasource = option['datasource']
+        self.file_type = option['file_type']
+        self.data_dir = option['data_dir']
+        if not self.data_dir:
+            # TODO (#3): nahradit za tempfile.mkstemp
+            self.data_dir = os.environ['HOMEPATH'] if sys.platform.startswith('win') else os.environ['HOME']
+        else:
+            if not os.path.exists(self.data_dir):
+                ### TODO (#3): osetrit pripad, kdy uzivatel nema pravo zapisu
+                os.makedirs(self.data_dir)
 
     def run(self):
         # create convertor
-        os.environ['DATA_DIR'] = os.environ['HOMEPATH'] if sys.platform.startswith('win') else os.environ['HOME']
+        os.environ['DATA_DIR'] = self.data_dir
         ogr = VfrOgr(frmt='SQLite', dsn=self.datasource, overwrite=True, geom_name='OriginalniHranice')
 
         n = len(self.layers)
         i = 1
         for l in self.layers:
-            filename = 'OB_{}_UKSH'.format(l)
+            filename = 'OB_{}_{}'.format(l, self.file_type)
             QtCore.qDebug('\n (VFR) Processing file: {}'.format(filename))
             # download
             ogr.reset()
@@ -338,5 +350,6 @@ class ImportThread(QtCore.QThread):
             self.importStat.emit(i, n, l, "Import")
             ogr.run(True if i > 1 else False)
             i += 1
-        
+
+        del os.environ['DATA_DIR']
         self.importEnd.emit()
