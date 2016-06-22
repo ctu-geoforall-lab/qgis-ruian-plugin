@@ -34,6 +34,8 @@ from ui_MainApp import Ui_MainApp
 import time
 from gdal_vfr.vfr4ogr import VfrOgr
 
+debug=True
+
 class MainApp(QtGui.QDialog):
 
     def __init__(self, iface, parent=None):
@@ -43,7 +45,7 @@ class MainApp(QtGui.QDialog):
         self.driverNames = ['SQLite']
         #'PostgreSQL','MSSQLSpatial','SQLite','GPKG', 'ESRI Shapefile', 'Nepodporuje'
         self.missDrivers = []
-        self.option = {'driver':None, 'datasource':None, 'layers':[], 'layers_name':[], 'overwrite':False}
+        self.option = {'driver':None, 'datasource':None, 'layers':[], 'layers_name':[]}
 
         # Set up the user interface from Designer.
         self.ui = Ui_MainApp()
@@ -63,7 +65,11 @@ class MainApp(QtGui.QDialog):
         self.ui.search.setEditable(True)
         self.ui.search.clearEditText()
         self.ui.advanced.hide()
-        #self.ui.import_btn.setEnabled(False)
+        if not debug:
+            self.ui.import_btn.setEnabled(False)
+        else:
+            self.option['driver'] = 'SQLite'
+            self.option['datasource'] = '/tmp/ruian.db'
 
         # Set up the table view
         path = os.path.join(os.path.dirname(__file__), 'files','obce_cr.csv')
@@ -143,17 +149,23 @@ class MainApp(QtGui.QDialog):
 
     # set driver and datasource
     def set_datasource(self, driverName):
+        if self.ui.import_btn.isEnabled():
+            self.ui.import_btn.setEnabled(False)
+
         if driverName in self.missDrivers:
             self.ui.driverBox.setCurrentIndex(0)
             self.iface.messageBar().pushMessage(u"Nainstalovaná verze GDAL nepodporuje ovladač {}".format(driverName), level=QgsMessageBar.CRITICAL, duration=5)
-            return 0
+            return
 
-        if driverName in ['SQLite', 'GPKG', 'ESRI Shapefile']:
-            connString = QtGui.QFileDialog.getSaveFileName(self,u'Vybrat/vytvořit soubor','output.{}'.format(self.driverTypes[driverName]),'{} (*.{})'.format(driverName, self.driverTypes[driverName]),QtGui.QFileDialog.DontConfirmOverwrite)   
+        if driverName in ['SQLite', 'GPKG', 'ESRI Shapefile']: ### only SQLite currently works
+            connString = QtGui.QFileDialog.getSaveFileName(self,
+                                                           u'Vybrat/vytvořit soubor','output.{}'.format(
+                                                               self.driverTypes[driverName]),
+                                                           '{} (*.{})'.format(driverName, self.driverTypes[driverName]),
+                                                           QtGui.QFileDialog.DontConfirmOverwrite)
             if not connString:
                 self.ui.driverBox.setCurrentIndex(0)
-                return 0
-            os.connString = connString;
+                return
 
             driver = ogr.GetDriverByName(str(driverName))
             capability = driver.TestCapability(ogr._ogr.ODrCCreateDataSource)
@@ -162,10 +174,11 @@ class MainApp(QtGui.QDialog):
             	self.ui.driverBox.setToolTip(connString)
                 self.option['driver'] = driverName
                 self.option['datasource'] = connString
+                if not self.ui.import_btn.isEnabled():
+                    self.ui.import_btn.setEnabled(True)
             else:
             	self.iface.messageBar().pushMessage(u"Soubor {} nelze vybrat/vytvořit".format(connString), level=QgsMessageBar.CRITICAL, duration=5)
                 self.ui.driverBox.setCurrentIndex(0)
-                
 
         elif driverName in ['PostgreSQL','MSSQLSpatial']:
             self.connection = Connection(self.iface, driverName, self)
@@ -216,10 +229,6 @@ class MainApp(QtGui.QDialog):
 
     # star importing data
     def get_options(self):
-    	if self.ui.overwrite.checkState()  == QtCore.Qt.Checked:
-    		self.option['overwrite'] = True
-    	else: self.option['overwrite'] = False
-
     	self.option['layers'] = []
     	self.option['layers_name'] = []
         for row in xrange(0,self.model.rowCount()):
@@ -229,6 +238,10 @@ class MainApp(QtGui.QDialog):
             	name = self.model.item(row,2).text()
             	self.option['layers'].append(code)
             	self.option['layers_name'].append(name)
+
+        if not self.option['layers']:
+            self.iface.messageBar().pushMessage(u"Nejsou vybrána žádná data pro import.", level=QgsMessageBar.INFO, duration=5)
+            return
 
         # create progress dialog
         self.progress = QtGui.QProgressDialog(u'Probíhá import ...', u'Ukončit', 0, 0, self, QtCore.Qt.SplashScreen)
@@ -264,9 +277,10 @@ class MainApp(QtGui.QDialog):
 
     # import was succesful
     def import_end(self):
-    	self.progress.cancel()
-    	QtGui.QMessageBox.information(self, u'Import', u"Import dat proběhl úspěšně",QtGui.QMessageBox.Yes | QtGui.QMessageBox.Yes)
-    	
+        self.progress.cancel()
+        QtGui.QMessageBox.information(self, u'Import', u"Import dat proběhl úspěšně",QtGui.QMessageBox.Yes | QtGui.QMessageBox.Yes)
+
+
     # close application
     def close(self):
         self.hide()
@@ -279,12 +293,12 @@ class ImportThread(QtCore.QThread):
     def __init__(self, option):
         QtCore.QThread.__init__(self)
         self.layers = option['layers']
+        self.datasource = option['datasource']
 
     def run(self):
         # create convertor
         os.environ['DATA_DIR'] = os.environ['HOMEPATH'] if sys.platform.startswith('win') else os.environ['HOME']
-#        ogr = VfrOgr(frmt='SQLite', dsn=os.path.join(os.environ['DATA_DIR'], 'blablalba.db'), overwrite=True, geom_name='OriginalniHranice')
-        ogr = VfrOgr(frmt='SQLite', dsn=os.connString, overwrite=True, geom_name='OriginalniHranice')
+        ogr = VfrOgr(frmt='SQLite', dsn=self.datasource, overwrite=True, geom_name='OriginalniHranice')
 
         n = len(self.layers)
         i = 1
