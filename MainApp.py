@@ -278,13 +278,38 @@ class MainApp(QtGui.QDialog):
     # import was succesful
     def import_end(self):
         self.progress.cancel()
-        QtGui.QMessageBox.information(self, u'Import', u"Import dat proběhl úspěšně",QtGui.QMessageBox.Yes | QtGui.QMessageBox.Yes)
-
+        reply  = QtGui.QMessageBox.question(self, u'Import', u"Import dat proběhl úspěšně. "
+                                            u"Přejete si vytvořené vrtsvy do mapového okna?",
+                                            QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
+        if reply == QtGui.QMessageBox.Yes:
+            self.add_layers()
 
     # close application
     def close(self):
         self.hide()
 
+    # add created layers to map display
+    def add_layers(self):
+        driver = ogr.GetDriverByName(self.option['driver'])
+        datasource = driver.Open(self.option['datasource'], False)
+        if not datasource:
+            self.iface.messageBar().pushMessage(u"Soubor {} nelze načíst".format(self.option['datasource']), level=QgsMessageBar.CRITICAL, duration=5)
+            return
+
+        # TODO: use uri instead of hardcoded datasource for SQLite
+        # uri = QgsDataSourceURI()
+        # uri.setDatabase(self.option['datasource'])
+        # schema = ''
+        # geom_column = 'GEOMETRY'
+        layers = []
+        for idx in range(datasource.GetLayerCount()):
+            layer = datasource.GetLayerByIndex(idx)
+            layer_name = layer.GetName()
+            #uri.setDataSource(schema, layer_name, geom_column)
+            vlayer = QgsVectorLayer('{0}|layername={1}'.format(self.option['datasource'], layer_name), layer_name, 'ogr')
+            QgsMapLayerRegistry.instance().addMapLayer(vlayer)
+
+        del datasource # close datasource
 
 class ImportThread(QtCore.QThread):
     importEnd = QtCore.pyqtSignal()
