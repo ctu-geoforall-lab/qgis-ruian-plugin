@@ -264,11 +264,142 @@
       <property name="topMargin">
        <number>0</number>
       </property>
-      <item alignment="Qt::AlignHCenter">
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>Od verze pluginu 1.0 zde bude možnost volit importovaná data dle modelu RUIAN</string>
+      <item>
+       <widget class="QGroupBox" name="typedata">
+        <property name="enabled">
+         <bool>true</bool>
         </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="title">
+         <string>Typ dat</string>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
+        </property>
+        <widget class="QWidget" name="">
+         <property name="geometry">
+          <rect>
+           <x>11</x>
+           <y>31</y>
+           <width>561</width>
+           <height>122</height>
+          </rect>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_4">
+            <item>
+             <widget class="QLabel" name="cas_rozsah_l">
+              <property name="text">
+               <string>Časový rozsah</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="cas_rozsah_box">
+              <item>
+               <property name="text">
+                <string>úplný</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>přírůstky</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_5">
+            <item>
+             <widget class="QLabel" name="dat_sada_l">
+              <property name="text">
+               <string>Datová sada</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="dat_sada_box">
+              <item>
+               <property name="text">
+                <string>kompletní</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>základní</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <item>
+             <widget class="QLabel" name="platnost_udaju_l">
+              <property name="text">
+               <string>Platnost údajů</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="platnost_udaju_box">
+              <item>
+               <property name="text">
+                <string>platné</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>historické</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_7">
+            <item>
+             <widget class="QLabel" name="vyber_z_l">
+              <property name="text">
+               <string>Výběr z údajů (pouze u kompletní datové sady):</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="vyber_z_box">
+              <item>
+               <property name="text">
+                <string>základní + originální hranice</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>základní + generalizované hranice</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>základní</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>vlajky a znaky</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
        </widget>
       </item>
      </layout>

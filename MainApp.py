@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 /***************************************************************************
  VFRImporter_dialog
@@ -192,6 +192,12 @@ class MainApp(QtGui.QDialog):
             self.ui.import_btn.setEnabled(False)
         else:
             self.ui.import_btn.setEnabled(True)
+    # enable data select
+    def data_select(self, dat_sada_box):
+        if self.ui.dat_sada_box.currentText() == u'základní':
+            self.ui.vyber_z_box.setEnabled(False)
+        else:
+            self.ui.vyber_z_box.setEnabled(True)
 
 
     # filtering tableview
@@ -227,7 +233,7 @@ class MainApp(QtGui.QDialog):
             self.ui.advanced.hide()
 
 
-    # star importing data
+    # start importing data
     def get_options(self):
     	self.option['layers'] = []
     	self.option['layers_name'] = []
@@ -238,9 +244,26 @@ class MainApp(QtGui.QDialog):
             	name = self.model.item(row,2).text()
             	self.option['layers'].append(code)
             	self.option['layers_name'].append(name)
-
-        self.option['file_type'] = 'UKSH' # TODO (#3): self.ui.type_time...
+        # generating RUIAN type
+        self.UKSH = {'up':'U','zk':'K', 'sh':'S','zgho':'H'}
+        if self.ui.vyber_z_box.currentText() == u'základní a generalizované hranice':
+            self.UKSH['zgho'] = 'G'
+        elif self.ui.vyber_z_box.currentText() == u'základní':
+            self.UKSH['zgho'] = 'Z'
+        elif self.ui.vyber_z_box.currentText() == u'vlajky a znaky':
+            self.UKSH['zgho'] = 'O'
+        self.option['up'] = 'U'
+        if self.ui.cas_rozsah_box.currentText() == u'přírůstky':
+            self.UKSH['up'] = 'Z'
+        if self.ui.dat_sada_box.currentText() == u'základní':
+            self.UKSH['zk'] = 'Z'
+            self.UKSH['zgho'] = 'Z'
+        if self.ui.platnost_udaju_box.currentText() == u'historické':
+            self.UKSH['sh'] = 'H'
+        self.option['file_type'] = u'{0}{1}{2}{3}'.format(self.UKSH['up'], self.UKSH['zk'], self.UKSH['sh'], self.UKSH['zgho']) # TODO (#3): self.ui.type_time...
         self.option['data_dir'] = None # TODO (#3): self.ui.data_dir.text()
+        print(self.option['file_type'])
+
 
         if not self.option['layers']:
             self.iface.messageBar().pushMessage(u"Nejsou vybrána žádná data pro import.", level=QgsMessageBar.INFO, duration=5)
