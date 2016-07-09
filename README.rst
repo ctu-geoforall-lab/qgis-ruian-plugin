@@ -33,7 +33,7 @@ Návod k použití
 
 Po instalaci plugin nejprve aktivujeme:
 
-.. image:: images/installation.png
+.. image:: images/install.png
    
 Autoři
 ------
