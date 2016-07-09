@@ -34,7 +34,15 @@ Návod k použití
 Po instalaci plugin nejprve aktivujeme:
 
 .. image:: images/install.png
-   
+
+Vybereme obce, které chceme naimportovat:
+
+.. image:: images/usage.png
+
+Data můžeme v QGISu rovnou zobrazit:
+
+.. image:: images/visualization.png
+           
 Autoři
 ------
 
