@@ -28,6 +28,13 @@ Postup k instalaci
    cd vfr_plugin
    git clone https://github.com/ctu-osgeorel/gdal-vfr.git gdal_vfr
 
+Návod k použití
+---------------
+
+Po instalaci plugin nejprve aktivujeme:
+
+.. image:: images/installation.png
+   
 Autoři
 ------
 
