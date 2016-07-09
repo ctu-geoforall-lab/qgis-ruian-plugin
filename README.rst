@@ -37,7 +37,7 @@ Po instalaci plugin nejprve aktivujeme:
 
 Vybereme obce, které chceme naimportovat:
 
-.. image:: images/usage.png
+.. image:: images/select.png
 
 Data můžeme v QGISu rovnou zobrazit:
 
