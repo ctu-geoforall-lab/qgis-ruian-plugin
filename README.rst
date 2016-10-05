@@ -6,7 +6,7 @@ automaticky stahovat a spravovat prostorové data `RUIÁN
 <http://vdp.cuzk.cz/>`_. Grafické uživatelské rozhraní (GUI) je
 navrženo tak, aby uživateli nabídlo jednoduchý výběr požadovaných
 dat. Plugin je implementován v programovacím jazyku Python s podporou
-knihoven GDAL (http://gdal.org), resp. projektu GDAL-VFR
+knihoven `GDAL <http://gdal.org>`_, resp. projektu GDAL-VFR
 (https://github.com/ctu-osgeorel/gdal-vfr.git) a PyQt.
 
 Projekt navazuje na semestrální projekty předmětu `Free Software GIS
