@@ -9,9 +9,10 @@ dat. Plugin je implementován v programovacím jazyku Python s podporou
 knihoven GDAL (http://gdal.org), resp. projektu GDAL-VFR
 (https://github.com/ctu-osgeorel/gdal-vfr.git) a PyQt.
 
-Projekt navazuje na semestrální projekty předmětu Free Software GIS
-vyučovaného na Fakultě stavební ČVUT v Praze z akademického roku
-2014/1015 (https://github.com/ctu-yfsg/2015-c-qgis-vfr) a 2015/2016
+Projekt navazuje na semestrální projekty předmětu `Free Software GIS
+<http://geo.fsv.cvut.cz/gwiki/155YFSG>`_ vyučovaného na Fakultě
+stavební ČVUT v Praze z akademického roku 2014/1015
+(https://github.com/ctu-yfsg/2015-c-qgis-vfr) a 2015/2016
 (https://github.com/ctu-yfsg/2015-c-qgis-vfr).
 
 Postup pro instalaci
