@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 /***************************************************************************
  VFRImporter_dialog
@@ -23,15 +23,19 @@
 # Import the PyQt, QGIS libraries and classes
 import os
 import sys
+import tempfile
+import time
 
-#import subprocess
 from PyQt4 import QtCore, QtGui
+
 from qgis.core import *
 from qgis.gui import QgsMessageBar
+
 from osgeo import ogr, gdal
+
 from Connection import Connection
 from ui_MainApp import Ui_MainApp
-import time
+
 from gdal_vfr.vfr4ogr import VfrOgr
 
 debug=True
@@ -65,11 +69,16 @@ class MainApp(QtGui.QDialog):
         self.ui.search.setEditable(True)
         self.ui.search.clearEditText()
         self.ui.advanced.hide()
+
+        # define temporary directory for downloading VFR data
+        self.option['tmp_dir'] = os.path.join(tempfile.gettempdir(),
+                                              'vfr_plugin_{}'.format(os.getpid()))
         if not debug:
             self.ui.import_btn.setEnabled(False)
         else:
             self.option['driver'] = 'SQLite'
-            self.option['datasource'] = '/tmp/ruian.db'
+            self.option['datasource'] = os.path.join(self.option['tmp_dir'],
+                                                     'ruian.db')
 
         # Set up the table view
         path = os.path.join(os.path.dirname(__file__), 'files','obce_cr.csv')
@@ -261,7 +270,7 @@ class MainApp(QtGui.QDialog):
         if self.ui.platnost_udaju_box.currentText() == u'historické':
             self.UKSH['sh'] = 'H'
         self.option['file_type'] = u'{0}{1}{2}{3}'.format(self.UKSH['up'], self.UKSH['zk'], self.UKSH['sh'], self.UKSH['zgho']) # TODO (#3): self.ui.type_time...
-        self.option['data_dir'] = None # TODO (#3): self.ui.data_dir.text()
+        self.option['data_dir'] = os.path.join(self.option['tmp_dir'], 'vfr') # TODO (#3): self.ui.data_dir.text()
         print(self.option['file_type'])
 
 
@@ -356,8 +365,12 @@ class ImportThread(QtCore.QThread):
                 os.makedirs(self.data_dir)
 
     def run(self):
-        # create convertor
+        # define directory where VFR will be stored
         os.environ['DATA_DIR'] = self.data_dir
+        # logs will be stored also in data directory
+        os.environ['LOG_DIR'] = self.data_dir
+
+        # create convertor
         ogr = VfrOgr(frmt='SQLite', dsn=self.datasource, overwrite=True, geom_name='OriginalniHranice')
 
         n = len(self.layers)
