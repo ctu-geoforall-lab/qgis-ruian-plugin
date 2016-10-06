@@ -6,19 +6,18 @@
 # This file should be included when you package your plugin.# Mandatory items:
 
 [general]
-name=Nástroj pro práci s daty RUIAN
+name=Nastroj pro praci s daty RUIAN
 qgisMinimumVersion=2.0
-description=Nástroj umožňuje importovat data RUIAN do mnoha formátů včetně databází a následně s nimi pracovat. Pro práci s daty RUIAN je nutná instalace knihovny GDAL/OGR vyšší než 1.11.
+description=Nastroj umoznuje importovat data RUIAN do mnoha formatu vcetne databazi a nasledne s nimi pracovat. Pro praci s daty RUIAN je nutna instalace knihovny GDAL vyssi nez 1.11.
 version=0.1
-author=Jan Klima
-email=honzi.klima@gmail.com
+author=Jan Klima, Lukas Streda, Simon Gajzler, Martin Landa (mentor)
+email=martin.landa@fsv.cvut.cz
 
 # changelog=
 tags=VFR, VDP, RUIAN
-homepage=
-tracker=
-repository=
+homepage=https://github.com/ctu-geoforall-lab/qgis-ruian-plugin/blob/master/README.rst
+tracker=https://github.com/ctu-geoforall-lab/qgis-ruian-plugin/issues
+repository=https://github.com/ctu-geoforall-lab/qgis-ruian-plugin
 icon=files/icon.png
 experimental=True
 deprecated=False
-
