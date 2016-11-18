@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>601</width>
-    <height>493</height>
+    <width>613</width>
+    <height>507</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -17,17 +17,17 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Import dat RUIAN</string>
+   <string>Import dat RÚIAN</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="resources.qrc">
+   <iconset>
     <normaloff>:/icon.png</normaloff>:/icon.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_4">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
+    <layout class="QHBoxLayout" name="horizontalLayoutDriver">
      <item>
-      <widget class="QLabel" name="driver_lbl">
+      <widget class="QLabel" name="driverLabel">
        <property name="font">
         <font>
          <pointsize>10</pointsize>
@@ -63,17 +63,17 @@
       </widget>
      </item>
      <item>
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+      <widget class="QLabel" name="outputPath">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>1</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
        </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>368</width>
-         <height>20</height>
-        </size>
+       <property name="text">
+        <string/>
        </property>
-      </spacer>
+      </widget>
      </item>
     </layout>
    </item>
@@ -94,9 +94,9 @@
     </spacer>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
+    <layout class="QHBoxLayout" name="horizontalLayoutSearch">
      <item>
-      <widget class="QToolButton" name="check">
+      <widget class="QToolButton" name="checkButton">
        <property name="maximumSize">
         <size>
          <width>20</width>
@@ -110,7 +110,7 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset resource="resources.qrc">
+        <iconset>
          <normaloff>:/check.png</normaloff>:/check.png</iconset>
        </property>
        <property name="iconSize">
@@ -134,7 +134,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QToolButton" name="uncheck">
+      <widget class="QToolButton" name="uncheckButton">
        <property name="maximumSize">
         <size>
          <width>20</width>
@@ -148,7 +148,7 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset resource="resources.qrc">
+        <iconset>
          <normaloff>:/uncheck.png</normaloff>:/uncheck.png</iconset>
        </property>
        <property name="iconSize">
@@ -181,7 +181,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="search">
+      <widget class="QComboBox" name="searchComboBox">
        <property name="font">
         <font>
          <pointsize>10</pointsize>
@@ -201,7 +201,7 @@
     </layout>
    </item>
    <item>
-    <widget class="QTableView" name="view">
+    <widget class="QTableView" name="dataView">
      <property name="minimumSize">
       <size>
        <width>0</width>
@@ -224,14 +224,14 @@
     </widget>
    </item>
    <item>
-    <widget class="QToolButton" name="advanced_btn">
+    <widget class="QToolButton" name="advancedButton">
      <property name="font">
       <font>
        <pointsize>10</pointsize>
       </font>
      </property>
      <property name="text">
-      <string>Pokročilé</string>
+      <string> Pokročilé nastavení</string>
      </property>
      <property name="popupMode">
       <enum>QToolButton::DelayedPopup</enum>
@@ -248,7 +248,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QWidget" name="advanced" native="true">
+    <widget class="QWidget" name="advancedSettings" native="true">
      <property name="minimumSize">
       <size>
        <width>0</width>
@@ -265,12 +265,35 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QGroupBox" name="typedata">
+       <widget class="QGroupBox" name="datatypeBox">
         <property name="enabled">
          <bool>true</bool>
         </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>1</verstretch>
+         </sizepolicy>
+        </property>
         <property name="focusPolicy">
          <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">
+
+QGroupBox {
+    border: 1px solid gray;
+    border-radius: 9px;
+    margin-top: 0.5em;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    left: 10px;
+    padding: 0 3px 0 3px;
+}
+
+</string>
         </property>
         <property name="title">
          <string>Typ dat</string>
@@ -278,135 +301,140 @@
         <property name="checkable">
          <bool>false</bool>
         </property>
-        <widget class="QWidget" name="">
+        <widget class="QWidget" name="gridLayoutWidget">
          <property name="geometry">
           <rect>
-           <x>11</x>
-           <y>31</y>
+           <x>10</x>
+           <y>30</y>
            <width>561</width>
-           <height>122</height>
+           <height>141</height>
           </rect>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout">
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_4">
-            <item>
-             <widget class="QLabel" name="cas_rozsah_l">
-              <property name="text">
-               <string>Časový rozsah</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="cas_rozsah_box">
-              <item>
-               <property name="text">
-                <string>úplný</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>přírůstky</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-           </layout>
+         <layout class="QGridLayout" name="gridLayout" columnstretch="0,1">
+          <item row="1" column="0">
+           <widget class="QLabel" name="datasetLabel">
+            <property name="text">
+             <string>Datová sada:</string>
+            </property>
+           </widget>
           </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_5">
-            <item>
-             <widget class="QLabel" name="dat_sada_l">
-              <property name="text">
-               <string>Datová sada</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="dat_sada_box">
-              <item>
-               <property name="text">
-                <string>kompletní</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>základní</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-           </layout>
+          <item row="0" column="0">
+           <widget class="QLabel" name="timeLabel">
+            <property name="text">
+             <string>Časový rozsah:</string>
+            </property>
+           </widget>
           </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_6">
+          <item row="0" column="1">
+           <widget class="QComboBox" name="timeComboBox">
             <item>
-             <widget class="QLabel" name="platnost_udaju_l">
-              <property name="text">
-               <string>Platnost údajů</string>
-              </property>
-             </widget>
+             <property name="text">
+              <string>úplný</string>
+             </property>
             </item>
             <item>
-             <widget class="QComboBox" name="platnost_udaju_box">
-              <item>
-               <property name="text">
-                <string>platné</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>historické</string>
-               </property>
-              </item>
-             </widget>
+             <property name="text">
+              <string>přírůstky</string>
+             </property>
             </item>
-           </layout>
+           </widget>
           </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_7">
+          <item row="2" column="0">
+           <widget class="QLabel" name="validityLabel">
+            <property name="text">
+             <string>Platnost údajů:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QComboBox" name="datasetComboBox">
             <item>
-             <widget class="QLabel" name="vyber_z_l">
-              <property name="text">
-               <string>Výběr z údajů (pouze u kompletní datové sady):</string>
-              </property>
-             </widget>
+             <property name="text">
+              <string>kompletní</string>
+             </property>
             </item>
             <item>
-             <widget class="QComboBox" name="vyber_z_box">
-              <item>
-               <property name="text">
-                <string>základní + originální hranice</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>základní + generalizované hranice</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>základní</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>vlajky a znaky</string>
-               </property>
-              </item>
-             </widget>
+             <property name="text">
+              <string>základní</string>
+             </property>
             </item>
-           </layout>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QComboBox" name="validityComboBox">
+            <item>
+             <property name="text">
+              <string>platné</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>historické</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="selectionLabel">
+            <property name="toolTip">
+             <string>Pouze u kompletní datové sady.</string>
+            </property>
+            <property name="text">
+             <string>Výběr z údajů:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QComboBox" name="selectionComboBox">
+            <item>
+             <property name="text">
+              <string>základní + originální hranice</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>základní + generalizované hranice</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>základní</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>vlajky a znaky</string>
+             </property>
+            </item>
+           </widget>
           </item>
          </layout>
         </widget>
+        <zorder>gridLayoutWidget</zorder>
+        <zorder></zorder>
        </widget>
+      </item>
+      <item>
+       <spacer name="verticalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Expanding</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
       </item>
      </layout>
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <layout class="QHBoxLayout" name="horizontalLayoutButtons">
      <item>
       <widget class="QDialogButtonBox" name="buttonBox">
        <property name="standardButtons">
@@ -415,7 +443,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="import_btn">
+      <widget class="QPushButton" name="importButton">
        <property name="text">
         <string>Importovat</string>
        </property>

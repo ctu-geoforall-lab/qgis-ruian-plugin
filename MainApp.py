@@ -38,77 +38,95 @@ from ui_MainApp import Ui_MainApp
 
 from gdal_vfr.vfr4ogr import VfrOgr
 
-debug=True
+debug=False
 
 class MainApp(QtGui.QDialog):
 
     def __init__(self, iface, parent=None):
         QtGui.QDialog.__init__(self)
         self.iface = iface
-        self.driverTypes = {'PostgreSQL':'PG','MSSQLSpatial':'MSSQL','SQLite':'sqlite','ESRI Shapefile':'shp','GPKG':'gpkg','Nepodporuje':0}
+        self.driverTypes = { 'PostgreSQL'    :'PG',
+                             'MSSQLSpatial'  :'MSSQL',
+                             'SQLite'        :'sqlite',
+                             'ESRI Shapefile':'shp',
+                             'GPKG'          :'gpkg',
+                             'Nepodporuje'   : 0
+        }
+        # currently only SQLite is supported
         self.driverNames = ['SQLite']
-        #'PostgreSQL','MSSQLSpatial','SQLite','GPKG', 'ESRI Shapefile', 'Nepodporuje'
-        self.missDrivers = []
-        self.option = {'driver':None, 'datasource':None, 'layers':[], 'layers_name':[]}
 
-        # Set up the user interface from Designer.
+        self.missDrivers = [] # list of missing drivers
+
+        # internal settings
+        self.option = {'driver'     : None,
+                       'datasource' : None,
+                       'layers'     : [],
+                       'layers_name': []
+        }
+
+        # set up the user interface from designed
         self.ui = Ui_MainApp()
         self.ui.setupUi(self)
 
         # test GDAL version
         version = gdal.__version__.split('.', 2)
         if not (int(version[0]) > 1 or int(version[1]) >= 11):
-            self.iface.messageBar().pushMessage(u"GDAL/OGR: požadována verze 1.11 nebo vyšší (nainstalována {}.{})".format(version[0],version[1]), level=QgsMessageBar.CRITICAL, duration=5)
+            self.iface.messageBar().pushMessage(u"GDAL/OGR: požadována verze 1.11 nebo vyšší (nainstalována {}.{})".format(
+                version[0],version[1]), level=QgsMessageBar.CRITICAL, duration=5
+            )
 
-        # set up widget
+        # set up widgets
         self.ui.driverBox.setToolTip(u'Zvolte typ výstupního souboru/databáze')
         self.ui.driverBox.addItem('--Vybrat--')
         self.set_comboDrivers(self.driverNames) 
         self.ui.driverBox.insertSeparator(4)  
-        self.ui.search.addItems(['Obec', 'ORP', 'Okres', 'Kraj'])
-        self.ui.search.setEditable(True)
-        self.ui.search.clearEditText()
-        self.ui.advanced.hide()
+        self.ui.searchComboBox.addItems(['Obec', 'ORP', 'Okres', 'Kraj'])
+        self.ui.searchComboBox.setEditable(True)
+        self.ui.searchComboBox.clearEditText()
+        self.ui.advancedSettings.hide()
 
         # define temporary directory for downloading VFR data
         self.option['tmp_dir'] = os.path.join(tempfile.gettempdir(),
-                                              'vfr_plugin_{}'.format(os.getpid()))
+                                              'ruian_plugin_{}'.format(os.getpid()))
         if not debug:
-            self.ui.import_btn.setEnabled(False)
+            self.ui.importButton.setEnabled(False)
         else:
             self.option['driver'] = 'SQLite'
             self.option['datasource'] = os.path.join(self.option['tmp_dir'],
                                                      'ruian.db')
 
-        # Set up the table view
+        # set up the table view
         path = os.path.join(os.path.dirname(__file__), 'files','obce_cr.csv')
         self.model, self.proxy = self.create_model(path)
-        self.ui.view.setModel(self.proxy)
-        self.ui.view.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
-        self.ui.view.setCornerButtonEnabled(False)
-        self.ui.view.setSortingEnabled(True)
-        self.ui.view.sortByColumn(2,0)
-        self.ui.view.horizontalHeader().setDefaultAlignment(QtCore.Qt.AlignLeft)
-        self.ui.view.horizontalHeader().setResizeMode(0,2)
-        self.ui.view.horizontalHeader().resizeSection(0,28)
-        self.ui.view.horizontalHeader().setStretchLastSection(True)
-        self.ui.view.verticalHeader().setResizeMode(2)
-        self.ui.view.verticalHeader().setDefaultSectionSize(23)
-        self.ui.view.verticalHeader().hide()
+        self.ui.dataView.setModel(self.proxy)
+        self.ui.dataView.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
+        self.ui.dataView.setCornerButtonEnabled(False)
+        self.ui.dataView.setSortingEnabled(True)
+        self.ui.dataView.sortByColumn(2,0)
+        self.ui.dataView.horizontalHeader().setDefaultAlignment(QtCore.Qt.AlignLeft)
+        self.ui.dataView.horizontalHeader().setResizeMode(0,2)
+        self.ui.dataView.horizontalHeader().resizeSection(0,28)
+        self.ui.dataView.horizontalHeader().setStretchLastSection(True)
+        self.ui.dataView.verticalHeader().setResizeMode(2)
+        self.ui.dataView.verticalHeader().setDefaultSectionSize(23)
+        self.ui.dataView.verticalHeader().hide()
 
-        # SIGNAL/SLOTS CONNECTION
+        # signal/slots connections
         self.ui.driverBox.activated['QString'].connect(self.set_datasource)              
         self.ui.driverBox.currentIndexChanged['QString'].connect(self.enable_import)     
-        self.ui.search.activated.connect(self.set_searching)        
-        self.ui.search.editTextChanged.connect(self.start_searching)       
-        self.ui.check.clicked.connect(lambda: self.set_checkstate(0))   
-        self.ui.uncheck.clicked.connect(lambda: self.set_checkstate(1)) 
-        self.ui.advanced_btn.clicked.connect(self.show_advanced)        
-        self.ui.import_btn.clicked.connect(self.get_options)          
-        self.ui.buttonBox.rejected.connect(self.close)                
+        self.ui.searchComboBox.activated.connect(self.set_searching)
+        self.ui.searchComboBox.editTextChanged.connect(self.start_searching)
+        self.ui.checkButton.clicked.connect(lambda: self.set_checkstate(0))
+        self.ui.uncheckButton.clicked.connect(lambda: self.set_checkstate(1))
+        self.ui.advancedButton.clicked.connect(self.show_advanced)
+        self.ui.importButton.clicked.connect(self.get_options)
+        self.ui.buttonBox.rejected.connect(self.close)
 
-    # set combobox drivers
-    def set_comboDrivers(self, driverNames):   
+    def set_comboDrivers(self, driverNames):
+        """Set GDAL drivers combo box.
+
+        :param driverNames list of supported drivers
+        """
         model = self.ui.driverBox.model()
         for driverName in driverNames:
             item = QtGui.QStandardItem(str(driverName))
@@ -121,8 +139,13 @@ class MainApp(QtGui.QDialog):
                 model.appendRow(item)
 
 
-    # create model-view
     def create_model(self, file_path):
+        """Create model-view from file.
+
+        :param file_path: path to the file
+
+        :return model, proxy
+        """
         model = QtGui.QStandardItemModel(self)
         firts_line = True
         header = []
@@ -148,27 +171,32 @@ class MainApp(QtGui.QDialog):
                         item.setSelectable(False)
                         items.append(item)
                     model.appendRow(items)        
-                
+
         model.setHorizontalHeaderLabels(header)
         proxy = QtGui.QSortFilterProxyModel()
         proxy.setFilterKeyColumn(2)
         proxy.setSourceModel(model)
+
         return model, proxy
 
-
-    # set driver and datasource
     def set_datasource(self, driverName):
-        if self.ui.import_btn.isEnabled():
-            self.ui.import_btn.setEnabled(False)
+        """Set GDAL driver and datasource.
+
+        :param driverName: GDAL driver
+        """
+        if self.ui.importButton.isEnabled():
+            self.ui.importButton.setEnabled(False)
 
         if driverName in self.missDrivers:
+            # selected driver is not supported by installed GDAL
             self.ui.driverBox.setCurrentIndex(0)
-            self.iface.messageBar().pushMessage(u"Nainstalovaná verze GDAL nepodporuje ovladač {}".format(driverName), level=QgsMessageBar.CRITICAL, duration=5)
+            self.iface.messageBar().pushMessage(u"Nainstalovaná verze GDAL nepodporuje ovladač {}".format(driverName),
+                                                level=QgsMessageBar.CRITICAL, duration=5)
             return
 
         if driverName in ['SQLite', 'GPKG', 'ESRI Shapefile']: ### only SQLite currently works
             connString = QtGui.QFileDialog.getSaveFileName(self,
-                                                           u'Vybrat/vytvořit soubor','output.{}'.format(
+                                                           u'Vybrat/vytvořit výstupní soubor','ruian.{}'.format(
                                                                self.driverTypes[driverName]),
                                                            '{} (*.{})'.format(driverName, self.driverTypes[driverName]),
                                                            QtGui.QFileDialog.DontConfirmOverwrite)
@@ -180,13 +208,14 @@ class MainApp(QtGui.QDialog):
             capability = driver.TestCapability(ogr._ogr.ODrCCreateDataSource)
                 
             if capability:
-            	self.ui.driverBox.setToolTip(connString)
+                self.ui.driverBox.setToolTip(connString)
                 self.option['driver'] = driverName
                 self.option['datasource'] = connString
-                if not self.ui.import_btn.isEnabled():
-                    self.ui.import_btn.setEnabled(True)
+                if not self.ui.importButton.isEnabled():
+                    self.ui.importButton.setEnabled(True)
             else:
-            	self.iface.messageBar().pushMessage(u"Soubor {} nelze vybrat/vytvořit".format(connString), level=QgsMessageBar.CRITICAL, duration=5)
+                self.iface.messageBar().pushMessage(u"Soubor {} nelze vybrat/vytvořit".format(connString),
+                                                    level=QgsMessageBar.CRITICAL, duration=5)
                 self.ui.driverBox.setCurrentIndex(0)
 
         elif driverName in ['PostgreSQL','MSSQLSpatial']:
@@ -195,32 +224,50 @@ class MainApp(QtGui.QDialog):
             self.connection.show()
             self.connection.setWindowTitle(u'Připojení k databázi {}'.format(driverName))
 
+        self.ui.outputPath.setText(connString)
+
     def enable_import(self, driverName):
+        """Enable/disable import widgets.
+
+        :param driverName: selected GDAL driver
+        """
         if driverName == '--Vybrat--':
             self.ui.driverBox.setToolTip(u'Zvolte typ výstupního souboru/databáze')
-            self.ui.import_btn.setEnabled(False)
+            self.ui.importButton.setEnabled(False)
         else:
-            self.ui.import_btn.setEnabled(True)
-    # enable data select
-    def data_select(self, dat_sada_box):
-        if self.ui.dat_sada_box.currentText() == u'základní':
-            self.ui.vyber_z_box.setEnabled(False)
+            self.ui.importButton.setEnabled(True)
+
+    def data_select(self, data_box):
+        """Enable/disable data selection widgets.
+
+        :param data_box: group box
+        """
+        if self.ui.datasetComboBox.currentIndex() == 1:
+            self.ui.selectionComboBox.setEnabled(False)
         else:
-            self.ui.vyber_z_box.setEnabled(True)
+            self.ui.selectionComboBox.setEnabled(True)
 
-
-    # filtering tableview
     def set_searching(self, column):
-        self.proxy.setFilterKeyColumn(column+2)
-        self.ui.search.clearEditText()
+        """Set filtering.
+
+        :param column: selected column for filtering
+        """
+        self.proxy.setFilterKeyColumn(column + 2)
+        self.ui.searchComboBox.clearEditText()
 
     def start_searching(self, searchName):
+        """Start searching.
+
+        :param searchName: name to be searched
+        """
         if searchName not in ['Obec', 'ORP', 'Okres', 'Kraj']:
             self.proxy.setFilterRegExp(QtCore.QRegExp(searchName, QtCore.Qt.CaseInsensitive))
 
-
-    # check or uncheck items in qtableview
     def set_checkstate(self, state):
+        """Check or uncheck items in qtableview.
+
+        :param state: state (true/false)
+        """
         rows = self.proxy.rowCount()
         for row in xrange(0,rows):
             proxyIdx = self.proxy.index(row,0)
@@ -231,55 +278,60 @@ class MainApp(QtGui.QDialog):
             elif state == 1:
                 item.setCheckState(QtCore.Qt.Unchecked)
 
-
-    # show advance option
     def show_advanced(self):
-        if self.ui.advanced_btn.arrowType() == 4:
-            self.ui.advanced_btn.setArrowType(QtCore.Qt.DownArrow)
-            self.ui.advanced.show()
-        elif self.ui.advanced_btn.arrowType() == 2:
-            self.ui.advanced_btn.setArrowType(QtCore.Qt.RightArrow)
-            self.ui.advanced.hide()
+        """Show advanced options.
+        """
+        if self.ui.advancedButton.arrowType() == 4:
+            self.ui.advancedButton.setArrowType(QtCore.Qt.DownArrow)
+            self.ui.advancedSettings.show()
+        elif self.ui.advancedButton.arrowType() == 2:
+            self.ui.advancedButton.setArrowType(QtCore.Qt.RightArrow)
+            self.ui.advancedSettings.hide()
 
-
-    # start importing data
     def get_options(self):
-    	self.option['layers'] = []
-    	self.option['layers_name'] = []
+        """Start importing data.
+        """
+        self.option['layers'] = []
+        self.option['layers_name'] = []
         for row in xrange(0,self.model.rowCount()):
             item = self.model.item(row,0)
             if item.checkState() == QtCore.Qt.Checked:
-            	code = self.model.item(row,1).text()
-            	name = self.model.item(row,2).text()
-            	self.option['layers'].append(code)
-            	self.option['layers_name'].append(name)
-        # generating RUIAN type
-        self.UKSH = {'up':'U','zk':'K', 'sh':'S','zgho':'H'}
-        if self.ui.vyber_z_box.currentText() == u'základní a generalizované hranice':
-            self.UKSH['zgho'] = 'G'
-        elif self.ui.vyber_z_box.currentText() == u'základní':
-            self.UKSH['zgho'] = 'Z'
-        elif self.ui.vyber_z_box.currentText() == u'vlajky a znaky':
-            self.UKSH['zgho'] = 'O'
-        self.option['up'] = 'U'
-        if self.ui.cas_rozsah_box.currentText() == u'přírůstky':
-            self.UKSH['up'] = 'Z'
-        if self.ui.dat_sada_box.currentText() == u'základní':
-            self.UKSH['zk'] = 'Z'
-            self.UKSH['zgho'] = 'Z'
-        if self.ui.platnost_udaju_box.currentText() == u'historické':
-            self.UKSH['sh'] = 'H'
-        self.option['file_type'] = u'{0}{1}{2}{3}'.format(self.UKSH['up'], self.UKSH['zk'], self.UKSH['sh'], self.UKSH['zgho']) # TODO (#3): self.ui.type_time...
-        self.option['data_dir'] = os.path.join(self.option['tmp_dir'], 'vfr') # TODO (#3): self.ui.data_dir.text()
-        print(self.option['file_type'])
+                code = self.model.item(row,1).text()
+                name = self.model.item(row,2).text()
+                self.option['layers'].append(code)
+                self.option['layers_name'].append(name)
 
+        # build RUIAN type
+        vfr_type = { 'up'  : 'U',
+                     'zk'  : 'K',
+                     'sh'  : 'S',
+                     'zgho': 'H'
+        }
+        selectionIndex = self.ui.selectionComboBox.currentIndex()
+        if selectionIndex == 1:
+            vfr_type['zgho'] = 'G'
+        elif selectionIndex == 2:
+            vfr_type['zgho'] = 'Z'
+        elif selectionIndex == 3:
+            vfr_type['zgho'] = 'O'
+
+        if self.ui.timeComboBox.currentIndex() == 1:
+            vfr_type['up'] = 'Z'
+        if self.ui.datasetComboBox.currentIndex() == 1:
+            vfr_type['zk'] = 'Z'
+            vfr_type['zgho'] = 'Z'
+        if self.ui.validityComboBox.currentIndex() == 1:
+            vfr_type['sh'] = 'H'
+        self.option['file_type'] = u'{0}{1}{2}{3}'.format(vfr_type['up'], vfr_type['zk'], vfr_type['sh'], vfr_type['zgho'])
 
         if not self.option['layers']:
-            self.iface.messageBar().pushMessage(u"Nejsou vybrána žádná data pro import.", level=QgsMessageBar.INFO, duration=5)
+            self.iface.messageBar().pushMessage(u"Nejsou vybrána žádná data pro import.",
+                                                level=QgsMessageBar.INFO, duration=5)
             return
 
         # create progress dialog
-        self.progress = QtGui.QProgressDialog(u'Probíhá import ...', u'Ukončit', 0, 0, self, QtCore.Qt.SplashScreen)
+        self.progress = QtGui.QProgressDialog(u'Probíhá import ...', u'Ukončit',
+                                              0, 0, self)
         self.progress.setParent(self)
         self.progress.setWindowModality(QtCore.Qt.WindowModal)
         self.progress.setWindowTitle(u'Import dat RÚIAN')
@@ -293,25 +345,28 @@ class MainApp(QtGui.QDialog):
         self.importThread.importEnd.connect(self.import_end)
         self.importThread.importStat.connect(self.set_status)
         if not self.importThread.isRunning():
-        	self.progress.show()
-        	self.importThread.start()
+            self.progress.show()
+            self.importThread.start()
     
-    # update progress status
     def set_status(self, num, tot, text, operation):
-    	self.progress.setLabelText(u'{0} {1} z {2} ({3})'.format(operation, num, tot, text))
+        """Update progress status.
+        """
+        self.progress.setLabelText(u'{0} {1} z {2} ({3})'.format(operation, num, tot, text))
 
-    # terminate import
     def import_close(self):
-    	reply = QtGui.QMessageBox.question(self, u'Ukončit', u"Opravdu chcete ukončit import dat?",
-    			QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.Yes)
-    	if reply == QtGui.QMessageBox.Yes:
-    		self.importThread.terminate()
-    	else:
-    		self.progress.resize(400, 50)
-    		self.progress.show()
+        """Terminate import.
+        """
+        reply = QtGui.QMessageBox.question(self, u'Ukončit', u"Opravdu chcete ukončit import dat?",
+                                           QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.Yes)
+        if reply == QtGui.QMessageBox.Yes:
+            self.importThread.terminate()
+        else:
+            self.progress.resize(400, 50)
+            self.progress.show()
 
-    # import was succesful
     def import_end(self):
+        """Inform about successfull import.
+        """
         self.progress.cancel()
         reply  = QtGui.QMessageBox.question(self, u'Import', u"Import dat proběhl úspěšně. "
                                             u"Přejete si vytvořené vrtsvy do mapového okna?",
@@ -319,16 +374,18 @@ class MainApp(QtGui.QDialog):
         if reply == QtGui.QMessageBox.Yes:
             self.add_layers()
 
-    # close application
     def close(self):
+        """Close application."""
         self.hide()
 
-    # add created layers to map display
     def add_layers(self):
-        driver = ogr.GetDriverByName(self.option['driver'])
+        """Add created layers to map display.
+        """
+        driver = ogr.GetDriverByName(str(self.option['driver']))
         datasource = driver.Open(self.option['datasource'], False)
         if not datasource:
-            self.iface.messageBar().pushMessage(u"Soubor {} nelze načíst".format(self.option['datasource']), level=QgsMessageBar.CRITICAL, duration=5)
+            self.iface.messageBar().pushMessage(u"Soubor {} nelze načíst".format(self.option['datasource']),
+                                                level=QgsMessageBar.CRITICAL, duration=5)
             return
 
         # TODO: use uri instead of hardcoded datasource for SQLite
@@ -355,16 +412,14 @@ class ImportThread(QtCore.QThread):
         self.layers = option['layers']
         self.datasource = option['datasource']
         self.file_type = option['file_type']
-        self.data_dir = option['data_dir']
-        if not self.data_dir:
-            # TODO (#3): nahradit za tempfile.mkstemp
-            self.data_dir = os.environ['HOMEPATH'] if sys.platform.startswith('win') else os.environ['HOME']
-        else:
-            if not os.path.exists(self.data_dir):
-                ### TODO (#3): osetrit pripad, kdy uzivatel nema pravo zapisu
-                os.makedirs(self.data_dir)
+        self.data_dir = option['tmp_dir']
+        if not os.path.exists(self.data_dir):
+            ### TODO (#3): osetrit pripad, kdy uzivatel nema pravo zapisu
+            os.makedirs(self.data_dir)
 
     def run(self):
+        """Run download/import thread.
+        """
         # define directory where VFR will be stored
         os.environ['DATA_DIR'] = self.data_dir
         # logs will be stored also in data directory
