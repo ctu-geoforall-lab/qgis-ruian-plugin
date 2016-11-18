@@ -381,6 +381,27 @@ class MainApp(QtGui.QDialog):
     def add_layers(self):
         """Add created layers to map display.
         """
+        def add_layer(layer):
+            if layer.GetFeatureCount() < 1:
+                # skip empty layers
+                return False
+
+            # TODO: use uri instead of hardcoded datasource for SQLite
+            # uri = QgsDataSourceURI()
+            # uri.setDatabase(self.option['datasource'])
+            # schema = ''
+            # geom_column = 'GEOMETRY'
+            #uri.setDataSource(schema, layer_name, geom_column)
+
+            vlayer = QgsVectorLayer('{0}|layername={1}'.format(self.option['datasource'], layer_name), layer_name, 'ogr')
+            layer_style = os.path.join(style_path, layer_name + '.qml')
+            if os.path.exists(layer_style):
+                vlayer.loadNamedStyle(layer_style)
+
+            QgsMapLayerRegistry.instance().addMapLayer(vlayer)
+
+            return True
+
         driver = ogr.GetDriverByName(str(self.option['driver']))
         datasource = driver.Open(self.option['datasource'], False)
         if not datasource:
@@ -388,18 +409,33 @@ class MainApp(QtGui.QDialog):
                                                 level=QgsMessageBar.CRITICAL, duration=5)
             return
 
-        # TODO: use uri instead of hardcoded datasource for SQLite
-        # uri = QgsDataSourceURI()
-        # uri.setDatabase(self.option['datasource'])
-        # schema = ''
-        # geom_column = 'GEOMETRY'
-        layers = []
+        style_path = os.path.join(os.path.dirname(__file__), "styles")
+
+        # first add well-known layers
+        layers_added = []
+        for layer_name, layer_alias in [('obce', u'Obce'),
+                                        ('spravniobvody', u'Správní obvody'),
+                                        ('mop', u'Městské obvody v Praze'),
+                                        ('momc', u'Městský obvod/část'),
+                                        ('castiobci', u'Části obcí'),
+                                        ('katastralniuzemi', u'Katastrální území'),
+                                        ('zsj', u'Základní sídelní jednotky'),
+                                        ('ulice', u'Ulice'),
+                                        ('parcely', u'Parcely'),
+                                        ('stavebniobjekty', u'Stavební objekty'),
+                                        ('adresnimista', u'Adresní místa')]:
+            layer = datasource.GetLayerByName(layer_name)
+            if layer:
+                if add_layer(layer):
+                    layers_added.append(layer_name)
+
         for idx in range(datasource.GetLayerCount()):
             layer = datasource.GetLayerByIndex(idx)
             layer_name = layer.GetName()
-            #uri.setDataSource(schema, layer_name, geom_column)
-            vlayer = QgsVectorLayer('{0}|layername={1}'.format(self.option['datasource'], layer_name), layer_name, 'ogr')
-            QgsMapLayerRegistry.instance().addMapLayer(vlayer)
+            if layer_name in layers_added:
+                # skip already added layers
+                continue
+            layers_added.append(layer_name)
 
         del datasource # close datasource
 
