@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
- VFRImporter_dialog
                                  A QGIS plugin
- Tool for import RUIAN data
+                           Tool for importing RUIAN data
                              -------------------
         begin                : 2015-03-16
         git sha              : $Format:%
-        copyright            : (C) 2015 by Jan Klima (C) 2016 by Dennis Dvořák
-        email                : honzi.klima@gmail.com; dennis.dvorak@email.cz
+        copyright            : (C) 2015-2016 by Jan Klima, Dennis Dvořák,
+                               and Martin Landa
+        email                : honzi.klima@gmail.com; dennis.dvorak@email.cz;
+                               martin.landa@fsv.cvut.cz
  ***************************************************************************/
 
 /***************************************************************************
@@ -38,12 +39,19 @@ from ui_MainApp import Ui_MainApp
 
 from gdal_vfr.vfr4ogr import VfrOgr
 
-debug=False
+class TextOutputSignal(QtCore.QObject):
+    textWritten = QtCore.pyqtSignal(str)
+    def write(self, text):
+        self.textWritten.emit(str(text))
 
 class MainApp(QtGui.QDialog):
 
     def __init__(self, iface, parent=None):
         QtGui.QDialog.__init__(self)
+
+        #     sys.stdout = TextOutputSignal(textWritten=self.normalOutputWritten)
+        sys.stderr = TextOutputSignal(textWritten=self.errorOutputWritten)
+
         self.iface = iface
         self.driverTypes = { 'PostgreSQL'    :'PG',
                              'MSSQLSpatial'  :'MSSQL',
@@ -88,12 +96,9 @@ class MainApp(QtGui.QDialog):
         # define temporary directory for downloading VFR data
         self.option['tmp_dir'] = os.path.join(tempfile.gettempdir(),
                                               'ruian_plugin_{}'.format(os.getpid()))
-        if not debug:
-            self.ui.importButton.setEnabled(False)
-        else:
-            self.option['driver'] = 'SQLite'
-            self.option['datasource'] = os.path.join(self.option['tmp_dir'],
-                                                     'ruian.db')
+        self.option['driver'] = 'SQLite'
+        self.option['datasource'] = os.path.join(self.option['tmp_dir'],
+                                                 'ruian.db')
 
         # set up the table view
         path = os.path.join(os.path.dirname(__file__), 'files','obce_cr.csv')
@@ -121,6 +126,10 @@ class MainApp(QtGui.QDialog):
         self.ui.advancedButton.clicked.connect(self.show_advanced)
         self.ui.importButton.clicked.connect(self.get_options)
         self.ui.buttonBox.rejected.connect(self.close)
+
+    def errorOutputWritten(self, text):
+        self.iface.messageBar().pushMessage(u"Chyba: {}".format(text),
+                                            level=QgsMessageBar.CRITICAL)
 
     def set_comboDrivers(self, driverNames):
         """Set GDAL drivers combo box.
@@ -368,6 +377,9 @@ class MainApp(QtGui.QDialog):
         """Inform about successfull import.
         """
         self.progress.cancel()
+        if self.importThread.aborted:
+            return
+
         reply  = QtGui.QMessageBox.question(self, u'Import', u"Import dat proběhl úspěšně. "
                                             u"Přejete si vytvořené vrtsvy do mapového okna?",
                                             QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
@@ -460,23 +472,32 @@ class ImportThread(QtCore.QThread):
         os.environ['DATA_DIR'] = self.data_dir
         # logs will be stored also in data directory
         os.environ['LOG_DIR'] = self.data_dir
+        self.aborted = False
 
-        # create convertor
-        ogr = VfrOgr(frmt='SQLite', dsn=self.datasource, overwrite=True, geom_name='OriginalniHranice')
+        try:
+            # create convertor
+            ogr = VfrOgr(frmt='SQLite', dsn=self.datasource, overwrite=True, geom_name='OriginalniHranice')
 
-        n = len(self.layers)
-        i = 1
-        for l in self.layers:
-            filename = 'OB_{}_{}'.format(l, self.file_type)
-            QtCore.qDebug('\n (VFR) Processing file: {}'.format(filename))
-            # download
-            ogr.reset()
-            self.importStat.emit(i, n, l, "Download")
-            ogr.download([filename])
-            # import
-            self.importStat.emit(i, n, l, "Import")
-            ogr.run(True if i > 1 else False)
-            i += 1
+            n = len(self.layers)
+            i = 1
+            for l in self.layers:
+                filename = 'OB_{}_{}'.format(l, self.file_type)
+                QtCore.qDebug('\n (VFR) Processing file: {}'.format(filename))
+                # download
+                ogr.reset()
+                self.importStat.emit(i, n, l, "Download")
+                ogr.download([filename])
+                # import
+                self.importStat.emit(i, n, l, "Import")
+                ogr.run(True if i > 1 else False)
+                i += 1
 
-        del os.environ['DATA_DIR']
+            del os.environ['DATA_DIR']
+        except:
+            (type, value, traceback) = sys.exc_info()
+            sys.excepthook(type, value, traceback)
+            sys.stderr.write('{}'.format(value))
+            self.aborted = True
+            self.terminate()
+
         self.importEnd.emit()
