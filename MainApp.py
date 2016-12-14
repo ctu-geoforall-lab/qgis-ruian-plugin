@@ -93,13 +93,6 @@ class MainApp(QtGui.QDialog):
         self.ui.searchComboBox.clearEditText()
         self.ui.advancedSettings.hide()
 
-        # define temporary directory for downloading VFR data
-        self.option['tmp_dir'] = os.path.join(tempfile.gettempdir(),
-                                              'ruian_plugin_{}'.format(os.getpid()))
-        self.option['driver'] = 'SQLite'
-        self.option['datasource'] = os.path.join(self.option['tmp_dir'],
-                                                 'ruian.db')
-
         # set up the table view
         path = os.path.join(os.path.dirname(__file__), 'files','obce_cr.csv')
         self.model, self.proxy = self.create_model(path)
@@ -218,7 +211,7 @@ class MainApp(QtGui.QDialog):
                 
             if capability:
                 self.ui.driverBox.setToolTip(connString)
-                self.option['driver'] = driverName
+                self.option['driver'] = str(driverName)
                 self.option['datasource'] = connString
                 if not self.ui.importButton.isEnabled():
                     self.ui.importButton.setEnabled(True)
@@ -332,6 +325,11 @@ class MainApp(QtGui.QDialog):
         if self.ui.validityComboBox.currentIndex() == 1:
             vfr_type['sh'] = 'H'
         self.option['file_type'] = u'{0}{1}{2}{3}'.format(vfr_type['up'], vfr_type['zk'], vfr_type['sh'], vfr_type['zgho'])
+
+        if not self.option['driver'] or not self.option['datasource']:
+            self.iface.messageBar().pushMessage(u"Není vybrán žádný výstup.",
+                                                level=QgsMessageBar.INFO, duration=5)
+            return
 
         if not self.option['layers']:
             self.iface.messageBar().pushMessage(u"Nejsou vybrána žádná data pro import.",
@@ -457,26 +455,29 @@ class ImportThread(QtCore.QThread):
 
     def __init__(self, option):
         QtCore.QThread.__init__(self)
-        self.layers = option['layers']
+        self.driver = option['driver']
         self.datasource = option['datasource']
+        self.layers = option['layers']
         self.file_type = option['file_type']
-        self.data_dir = option['tmp_dir']
-        if not os.path.exists(self.data_dir):
-            ### TODO (#3): osetrit pripad, kdy uzivatel nema pravo zapisu
-            os.makedirs(self.data_dir)
 
     def run(self):
         """Run download/import thread.
         """
-        # define directory where VFR will be stored
-        os.environ['DATA_DIR'] = self.data_dir
+        # define temporary directory for downloading VFR data
+        data_dir = os.path.join(tempfile.gettempdir(),
+                                'ruian_plugin_{}'.format(os.getpid()))
+        os.environ['DATA_DIR'] = data_dir
+        if not os.path.exists(data_dir):
+            ### TODO (#3): osetrit pripad, kdy uzivatel nema pravo zapisu
+            os.makedirs(data_dir)
+
         # logs will be stored also in data directory
-        os.environ['LOG_DIR'] = self.data_dir
+        os.environ['LOG_DIR'] = data_dir
         self.aborted = False
 
         try:
             # create convertor
-            ogr = VfrOgr(frmt='SQLite', dsn=self.datasource, overwrite=True, geom_name='OriginalniHranice')
+            ogr = VfrOgr(frmt=self.driver, dsn=self.datasource, overwrite=True, geom_name='OriginalniHranice')
 
             n = len(self.layers)
             i = 1
