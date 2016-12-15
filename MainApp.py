@@ -123,6 +123,7 @@ class MainApp(QtGui.QDialog):
     def errorOutputWritten(self, text):
         self.iface.messageBar().pushMessage(u"Chyba: {}".format(text),
                                             level=QgsMessageBar.CRITICAL)
+        QgsMessageLog.logMessage('Ruian plugin: {}'.format(text), level=QgsMessageLog.WARNING)
 
     def set_comboDrivers(self, driverNames):
         """Set GDAL drivers combo box.
