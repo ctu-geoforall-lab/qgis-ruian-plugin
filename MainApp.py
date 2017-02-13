@@ -381,7 +381,8 @@ class MainApp(QtGui.QDialog):
 
         reply  = QtGui.QMessageBox.question(self, u'Import', u"Import dat proběhl úspěšně. "
                                             u"Přejete si vytvořené vrtsvy do mapového okna?",
-                                            QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
+                                            QtGui.QMessageBox.Yes | QtGui.QMessageBox.No,
+                                            QtGui.QMessageBox.Yes)
         if reply == QtGui.QMessageBox.Yes:
             self.add_layers()
 
@@ -392,7 +393,7 @@ class MainApp(QtGui.QDialog):
     def add_layers(self):
         """Add created layers to map display.
         """
-        def add_layer(layer):
+        def add_layer(group, layer):
             if layer.GetFeatureCount() < 1:
                 # skip empty layers
                 return False
@@ -409,7 +410,8 @@ class MainApp(QtGui.QDialog):
             if os.path.exists(layer_style):
                 vlayer.loadNamedStyle(layer_style)
 
-            QgsMapLayerRegistry.instance().addMapLayer(vlayer)
+            QgsMapLayerRegistry.instance().addMapLayer(vlayer, addToLegend=False)
+            group.addLayer(vlayer)
 
             return True
 
@@ -421,6 +423,16 @@ class MainApp(QtGui.QDialog):
             return
 
         style_path = os.path.join(os.path.dirname(__file__), "styles")
+
+        # new layers will added into this group
+        root = QgsProject.instance().layerTreeRoot()
+        try:
+            groupName = os.path.splitext(
+                os.path.basename(self.option['datasource'])
+            )[0]
+        except:
+            groupName = 'ruian'
+        layerGroup = root.addGroup(groupName)
 
         # first add well-known layers
         layers_added = []
@@ -437,7 +449,7 @@ class MainApp(QtGui.QDialog):
                                         ('adresnimista', u'Adresní místa')]:
             layer = datasource.GetLayerByName(layer_name)
             if layer:
-                if add_layer(layer):
+                if add_layer(layerGroup, layer):
                     layers_added.append(layer_name)
 
         for idx in range(datasource.GetLayerCount()):
