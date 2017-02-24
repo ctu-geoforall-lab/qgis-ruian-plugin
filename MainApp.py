@@ -37,7 +37,17 @@ from osgeo import ogr, gdal
 from Connection import Connection
 from ui_MainApp import Ui_MainApp
 
-from gdal_vfr.vfr4ogr import VfrOgr
+try:
+    from .gdal_vfr.vfr4ogr import VfrOgr
+except:
+    # download
+    import requests, zipfile, StringIO
+
+    url = "https://github.com/ctu-geoforall-lab/gdal-vfr/archive/v2.0.3.zip"
+    req = requests.get(url, stream=True)
+    zipf = zipfile.ZipFile(StringIO.StringIO(req.content))
+    zipf.extractall(os.path.join(os.path.dirname(__file__), 'gdal_vfr'))
+    zipf.close()
 
 class TextOutputSignal(QtCore.QObject):
     textWritten = QtCore.pyqtSignal(str)
