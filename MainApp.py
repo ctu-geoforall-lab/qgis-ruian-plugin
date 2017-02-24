@@ -49,19 +49,19 @@ class MainApp(QtGui.QDialog):
     def __init__(self, iface, parent=None):
         QtGui.QDialog.__init__(self)
 
-        #     sys.stdout = TextOutputSignal(textWritten=self.normalOutputWritten)
+        self.settings = QtCore.QSettings()
+
+        # sys.stdout = TextOutputSignal(textWritten=self.normalOutputWritten)
         sys.stderr = TextOutputSignal(textWritten=self.errorOutputWritten)
 
         self.iface = iface
-        self.driverTypes = { 'PostgreSQL'    :'PG',
-                             'MSSQLSpatial'  :'MSSQL',
-                             'SQLite'        :'sqlite',
-                             'ESRI Shapefile':'shp',
-                             'GPKG'          :'gpkg',
-                             'Nepodporuje'   : 0
+        self.driverTypes = {
+#            'PostgreSQL'    :'PG',
+#            'MSSQLSpatial'  :'MSSQL',
+            'SQLite': { 'alias': 'SQLite',     'ext': 'sqlite'},
+            'GPKG'  : { 'alias': 'GeoPackage', 'ext': 'gpkg'  },
+#            'ESRI Shapefile':'shp',
         }
-        # currently only SQLite is supported
-        self.driverNames = ['SQLite']
 
         self.missDrivers = [] # list of missing drivers
 
@@ -86,7 +86,7 @@ class MainApp(QtGui.QDialog):
         # set up widgets
         self.ui.driverBox.setToolTip(u'Zvolte typ výstupního souboru/databáze')
         self.ui.driverBox.addItem('--Vybrat--')
-        self.set_comboDrivers(self.driverNames) 
+        self.set_comboDrivers(self.driverTypes)
         self.ui.driverBox.insertSeparator(4)  
         self.ui.searchComboBox.addItems(['Obec', 'ORP', 'Okres', 'Kraj'])
         self.ui.searchComboBox.setEditable(True)
@@ -121,21 +121,22 @@ class MainApp(QtGui.QDialog):
         self.ui.buttonBox.rejected.connect(self.close)
 
     def errorOutputWritten(self, text):
-        self.iface.messageBar().pushMessage(u"Chyba: {}".format(text),
-                                            level=QgsMessageBar.CRITICAL)
-        QgsMessageLog.logMessage('Ruian plugin: {}'.format(text), level=QgsMessageLog.WARNING)
+        # self.iface.messageBar().pushMessage(u"Chyba: {}".format(text),
+        #                                     level=QgsMessageBar.CRITICAL)
+        # QgsMessageLog.logMessage('Ruian plugin: {}'.format(text), level=QgsMessageLog.WARNING)
+        pass
 
-    def set_comboDrivers(self, driverNames):
+    def set_comboDrivers(self, drivers):
         """Set GDAL drivers combo box.
 
         :param driverNames list of supported drivers
         """
         model = self.ui.driverBox.model()
-        for driverName in driverNames:
-            item = QtGui.QStandardItem(str(driverName))
-            driver = ogr.GetDriverByName(str(driverName))
-            if driver is None:
-                self.missDrivers.append(driverName)
+        for driver in drivers.iteritems():
+            item = QtGui.QStandardItem(str(driver[1]['alias']))
+            ogrdriver = ogr.GetDriverByName(str(driver[0]))
+            if ogrdriver is None:
+                self.missDrivers.append(str(driver[1]['alias']))
                 item.setForeground(QtGui.QColor(180,180,180,100))
                 model.appendRow(item)
             else:
@@ -190,22 +191,33 @@ class MainApp(QtGui.QDialog):
         if self.ui.importButton.isEnabled():
             self.ui.importButton.setEnabled(False)
 
+        for driverItem in self.driverTypes.iteritems():
+            if driverItem[1]['alias'] == driverName:
+                driverName = driverItem[0]
+                driverAlias = driverItem[1]['alias']
+                driverExtension = driverItem[1]['ext']
+
         if driverName in self.missDrivers:
             # selected driver is not supported by installed GDAL
             self.ui.driverBox.setCurrentIndex(0)
-            self.iface.messageBar().pushMessage(u"Nainstalovaná verze GDAL nepodporuje ovladač {}".format(driverName),
+            self.iface.messageBar().pushMessage(u"Nainstalovaná verze GDAL nepodporuje ovladač {}".format(driverAlias),
                                                 level=QgsMessageBar.CRITICAL, duration=5)
             return
 
-        if driverName in ['SQLite', 'GPKG', 'ESRI Shapefile']: ### only SQLite currently works
+        if driverName in ['SQLite', 'GPKG']:
+            sender = '{}-lastUserFilePath'.format(self.sender().objectName())
+            lastUsedFilePath = self.settings.value(sender, '')
+
             connString = QtGui.QFileDialog.getSaveFileName(self,
-                                                           u'Vybrat/vytvořit výstupní soubor','ruian.{}'.format(
-                                                               self.driverTypes[driverName]),
-                                                           '{} (*.{})'.format(driverName, self.driverTypes[driverName]),
+                                                           u'Vybrat/vytvořit výstupní soubor',
+                                                           '{}{}ruian.{}'.format(lastUsedFilePath, os.path.sep, driverExtension),
+                                                           '{} (*.{})'.format(driverAlias, driverExtension),
                                                            QtGui.QFileDialog.DontConfirmOverwrite)
             if not connString:
                 self.ui.driverBox.setCurrentIndex(0)
                 return
+
+            self.settings.setValue(sender, os.path.dirname(connString))
 
             driver = ogr.GetDriverByName(str(driverName))
             capability = driver.TestCapability(ogr._ogr.ODrCCreateDataSource)
