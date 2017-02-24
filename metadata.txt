@@ -6,9 +6,9 @@
 # This file should be included when you package your plugin.# Mandatory items:
 
 [general]
-name=Nastroj pro praci s daty RUIAN
-qgisMinimumVersion=2.0
-description=Nastroj umoznuje importovat data RUIAN do mnoha formatu vcetne databazi a nasledne s nimi pracovat. Pro praci s daty RUIAN je nutna instalace knihovny GDAL vyssi nez 1.11.
+name=Nastroj pro stahovani datovych vrstev RUIAN
+qgisMinimumVersion=2.8
+description=Nastroj umoznuje stahovat a importovat data RUIAN do vybranych formatu a nasledne s nimi pracovat. Pozadovana je verze knihovny GDAL 1.11 a vyssi.
 version=0.1
 author=Jan Klima, Lukas Streda, Simon Gajzler, Martin Landa (mentor)
 email=martin.landa@fsv.cvut.cz
