@@ -43,10 +43,13 @@ except:
     # download
     import requests, zipfile, StringIO
 
-    url = "https://github.com/ctu-geoforall-lab/gdal-vfr/archive/v2.0.3.zip"
+    gdal_vfr_version = '2.0.4'
+    url = "https://github.com/ctu-geoforall-lab/gdal-vfr/archive/v{}.zip".format(gdal_vfr_version)
     req = requests.get(url, stream=True)
     zipf = zipfile.ZipFile(StringIO.StringIO(req.content))
-    zipf.extractall(os.path.join(os.path.dirname(__file__), 'gdal_vfr'))
+    zipf.extractall(os.path.join(os.path.dirname(__file__)))
+    os.rename(os.path.join(os.path.dirname(__file__), 'gdal-vfr-{}'.format(gdal_vfr_version)),
+              os.path.join(os.path.dirname(__file__), 'gdal_vfr'))
     zipf.close()
 
 class TextOutputSignal(QtCore.QObject):
