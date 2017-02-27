@@ -52,6 +52,8 @@ except:
               os.path.join(os.path.dirname(__file__), 'gdal_vfr'))
     zipf.close()
 
+    from .gdal_vfr.vfr4ogr import VfrOgr
+
 class TextOutputSignal(QtCore.QObject):
     textWritten = QtCore.pyqtSignal(str)
     def write(self, text):
