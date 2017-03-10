@@ -359,12 +359,12 @@ class MainApp(QtGui.QDialog):
 
         if not self.option['driver'] or not self.option['datasource']:
             self.iface.messageBar().pushMessage(u"Není vybrán žádný výstup.",
-                                                level=QgsMessageBar.INFO, duration=5)
+                                                level=QgsMessageBar.CRITICAL, duration=5)
             return
 
         if not self.option['layers']:
             self.iface.messageBar().pushMessage(u"Nejsou vybrána žádná data pro import.",
-                                                level=QgsMessageBar.INFO, duration=5)
+                                                level=QgsMessageBar.CRITICAL, duration=5)
             return
 
         # create progress dialog
