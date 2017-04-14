@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Zásuvný modul QGIS pro stahování datových vrstev RÚIAN &mdash; Dokumentace pro QGIS RUIAN Plugin 0.9</title>
+  <title>Návod k použití &mdash; Dokumentace pro QGIS RUIAN Plugin 0.9</title>
   
 
   
@@ -31,8 +31,9 @@
 
   
         <link rel="search" title="Vyhledávání" href="search.html"/>
-    <link rel="top" title="Dokumentace pro QGIS RUIAN Plugin 0.9" href="#"/>
-        <link rel="next" title="Instalace" href="instalace.html"/> 
+    <link rel="top" title="Dokumentace pro QGIS RUIAN Plugin 0.9" href="index.html"/>
+        <link rel="next" title="Autoři" href="dodatek.html"/>
+        <link rel="prev" title="Instalace" href="instalace.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -50,7 +51,7 @@
           
 
           
-            <a href="#" class="icon icon-home"> QGIS RUIAN Plugin
+            <a href="index.html" class="icon icon-home"> QGIS RUIAN Plugin
           
 
           
@@ -84,9 +85,9 @@
           
             
             
-                <ul>
+                <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="instalace.html">Instalace</a></li>
-<li class="toctree-l1"><a class="reference internal" href="popis.html">Návod k použití</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Návod k použití</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dodatek.html">Autoři</a></li>
 </ul>
 
@@ -101,7 +102,7 @@
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="#">QGIS RUIAN Plugin</a>
+        <a href="index.html">QGIS RUIAN Plugin</a>
       </nav>
 
 
@@ -116,13 +117,13 @@
 
 <div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href="#">Docs</a> &raquo;</li>
+    <li><a href="index.html">Docs</a> &raquo;</li>
       
-    <li>Zásuvný modul QGIS pro stahování datových vrstev RÚIAN</li>
+    <li>Návod k použití</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/index.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/popis.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -132,34 +133,42 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="zasuvny-modul-qgis-pro-stahovani-datovych-vrstev-ruian">
-<h1>Zásuvný modul QGIS pro stahování datových vrstev RÚIAN<a class="headerlink" href="#zasuvny-modul-qgis-pro-stahovani-datovych-vrstev-ruian" title="Trvalý odkaz na tento nadpis">¶</a></h1>
-<p>Cílem projektu je vytvoření zásuvného modulu QGIS, pomocí kterého je
-možné automaticky stahovat data <strong>Registru územní identifikace, adres
-a nemovitostí</strong> (<a class="reference external" href="http://ruian.cz">RÚIAN</a>) dostupných v rámci
-<a class="reference external" href="http://vdp.cuzk.cz/">Veřejného dálkového přístupu</a>. Grafické
-uživatelské rozhraní (GUI) je navrženo tak, aby uživateli nabídlo
-jednoduchý výběr požadovaných dat. Plugin je implementován v
-programovacím jazyku Python s podporou knihoven <a class="reference external" href="http://gdal.org">GDAL</a>, resp. projektu GDAL-VFR
-(<a class="reference external" href="https://github.com/ctu-geoforall-lab/gdal-vfr.git">https://github.com/ctu-geoforall-lab/gdal-vfr.git</a>) a PyQt.</p>
+  <div class="section" id="navod-k-pouziti">
+<h1>Návod k použití<a class="headerlink" href="#navod-k-pouziti" title="Trvalý odkaz na tento nadpis">¶</a></h1>
+<p>Vybereme obec či obce, které chceme naimportovat:</p>
+<a class="reference internal image-reference" href="_images/select.png"><img alt="_images/select.png" src="_images/select.png" style="width: 600px;" /></a>
+<div class="admonition warning">
+<p class="first admonition-title">Varování</p>
+<p class="last">Je vhodné zvolit menší objem dat maximálně ve velikosti
+okresu. Zásuvný modul není navržen pro stahování většího
+objemu dat.</p>
+</div>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p>Vyhledávat lze podle názvu obce, obce s rozšířenou
+působností, okresu či kraje.</p>
+<div class="last figure align-center">
+<a class="reference internal image-reference" href="_images/select-type.png"><img alt="_images/select-type.png" src="_images/select-type.png" style="width: 600px;" /></a>
+</div>
+</div>
+<p>V dalším kroku zvolíme formát a cestu k výstupní souboru:</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/select-output.png"><img alt="_images/select-output.png" src="_images/select-output.png" style="width: 600px;" /></a>
+</div>
 <div class="admonition note">
 <p class="first admonition-title">Poznámka</p>
-<p class="last">Projekt navazuje na semestrální práce předmětu <a class="reference external" href="http://geo.fsv.cvut.cz/gwiki/155YFSG">Free Software GIS</a> vyučovaného na <a class="reference external" href="http://www.fsv.cvut.cz">Fakultě
-stavební ČVUT v Praze</a> z akademického roku
-2014/1015 (<a class="reference external" href="https://github.com/ctu-yfsg/2015-c-qgis-vfr">https://github.com/ctu-yfsg/2015-c-qgis-vfr</a>) a 2015/2016
-(<a class="reference external" href="https://github.com/ctu-yfsg/2016-c-qgis-vfr">https://github.com/ctu-yfsg/2016-c-qgis-vfr</a>).</p>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="instalace.html">Instalace</a></li>
-<li class="toctree-l1"><a class="reference internal" href="popis.html">Návod k použití</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dodatek.html">Autoři</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="dodatek.html#licence">Licence</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dodatek.html#hlaseni-chyb">Hlášení chyb</a></li>
+<p>V současné době zásuvný modul podporuje pouze dva výstupní
+formáty:</p>
+<ul class="simple">
+<li><a class="reference external" href="http://gdal.org/drv_sqlite.html">SQLite</a></li>
+<li><a class="reference external" href="http://gdal.org/drv_geopackage.html">OGC GeoPackage</a></li>
 </ul>
-</li>
-</ul>
+<p class="last">Podpora pro další formáty, např. Esri Shapefile je ve vývoji.</p>
 </div>
+<p>Data můžeme v QGISu rovnou zobrazit:</p>
+<a class="reference internal image-reference" href="_images/ruian-add.png"><img alt="_images/ruian-add.png" src="_images/ruian-add.png" style="width: 400px;" /></a>
+<p>Příklad vizualizace stažených dat:</p>
+<a class="reference internal image-reference" href="_images/visualization.png"><img alt="_images/visualization.png" src="_images/visualization.png" style="width: 1000px;" /></a>
 </div>
 
 
@@ -169,8 +178,10 @@ stavební ČVUT v Praze</a> z akademického roku
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="instalace.html" class="btn btn-neutral float-right" title="Instalace" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dodatek.html" class="btn btn-neutral float-right" title="Autoři" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
+      
+        <a href="instalace.html" class="btn btn-neutral" title="Instalace" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
