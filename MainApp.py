@@ -344,31 +344,34 @@ class MainApp(QtGui.QDialog):
                      'sh'  : 'S',
                      'zgho': 'H'
         }
-        selectionIndex = self.ui.selectionComboBox.currentIndex()
-        if selectionIndex == 1:
-            vfr_type['zgho'] = 'G'
-        elif selectionIndex == 2:
-            vfr_type['zgho'] = 'Z'
-        elif selectionIndex == 3:
-            vfr_type['zgho'] = 'O'
+        # not supported yet
+        # selectionIndex = self.ui.selectionComboBox.currentIndex()
+        # if selectionIndex == 1:
+        #     vfr_type['zgho'] = 'G'
+        # elif selectionIndex == 2:
+        #     vfr_type['zgho'] = 'Z'
+        # elif selectionIndex == 3:
+        #     vfr_type['zgho'] = 'O'
 
-        if self.ui.timeComboBox.currentIndex() == 1:
-            vfr_type['up'] = 'Z'
+        # not supported yet
+        # if self.ui.timeComboBox.currentIndex() == 1:
+        #     vfr_type['up'] = 'Z'
         if self.ui.datasetComboBox.currentIndex() == 1:
             vfr_type['zk'] = 'Z'
             vfr_type['zgho'] = 'Z'
-        if self.ui.validityComboBox.currentIndex() == 1:
-            vfr_type['sh'] = 'H'
+        # not supported yet (allows only 'Z' dataset)
+        # if self.ui.validityComboBox.currentIndex() == 1:
+        #     vfr_type['sh'] = 'H'
         self.option['file_type'] = u'{0}{1}{2}{3}'.format(vfr_type['up'], vfr_type['zk'], vfr_type['sh'], vfr_type['zgho'])
 
         if not self.option['driver'] or not self.option['datasource']:
             self.iface.messageBar().pushMessage(u"Není vybrán žádný výstup.",
-                                                level=QgsMessageBar.INFO, duration=5)
+                                                level=QgsMessageBar.CRITICAL, duration=5)
             return
 
         if not self.option['layers']:
             self.iface.messageBar().pushMessage(u"Nejsou vybrána žádná data pro import.",
-                                                level=QgsMessageBar.INFO, duration=5)
+                                                level=QgsMessageBar.CRITICAL, duration=5)
             return
 
         # create progress dialog
