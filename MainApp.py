@@ -75,7 +75,7 @@ class MainApp(QtGui.QDialog):
 #            'MSSQLSpatial'  :'MSSQL',
             'SQLite': { 'alias': 'SQLite',     'ext': 'sqlite'},
             'GPKG'  : { 'alias': 'GeoPackage', 'ext': 'gpkg'  },
-#            'ESRI Shapefile':'shp',
+            'ESRI Shapefile': { 'alias': 'Esri Shapefile', 'ext': 'shp'  },
         }
 
         self.missDrivers = [] # list of missing drivers
@@ -219,15 +219,21 @@ class MainApp(QtGui.QDialog):
                                                 level=QgsMessageBar.CRITICAL, duration=5)
             return
 
-        if driverName in ['SQLite', 'GPKG']:
+        connString = None
+        if driverName in ['SQLite', 'GPKG', 'ESRI Shapefile']:
             sender = '{}-lastUserFilePath'.format(self.sender().objectName())
             lastUsedFilePath = self.settings.value(sender, '')
 
-            connString = QtGui.QFileDialog.getSaveFileName(self,
-                                                           u'Vybrat/vytvořit výstupní soubor',
-                                                           '{}{}ruian.{}'.format(lastUsedFilePath, os.path.sep, driverExtension),
-                                                           '{} (*.{})'.format(driverAlias, driverExtension),
-                                                           QtGui.QFileDialog.DontConfirmOverwrite)
+            if driverName == 'ESRI Shapefile':
+                connString = QtGui.QFileDialog.getExistingDirectory(self,
+                                                                    u'Vybrat/vytvořit výstupní adresář',
+                                                                    lastUsedFilePath)
+            else:
+                connString = QtGui.QFileDialog.getSaveFileName(self,
+                                                               u'Vybrat/vytvořit výstupní soubor',
+                                                               '{}{}ruian.{}'.format(lastUsedFilePath, os.path.sep, driverExtension),
+                                                               '{} (*.{})'.format(driverAlias, driverExtension),
+                                                               QtGui.QFileDialog.DontConfirmOverwrite)
             if not connString:
                 self.ui.driverBox.setCurrentIndex(0)
                 return
@@ -248,13 +254,14 @@ class MainApp(QtGui.QDialog):
                                                     level=QgsMessageBar.CRITICAL, duration=5)
                 self.ui.driverBox.setCurrentIndex(0)
 
-        elif driverName in ['PostgreSQL','MSSQLSpatial']:
-            self.connection = Connection(self.iface, driverName, self)
-            self.connection.setModal(True)
-            self.connection.show()
-            self.connection.setWindowTitle(u'Připojení k databázi {}'.format(driverName))
+        # elif driverName in ['PostgreSQL','MSSQLSpatial']:
+        #     self.connection = Connection(self.iface, driverName, self)
+        #     self.connection.setModal(True)
+        #     self.connection.show()
+        #     self.connection.setWindowTitle(u'Připojení k databázi {}'.format(driverName))
 
-        self.ui.outputPath.setText(connString)
+        if connString:
+            self.ui.outputPath.setText(connString)
 
     def enable_import(self, driverName):
         """Enable/disable import widgets.
@@ -506,6 +513,7 @@ class ImportThread(QtCore.QThread):
         # define temporary directory for downloading VFR data
         data_dir = os.path.join(tempfile.gettempdir(),
                                 'ruian_plugin_{}'.format(os.getpid()))
+        QtCore.qDebug('\n (VFR) data dir: {}'.format(data_dir))
         os.environ['DATA_DIR'] = data_dir
         if not os.path.exists(data_dir):
             ### TODO (#3): osetrit pripad, kdy uzivatel nema pravo zapisu
@@ -533,6 +541,7 @@ class ImportThread(QtCore.QThread):
                 ogr.run(True if i > 1 else False)
                 i += 1
 
+            ogr.__del__()
             del os.environ['DATA_DIR']
         except:
             (type, value, traceback) = sys.exc_info()
