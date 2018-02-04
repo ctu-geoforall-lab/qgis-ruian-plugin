@@ -21,13 +21,14 @@ V dalším kroku zvolíme formát a cestu k výstupní souboru:
 .. figure:: images/select-output.png
    :width: 600
 
-.. note:: V současné době zásuvný modul podporuje pouze dva výstupní
+.. note:: V současné době zásuvný modul podporuje tři výstupní
           formáty:
 
+          * `Esri Shapefile <http://gdal.org/drv_shapefile.html>`__
           * `SQLite <http://gdal.org/drv_sqlite.html>`__
           * `OGC GeoPackage <http://gdal.org/drv_geopackage.html>`__
 
-          Podpora pro další formáty, např. Esri Shapefile je ve vývoji.
+          Podpora pro další formáty bude přidána na vyžádání.
           
 Data můžeme v QGISu rovnou zobrazit:
 
