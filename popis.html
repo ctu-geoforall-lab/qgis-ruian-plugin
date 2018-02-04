@@ -13,6 +13,8 @@
 
   
   
+  
+  
 
   
 
@@ -42,6 +44,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -85,7 +88,10 @@
           
             
             
-                <ul class="current">
+              
+            
+            
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="instalace.html">Instalace</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Návod k použití</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dodatek.html">Autoři</a></li>
@@ -101,8 +107,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">QGIS RUIAN Plugin</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">QGIS RUIAN Plugin</a>
+        
       </nav>
 
 
@@ -111,23 +119,40 @@
         <div class="rst-content">
           
 
- 
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="index.html">Docs</a> &raquo;</li>
-      
-    <li>Návod k použití</li>
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Návod k použití</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
-            <a href="_sources/popis.txt" rel="nofollow"> View page source</a>
+            
+            <a href="_sources/popis.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -157,13 +182,14 @@ působností, okresu či kraje.</p>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Poznámka</p>
-<p>V současné době zásuvný modul podporuje pouze dva výstupní
+<p>V současné době zásuvný modul podporuje tři výstupní
 formáty:</p>
 <ul class="simple">
+<li><a class="reference external" href="http://gdal.org/drv_shapefile.html">Esri Shapefile</a></li>
 <li><a class="reference external" href="http://gdal.org/drv_sqlite.html">SQLite</a></li>
 <li><a class="reference external" href="http://gdal.org/drv_geopackage.html">OGC GeoPackage</a></li>
 </ul>
-<p class="last">Podpora pro další formáty, např. Esri Shapefile je ve vývoji.</p>
+<p class="last">Podpora pro další formáty bude přidána na vyžádání.</p>
 </div>
 <p>Data můžeme v QGISu rovnou zobrazit:</p>
 <a class="reference internal image-reference" href="_images/ruian-add.png"><img alt="_images/ruian-add.png" src="_images/ruian-add.png" style="width: 400px;" /></a>
@@ -173,15 +199,18 @@ formáty:</p>
 
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dodatek.html" class="btn btn-neutral float-right" title="Autoři" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dodatek.html" class="btn btn-neutral float-right" title="Autoři" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="instalace.html" class="btn btn-neutral" title="Instalace" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="instalace.html" class="btn btn-neutral" title="Instalace" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -213,9 +242,11 @@ formáty:</p>
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
             VERSION:'0.9',
+            LANGUAGE:'cs',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>
