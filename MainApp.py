@@ -26,6 +26,7 @@ import os
 import sys
 import tempfile
 import time
+from collections import OrderedDict
 
 from PyQt4 import QtCore, QtGui
 
@@ -70,13 +71,10 @@ class MainApp(QtGui.QDialog):
         sys.stderr = TextOutputSignal(textWritten=self.errorOutputWritten)
 
         self.iface = iface
-        self.driverTypes = {
-#            'PostgreSQL'    :'PG',
-#            'MSSQLSpatial'  :'MSSQL',
-            'SQLite': { 'alias': 'SQLite',     'ext': 'sqlite'},
-            'GPKG'  : { 'alias': 'GeoPackage', 'ext': 'gpkg'  },
-            'ESRI Shapefile': { 'alias': 'Esri Shapefile', 'ext': 'shp'  },
-        }
+        self.driverTypes = OrderedDict()
+        self.driverTypes['GPKG'] = { 'alias': 'OGC GeoPackage', 'ext': 'gpkg' }
+        self.driverTypes['SQLite'] = { 'alias': 'SQLite DB', 'ext': 'sqlite' }
+        self.driverTypes['ESRI Shapefile'] = { 'alias': 'Esri Shapefile', 'ext': 'shp' }
 
         self.missDrivers = [] # list of missing drivers
 
@@ -101,7 +99,7 @@ class MainApp(QtGui.QDialog):
         # set up widgets
         self.ui.driverBox.setToolTip(u'Zvolte typ výstupního souboru/databáze')
         self.ui.driverBox.addItem('--Vybrat--')
-        self.set_comboDrivers(self.driverTypes)
+        self.set_comboDrivers()
         self.ui.driverBox.insertSeparator(4)  
         self.ui.searchComboBox.addItems(['Obec', 'ORP', 'Okres', 'Kraj'])
         self.ui.searchComboBox.setEditable(True)
@@ -141,17 +139,15 @@ class MainApp(QtGui.QDialog):
         # QgsMessageLog.logMessage('Ruian plugin: {}'.format(text), level=QgsMessageLog.WARNING)
         pass
 
-    def set_comboDrivers(self, drivers):
+    def set_comboDrivers(self):
         """Set GDAL drivers combo box.
-
-        :param driverNames list of supported drivers
         """
         model = self.ui.driverBox.model()
-        for driver in drivers.iteritems():
-            item = QtGui.QStandardItem(str(driver[1]['alias']))
-            ogrdriver = ogr.GetDriverByName(str(driver[0]))
+        for driver, metadata in self.driverTypes.items():
+            item = QtGui.QStandardItem(str(metadata['alias']))
+            ogrdriver = ogr.GetDriverByName(driver)
             if ogrdriver is None:
-                self.missDrivers.append(str(driver[1]['alias']))
+                self.missDrivers.append(str(metadata['alias']))
                 item.setForeground(QtGui.QColor(180,180,180,100))
                 model.appendRow(item)
             else:
@@ -206,11 +202,11 @@ class MainApp(QtGui.QDialog):
         if self.ui.importButton.isEnabled():
             self.ui.importButton.setEnabled(False)
 
-        for driverItem in self.driverTypes.iteritems():
-            if driverItem[1]['alias'] == driverName:
-                driverName = driverItem[0]
-                driverAlias = driverItem[1]['alias']
-                driverExtension = driverItem[1]['ext']
+        for driver, metadata in self.driverTypes.items():
+            if metadata['alias'] == driverName:
+                driverName = driver
+                driverAlias = metadata['alias']
+                driverExtension = metadata['ext']
 
         if driverName in self.missDrivers:
             # selected driver is not supported by installed GDAL
