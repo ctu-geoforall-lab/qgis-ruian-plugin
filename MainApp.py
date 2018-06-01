@@ -456,6 +456,12 @@ class MainApp(QtGui.QDialog):
             #uri.setDataSource(schema, layer_name, geom_column)
 
             vlayer = QgsVectorLayer('{0}|layername={1}'.format(self.option['datasource'], layer_name), layer_name, 'ogr')
+            # force EPSG:5514 and UTF-8 encoding (make sense especially for Esri Shapefile)
+            crs = vlayer.crs()
+            crs.createFromId(5514)
+            vlayer.setCrs(crs)
+            vlayer.setProviderEncoding(u'UTF-8')
+
             layer_style = os.path.join(style_path, layer_name + '.qml')
             if os.path.exists(layer_style):
                 vlayer.loadNamedStyle(layer_style)
