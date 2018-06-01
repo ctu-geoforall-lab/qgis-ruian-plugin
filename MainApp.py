@@ -75,8 +75,8 @@ class MainApp(QtGui.QDialog):
 
         self.iface = iface
         self.driverTypes = OrderedDict()
-        self.driverTypes['GPKG'] = { 'alias': 'OGC GeoPackage', 'ext': 'gpkg' }
         self.driverTypes['SQLite'] = { 'alias': 'SQLite DB', 'ext': 'sqlite' }
+        self.driverTypes['GPKG'] = { 'alias': 'OGC GeoPackage', 'ext': 'gpkg' }
         self.driverTypes['ESRI Shapefile'] = { 'alias': 'Esri Shapefile', 'ext': 'shp' }
 
         self.missDrivers = [] # list of missing drivers
