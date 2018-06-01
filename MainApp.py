@@ -221,47 +221,47 @@ class MainApp(QtGui.QDialog):
                                                 level=QgsMessageBar.CRITICAL, duration=5)
             return
 
-        connString = None
+        outputName = None
         if driverName in ['SQLite', 'GPKG', 'ESRI Shapefile']:
             sender = '{}-lastUserFilePath'.format(self.sender().objectName())
             lastUsedFilePath = self.settings.value(sender, '')
 
             if driverName == 'ESRI Shapefile':
-                connString = QtGui.QFileDialog.getExistingDirectory(self,
+                outputName = QtGui.QFileDialog.getExistingDirectory(self,
                                                                     u'Vybrat/vytvořit výstupní adresář',
                                                                     lastUsedFilePath)
             else:
-                connString = QtGui.QFileDialog.getSaveFileName(self,
+                outputName = QtGui.QFileDialog.getSaveFileName(self,
                                                                u'Vybrat/vytvořit výstupní soubor',
                                                                '{}{}ruian.{}'.format(lastUsedFilePath, os.path.sep, driverExtension),
                                                                '{} (*.{})'.format(driverAlias, driverExtension),
                                                                QtGui.QFileDialog.DontConfirmOverwrite)
-            if not connString:
+            if not outputName:
                 self.ui.driverBox.setCurrentIndex(0)
                 return
 
             try:
                 # check if target is writable
-                if not os.access(os.path.dirname(connString), os.W_OK):
+                if not os.access(os.path.dirname(outputName), os.W_OK):
                     raise RuianError(u"Nelze vytvořit {}, chybí právo zápisu".format(
-                        connString
+                        outputName
                     ))
 
-                self.settings.setValue(sender, os.path.dirname(connString))
+                self.settings.setValue(sender, os.path.dirname(outputName))
 
                 driver = ogr.GetDriverByName(str(driverName))
                 capability = driver.TestCapability(ogr._ogr.ODrCCreateDataSource)
                 
                 if capability:
-                    self.ui.driverBox.setToolTip(connString)
+                    self.ui.driverBox.setToolTip(outputName)
                     self.option['driver'] = str(driverName)
-                    self.option['datasource'] = connString
+                    self.option['datasource'] = outputName
                     if not self.ui.importButton.isEnabled():
                         self.ui.importButton.setEnabled(True)
                 else:
-                    raise RuianError(u"Nelze vytvořit {}".format(connString))
+                    raise RuianError(u"Nelze vytvořit {}".format(outputName))
 
-                self.ui.outputPath.setText(connString)
+                self.ui.outputPath.setText(outputName)
             except RuianError as e:
                 self.iface.messageBar().pushMessage(u'{}'.format(e),
                                                     level=QgsMessageBar.CRITICAL, duration=5)
