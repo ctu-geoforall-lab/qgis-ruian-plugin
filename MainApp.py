@@ -532,7 +532,6 @@ class ImportThread(QtCore.QThread):
         QtCore.qDebug('\n (VFR) data dir: {}'.format(data_dir))
         os.environ['DATA_DIR'] = data_dir
         if not os.path.exists(data_dir):
-            ### TODO (#3): osetrit pripad, kdy uzivatel nema pravo zapisu
             os.makedirs(data_dir)
 
         # logs will be stored also in data directory
