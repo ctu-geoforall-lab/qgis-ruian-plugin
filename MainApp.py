@@ -55,6 +55,9 @@ except:
 
     from .gdal_vfr.vfr4ogr import VfrOgr
 
+class RuianError(Exception):
+    pass
+
 class TextOutputSignal(QtCore.QObject):
     textWritten = QtCore.pyqtSignal(str)
     def write(self, text):
@@ -199,6 +202,9 @@ class MainApp(QtGui.QDialog):
 
         :param driverName: GDAL driver
         """
+        if self.ui.driverBox.currentIndex() == 0:
+            return
+
         if self.ui.importButton.isEnabled():
             self.ui.importButton.setEnabled(False)
 
@@ -234,30 +240,41 @@ class MainApp(QtGui.QDialog):
                 self.ui.driverBox.setCurrentIndex(0)
                 return
 
-            self.settings.setValue(sender, os.path.dirname(connString))
+            try:
+                # check if target is writable
+                if not os.access(os.path.dirname(connString), os.W_OK):
+                    raise RuianError(u"Nelze vytvořit {}, chybí právo zápisu".format(
+                        connString
+                    ))
 
-            driver = ogr.GetDriverByName(str(driverName))
-            capability = driver.TestCapability(ogr._ogr.ODrCCreateDataSource)
+                self.settings.setValue(sender, os.path.dirname(connString))
+
+                driver = ogr.GetDriverByName(str(driverName))
+                capability = driver.TestCapability(ogr._ogr.ODrCCreateDataSource)
                 
-            if capability:
-                self.ui.driverBox.setToolTip(connString)
-                self.option['driver'] = str(driverName)
-                self.option['datasource'] = connString
-                if not self.ui.importButton.isEnabled():
-                    self.ui.importButton.setEnabled(True)
-            else:
-                self.iface.messageBar().pushMessage(u"Soubor {} nelze vybrat/vytvořit".format(connString),
+                if capability:
+                    self.ui.driverBox.setToolTip(connString)
+                    self.option['driver'] = str(driverName)
+                    self.option['datasource'] = connString
+                    if not self.ui.importButton.isEnabled():
+                        self.ui.importButton.setEnabled(True)
+                else:
+                    raise RuianError(u"Nelze vytvořit {}".format(connString))
+
+                self.ui.outputPath.setText(connString)
+            except RuianError as e:
+                self.iface.messageBar().pushMessage(u'{}'.format(e),
                                                     level=QgsMessageBar.CRITICAL, duration=5)
                 self.ui.driverBox.setCurrentIndex(0)
+        else:
+			self.iface.messageBar().pushMessage(u"Ovladač {} není podporován".format(driverName),
+                                                level=QgsMessageBar.CRITICAL, duration=5)
 
         # elif driverName in ['PostgreSQL','MSSQLSpatial']:
         #     self.connection = Connection(self.iface, driverName, self)
         #     self.connection.setModal(True)
         #     self.connection.show()
         #     self.connection.setWindowTitle(u'Připojení k databázi {}'.format(driverName))
-
-        if connString:
-            self.ui.outputPath.setText(connString)
 
     def enable_import(self, driverName):
         """Enable/disable import widgets.
