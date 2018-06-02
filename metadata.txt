@@ -6,11 +6,11 @@
 # This file should be included when you package your plugin.# Mandatory items:
 
 [general]
-name=RUIAN Plugin
+name=RUIAN Plugin (DEV)
 qgisMinimumVersion=2.8
 description=Nastroj umoznuje stahovat a importovat data RUIAN do vybranych formatu a nasledne s nimi pracovat. Pozadovana je verze knihovny GDAL 1.11 a vyssi.
-version=0.1
-author=Jan Klima, Lukas Streda, Simon Gajzler, Martin Landa (mentor)
+version=1.1
+author=Jan Klima, Lukas Streda, Simon Gajzler, Martin Landa (supervisor)
 email=martin.landa@fsv.cvut.cz
 
 # changelog=
