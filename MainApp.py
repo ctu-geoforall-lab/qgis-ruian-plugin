@@ -6,10 +6,8 @@
                              -------------------
         begin                : 2015-03-16
         git sha              : $Format:%
-        copyright            : (C) 2015-2016 by Jan Klima, Dennis Dvořák,
-                               and Martin Landa
-        email                : honzi.klima@gmail.com; dennis.dvorak@email.cz;
-                               martin.landa@fsv.cvut.cz
+        copyright            : (C) 2015-2016 by CTU GeoForAll Lab
+        email                : martin.landa@fsv.cvut.cz
  ***************************************************************************/
 
 /***************************************************************************
@@ -267,7 +265,7 @@ class MainApp(QtGui.QDialog):
                                                     level=QgsMessageBar.CRITICAL, duration=5)
                 self.ui.driverBox.setCurrentIndex(0)
         else:
-			self.iface.messageBar().pushMessage(u"Ovladač {} není podporován".format(driverName),
+            self.iface.messageBar().pushMessage(u"Ovladač {} není podporován".format(driverName),
                                                 level=QgsMessageBar.CRITICAL, duration=5)
 
         # elif driverName in ['PostgreSQL','MSSQLSpatial']:
