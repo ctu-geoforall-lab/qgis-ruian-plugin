@@ -1,21 +1,17 @@
 QGIS plugin pro práci s daty RUIÁN
 ==================================
 
-Dokumentace: https://ctu-geoforall-lab.github.io/qgis-ruian-plugin/
+Dokumentace
+-----------
 
-Postup manuální instalace
--------------------------
+https://ctu-geoforall-lab.github.io/qgis-ruian-plugin/
 
-1. Do adresáře ``~/.qgis2/python/plugins`` naklonovat tento repositář:
+Autoři
+------
 
-::
-      
-   cd ~/.qgis2/python/plugins
-   git clone https://github.com/ctu-geoforall-lab/qgis-ruian-plugin.git ruian_plugin
+CTU GeoForAll Lab
 
-2. Do adresáře pluginu naklonovat repositář s knihovnou GDAL-VFR:
-
-::
-      
-   cd ruian_plugin
-   git clone https://github.com/ctu-osgeorel/gdal-vfr.git gdal_vfr
+* Jan Klíma
+* Lukáš Středa
+* Šimon Gajzler
+* Martin Landa (supervisor)
