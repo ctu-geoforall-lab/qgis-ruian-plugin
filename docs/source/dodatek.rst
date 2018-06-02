@@ -20,5 +20,5 @@ je licencován pod GNU GPL 2 a vyšší.
 Hlášení chyb
 ^^^^^^^^^^^^
 
-Případné chyby či náměty na vylepšení hlašte na `našem GitHubu
+Případné chyby či náměty na vylepšení hlašte na `našem GitHub repositáři
 <https://github.com/ctu-geoforall-lab/qgis-ruian-plugin/issues>`__.
