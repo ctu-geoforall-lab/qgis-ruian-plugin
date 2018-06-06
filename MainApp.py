@@ -83,7 +83,8 @@ class MainApp(QtGui.QDialog):
         self.option = {'driver'     : None,
                        'datasource' : None,
                        'layers'     : [],
-                       'layers_name': []
+                       'layers_name': [],
+                       'overwriteOutput': False
         }
 
         # set up the user interface from designed
@@ -384,6 +385,7 @@ class MainApp(QtGui.QDialog):
             self.iface.messageBar().pushMessage(u"Nejsou vybrána žádná data pro import.",
                                                 level=QgsMessageBar.CRITICAL, duration=5)
             return
+        self.option['overwriteOutput'] = self.ui.overwriteCheckbox.isChecked()
 
         # create progress dialog
         self.progress = QtGui.QProgressDialog(u'Probíhá import ...', u'Ukončit',
@@ -403,7 +405,7 @@ class MainApp(QtGui.QDialog):
         if not self.importThread.isRunning():
             self.progress.show()
             self.importThread.start()
-    
+
     def set_status(self, num, tot, text, operation):
         """Update progress status.
         """
@@ -526,6 +528,8 @@ class ImportThread(QtCore.QThread):
         self.datasource = option['datasource']
         self.layers = option['layers']
         self.file_type = option['file_type']
+        #add information about the checkbox state
+        self.overwrite = option['overwriteOutput']
 
     def run(self):
         """Run download/import thread.
@@ -544,7 +548,7 @@ class ImportThread(QtCore.QThread):
 
         try:
             # create convertor
-            ogr = VfrOgr(frmt=self.driver, dsn=self.datasource, overwrite=True, geom_name='OriginalniHranice')
+            ogr = VfrOgr(frmt=self.driver, dsn=self.datasource, overwrite=self.overwrite, geom_name='OriginalniHranice')
 
             n = len(self.layers)
             i = 1
@@ -557,7 +561,7 @@ class ImportThread(QtCore.QThread):
                 ogr.download([filename])
                 # import
                 self.importStat.emit(i, n, l, "Import")
-                ogr.run(True if i > 1 else False)
+                ogr.run(True if self.overwrite is False or i > 1 else False)
                 i += 1
 
             ogr.__del__()

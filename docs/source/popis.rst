@@ -1,12 +1,12 @@
 Návod k použití
 ---------------
 
-Vybereme obec či obce, které chceme naimportovat:
+Vybereme obec či obce, které chceme stáhnout:
 
 .. image:: images/select.png
    :width: 600
            
-.. warning:: Je vhodné zvolit menší objem dat maximálně ve velikosti
+.. important:: Je vhodné zvolit menší objem dat maximálně ve velikosti
              okresu. Zásuvný modul není navržen pro stahování většího
              objemu dat.
 
@@ -28,7 +28,7 @@ V dalším kroku zvolíme formát a cestu k výstupní souboru:
           * `SQLite <http://gdal.org/drv_sqlite.html>`__
           * `OGC GeoPackage <http://gdal.org/drv_geopackage.html>`__
 
-          Podpora pro další formáty bude přidána na vyžádání.
+          Podpora pro další formáty může být přidána na vyžádání.
           
 Data můžeme v QGISu rovnou zobrazit:
 
