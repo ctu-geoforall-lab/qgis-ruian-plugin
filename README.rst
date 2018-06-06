@@ -14,4 +14,5 @@ CTU GeoForAll Lab
 * Jan Klíma
 * Lukáš Středa
 * Šimon Gajzler
+* Lukáš Kettner
 * Martin Landa (supervisor)

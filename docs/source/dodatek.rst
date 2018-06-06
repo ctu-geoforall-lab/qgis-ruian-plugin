@@ -4,6 +4,7 @@ Autoři
 * Jan Klíma
 * Lukáš Středa
 * Šimon Gajzler
+* Lukáš Kettner
 
 `Laboratoř GeoForAll
 <http://geomatics.fsv.cvut.cz/research/geoforall/>`__ Fakulta
