@@ -1,8 +1,8 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9" lang="cs" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="cs" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
   
@@ -24,24 +24,17 @@
 
   
 
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="search" title="Vyhledávání" href="search.html"/>
-    <link rel="top" title="Dokumentace pro QGIS RUIAN Plugin 1.0.0" href="#"/>
-        <link rel="next" title="Instalace" href="instalace.html"/> 
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="search" title="Vyhledávání" href="search.html" />
+    <link rel="next" title="Instalace" href="instalace.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
@@ -58,7 +51,7 @@
 
           
             
-            <img src="_static/icon.png" class="logo" />
+            <img src="_static/icon.png" class="logo" alt="Logo"/>
           
           </a>
 
@@ -105,7 +98,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="#">QGIS RUIAN Plugin</a>
@@ -113,9 +106,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -159,20 +153,17 @@
             
   <div class="section" id="zasuvny-modul-qgis-pro-stahovani-datovych-vrstev-ruian">
 <h1>Zásuvný modul QGIS pro stahování datových vrstev RÚIAN<a class="headerlink" href="#zasuvny-modul-qgis-pro-stahovani-datovych-vrstev-ruian" title="Trvalý odkaz na tento nadpis">¶</a></h1>
-<p>Cílem projektu je vytvoření zásuvného modulu QGIS, pomocí kterého je
-možné automaticky stahovat data <strong>Registru územní identifikace, adres
-a nemovitostí</strong> (<a class="reference external" href="http://ruian.cz">RÚIAN</a>) dostupných v rámci
-<a class="reference external" href="http://vdp.cuzk.cz/">Veřejného dálkového přístupu</a>. Grafické
-uživatelské rozhraní (GUI) je navrženo tak, aby uživateli nabídlo
-jednoduchý výběr požadovaných dat. Plugin je implementován v
-programovacím jazyku Python s podporou knihoven <a class="reference external" href="http://gdal.org">GDAL</a>, resp. projektu GDAL-VFR
+<p>Tento zásuvný modul QGIS umožňuje automaticky stahovat data <strong>Registru
+územní identifikace, adres a nemovitostí</strong> (<a class="reference external" href="http://ruian.cz">RÚIAN</a>) dostupných v rámci <a class="reference external" href="http://vdp.cuzk.cz/">Veřejného dálkového přístupu</a>. Grafické uživatelské rozhraní je navrženo
+tak, aby uživateli nabídlo jednoduchý výběr požadovaných dat. Plugin
+je implementován v programovacím jazyku Python s podporou knihoven
+<a class="reference external" href="http://gdal.org">GDAL</a>, resp. projektu GDAL-VFR
 (<a class="reference external" href="https://github.com/ctu-geoforall-lab/gdal-vfr.git">https://github.com/ctu-geoforall-lab/gdal-vfr.git</a>) a PyQt.</p>
-<div class="admonition note">
-<p class="first admonition-title">Poznámka</p>
-<p class="last">Projekt navazuje na semestrální práce předmětu <a class="reference external" href="http://geo.fsv.cvut.cz/gwiki/155YFSG">Free Software GIS</a> vyučovaného na <a class="reference external" href="http://www.fsv.cvut.cz">Fakultě
-stavební ČVUT v Praze</a> z akademického roku
-2014/1015 (<a class="reference external" href="https://github.com/ctu-yfsg/2015-c-qgis-vfr">https://github.com/ctu-yfsg/2015-c-qgis-vfr</a>) a 2015/2016
-(<a class="reference external" href="https://github.com/ctu-yfsg/2016-c-qgis-vfr">https://github.com/ctu-yfsg/2016-c-qgis-vfr</a>).</p>
+<div class="admonition important">
+<p class="first admonition-title">Důležité</p>
+<p class="last">V současnosti je dostupný plugin pouze pro verzi <strong>QGIS
+2.x</strong>. Nová verze pro QGIS 3 je v přípravě, v případě zájmu se
+nezdráhejte oslovit autory.</p>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
@@ -185,13 +176,18 @@ stavební ČVUT v Praze</a> z akademického roku
 </li>
 </ul>
 </div>
+<div class="admonition note">
+<p class="first admonition-title">Poznámka</p>
+<p class="last">Projekt navazuje na semestrální práce předmětu <a class="reference external" href="http://geo.fsv.cvut.cz/gwiki/155YFSG">Free Software GIS</a> vyučovaného na <a class="reference external" href="http://www.fsv.cvut.cz">Fakultě
+stavební ČVUT v Praze</a> z akademického roku
+2014/1015 (<a class="reference external" href="https://github.com/ctu-yfsg/2015-c-qgis-vfr">https://github.com/ctu-yfsg/2015-c-qgis-vfr</a>) a 2015/2016
+(<a class="reference external" href="https://github.com/ctu-yfsg/2016-c-qgis-vfr">https://github.com/ctu-yfsg/2016-c-qgis-vfr</a>).</p>
+</div>
 </div>
 
 
            </div>
-           <div class="articleComments">
-            
-           </div>
+           
           </div>
           <footer>
   
@@ -211,7 +207,7 @@ stavební ČVUT v Praze</a> z akademického roku
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -230,6 +226,7 @@ stavební ČVUT v Praze</a> z akademického roku
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
             VERSION:'1.0.0',
+            LANGUAGE:'cs',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -243,19 +240,13 @@ stavební ČVUT v Praze</a> z akademického roku
 
   
 
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>
