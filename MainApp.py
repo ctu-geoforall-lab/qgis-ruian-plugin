@@ -68,13 +68,13 @@ class AccessProxyModel(QtGui.QSortFilterProxyModel):
       def find_keys(self, value):
           values = []
           rows = self.rowCount()
-          if len(value) != 0:
+          if len(value) > 0:
              for row in xrange(0, rows):
-                 Mdx = self.index(row,1)
-                 if Mdx.isValid():
-                    QVar = int(self.data(Mdx))
-                    if QVar in value:
-                       values.append(self.index(row,0))
+                 mdx = self.index(row,1)
+                 if mdx.isValid():
+                    qvar = int(self.data(mdx))
+                    if qvar in value:
+                       values.append(self.index(row, 0))
              return values
 
          return -1
@@ -128,7 +128,7 @@ class MainApp(QtGui.QDialog):
 
         # set up the table view
         path = os.path.join(os.path.dirname(__file__), 'files','obce_cr.csv')
-        self.model, self.proxy, self.geometry, self.Mproxy = self.create_model(path)
+        self.model, self.proxy, self.geometry, self.mproxy = self.create_model(path)
         self.ui.dataView.setModel(self.proxy)
         self.ui.dataView.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
         self.ui.dataView.setCornerButtonEnabled(False)
@@ -183,14 +183,10 @@ class MainApp(QtGui.QDialog):
         :return model, proxy
         """
         model = QtGui.QStandardItemModel(self)
-        first_line = True
-	line_n = 0
-        header = []
-        header.append('')
-
+        header = ['']
         geometry = {}
-	QPerIdx = {}
 
+        first_line = True
         with open(file_path, 'r') as f:
             for line in f:
                 line = line.replace('\n','')
@@ -222,16 +218,18 @@ class MainApp(QtGui.QDialog):
 			geom = QgsGeometry.fromWkt(wkt)
                         geometry[code] = geom
 		    else:
-			print #potreba udelat vypis pro obce ktery nemaji geometrii
-		    #line_n += 1
+                        QgsMessageLog.logMessage(
+                            u"Obec ({}) nema definovanu geometrii".format(code), 'Ruian Plugin',
+                            level=Qgis.Info
+                        )
 
         model.setHorizontalHeaderLabels(header)
         proxy = QtGui.QSortFilterProxyModel()
         proxy.setFilterKeyColumn(2)
         proxy.setSourceModel(model)
-	Mproxy = AccessProxyModel()
-	Mproxy.setSourceModel(model)
-        return model, proxy, geometry, Mproxy
+	mproxy = AccessProxyModel()
+	mproxy.setSourceModel(model)
+        return model, proxy, geometry, mproxy
 
     def set_datasource(self, driverName):
         """Set GDAL driver and datasource.
@@ -334,8 +332,7 @@ class MainApp(QtGui.QDialog):
             self.ui.selectionComboBox.setEnabled(True)
 
     def get_features(self):
-	""" Select features from model based on visibility in mapCanvas
-
+	"""Select features from model based on visibility in mapCanvas.
 	"""
 	qper_idx = []
 	if self.ui.checkBox.isChecked():
@@ -344,9 +341,9 @@ class MainApp(QtGui.QDialog):
 	       case = value.intersects(ext)
 	       if case:
 		 qper_idx.append(int(key))
-           Mdx = self.Mproxy.find_keys(qper_idx)
-           for mdx in xrange(0, len(Mdx)):
-               modelIdx = self.Mproxy.mapToSource(Mdx[mdx])
+           mdx = self.mproxy.find_keys(qper_idx)
+           for mdx in xrange(0, len(mdx)):
+               modelIdx = self.mproxy.mapToSource(mdx[mdx])
                item = self.model.itemFromIndex(modelIdx)
                item.setCheckState(QtCore.Qt.Checked)
 	else:
