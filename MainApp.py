@@ -62,22 +62,22 @@ class TextOutputSignal(QtCore.QObject):
         self.textWritten.emit(str(text))
 
 class AccessProxyModel(QtGui.QSortFilterProxyModel):
-      def __init__(self):
-          super(AccessProxyModel, self).__init__()
+    def __init__(self):
+        super(AccessProxyModel, self).__init__()
 
-      def find_keys(self, value):
-          values = []
-          rows = self.rowCount()
-          if len(value) > 0:
-             for row in xrange(0, rows):
-                 mdx = self.index(row,1)
-                 if mdx.isValid():
-                    qvar = int(self.data(mdx))
-                    if qvar in value:
-                       values.append(self.index(row, 0))
-             return values
+    def find_keys(self, value):
+        values = []
+        rows = self.rowCount()
+        if len(value) > 0:
+            for row in xrange(0, rows):
+                mdx = self.index(row,1)
+                if mdx.isValid():
+                   qvar = int(self.data(mdx))
+                   if qvar in value:
+                      values.append(self.index(row, 0))
+            return values
 
-         return -1
+        return -1
 
 class MainApp(QtGui.QDialog):
 
@@ -220,7 +220,7 @@ class MainApp(QtGui.QDialog):
 		    else:
                         QgsMessageLog.logMessage(
                             u"Obec ({}) nema definovanu geometrii".format(code), 'Ruian Plugin',
-                            level=Qgis.Info
+                            level=QgsMessageLog.INFO
                         )
 
         model.setHorizontalHeaderLabels(header)
