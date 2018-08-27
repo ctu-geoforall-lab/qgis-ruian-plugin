@@ -152,7 +152,7 @@ class MainApp(QtGui.QDialog):
         self.ui.advancedButton.clicked.connect(self.show_advanced)
         self.ui.importButton.clicked.connect(self.get_options)
         self.ui.buttonBox.rejected.connect(self.close)
-	self.ui.checkBox.clicked.connect(self.get_features)
+	self.ui.selectMapBox.clicked.connect(self.select_items_by_map)
 
     def errorOutputWritten(self, text):
         # self.iface.messageBar().pushMessage(u"Chyba: {}".format(text),
@@ -199,7 +199,7 @@ class MainApp(QtGui.QDialog):
                     items = []
                     code = None
 		    name = []
-                    item = QtGui.QStandardItem('')
+                    item = QtGui.QStandardItem()
                     item.setCheckable(True)
                     item.setSelectable(False)
                     items.append(item)
@@ -331,23 +331,29 @@ class MainApp(QtGui.QDialog):
         else:
             self.ui.selectionComboBox.setEnabled(True)
 
-    def get_features(self):
-	"""Select features from model based on visibility in mapCanvas.
+    def select_items_by_map(self):
+	"""Select items from model based on visibility in mapCanvas.
 	"""
 	qper_idx = []
-	if self.ui.checkBox.isChecked():
-	   ext = self.iface.mapCanvas().extent()
-	   for (key, value) in self.geometry.items():
-	       case = value.intersects(ext)
-	       if case:
-		 qper_idx.append(int(key))
-           mdx = self.mproxy.find_keys(qper_idx)
-           for mdx in xrange(0, len(mdx)):
-               modelIdx = self.mproxy.mapToSource(mdx[mdx])
-               item = self.model.itemFromIndex(modelIdx)
-               item.setCheckState(QtCore.Qt.Checked)
+	if self.ui.selectMapBox.isChecked():
+	    ext = self.iface.mapCanvas().extent()
+	    for (key, value) in self.geometry.items():
+	        if value.intersects(ext):
+		    qper_idx.append(int(key))
+            if not qper_idx:
+                self.iface.messageBar().pushMessage(
+                    u"V mapové okně nebyla nalezena žádná obec",
+                    level=QgsMessageBar.INFO
+                )
+                return
+
+            mdx = self.mproxy.find_keys(qper_idx)
+            for mdx_item in mdx:
+                model_idx = self.mproxy.mapToSource(mdx_item)
+                item = self.model.itemFromIndex(model_idx)
+                item.setCheckState(QtCore.Qt.Checked)
 	else:
-           self.set_checkstate(1)
+            self.set_checkstate(1)
 
     def set_searching(self, column):
         """Set filtering.
@@ -363,7 +369,9 @@ class MainApp(QtGui.QDialog):
         :param searchName: name to be searched
         """
         if searchName not in ['Obec', 'ORP', 'Okres', 'Kraj']:
-            self.proxy.setFilterRegExp(QtCore.QRegExp(searchName, QtCore.Qt.CaseInsensitive))
+            self.proxy.setFilterRegExp(
+                QtCore.QRegExp(searchName, QtCore.Qt.CaseInsensitive)
+            )
 
     def set_checkstate(self, state):
         """Check or uncheck items in qtableview.
