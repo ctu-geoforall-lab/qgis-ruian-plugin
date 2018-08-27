@@ -75,19 +75,6 @@
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="QCheckBox" name="selectMapBox">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-         <horstretch>1</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string>Přidat obce dle mapoveho okna</string>
-       </property>
-      </widget>
-     </item>
     </layout>
    </item>
    <item>
@@ -105,6 +92,19 @@
       </size>
      </property>
     </spacer>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="selectMapBox">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+       <horstretch>1</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text">
+      <string>Vybrat obce dle mapového okna</string>
+     </property>
+    </widget>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayoutSearch">
