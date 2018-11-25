@@ -7,7 +7,7 @@
 
 [general]
 description=Nastroj umoznuje stahovat a importovat data RUIAN do vybranych formatu a nasledne s nimi pracovat. Pozadovana je verze knihovny GDAL 1.11 a vyssi.
-version=1.1.0
+version=1.1beta
 author=Jan Klima, Lukas Streda, Simon Gajzler, Lukas Kettner, Martin Landa (supervisor)
 email=martin.landa@fsv.cvut.cz
 
@@ -17,5 +17,5 @@ homepage=https://ctu-geoforall-lab.github.io/qgis-ruian-plugin
 tracker=https://github.com/ctu-geoforall-lab/qgis-ruian-plugin/issues
 repository=https://github.com/ctu-geoforall-lab/qgis-ruian-plugin
 icon=files/icon.png
-experimental=False
+experimental=True
 deprecated=False
