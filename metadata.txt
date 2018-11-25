@@ -6,9 +6,9 @@
 # This file should be included when you package your plugin.# Mandatory items:
 
 [general]
-description=Nastroj umoznuje stahovat a importovat data RUIAN do vybranych formatu a nasledne s nimi pracovat. Pozadovana je verze knihovny GDAL 1.11 a vyssi.
+description=Nastroj umoznuje stahovat a importovat data RUIAN do vybranych formatu a nasledne s nimi pracovat.
 version=1.1beta
-author=Jan Klima, Lukas Streda, Simon Gajzler, Lukas Kettner, Martin Landa (supervisor)
+author=Jan Klima, Lukas Streda, Simon Gajzler, Lukas Kettner, Martin Landa (GeoForAll Lab)
 email=martin.landa@fsv.cvut.cz
 
 # changelog=
