@@ -20,23 +20,26 @@
  *                                                                         *
  ***************************************************************************/
 """
+from __future__ import absolute_import
+from builtins import object
+
 # Import the PyQt, QGIS libraries and classes
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from qgis.core import *
-from resources_rc import *
-from MainApp import MainApp
+from qgis.PyQt.QtWidgets import QAction
+from qgis.PyQt.QtGui import QIcon
+from .resources import *
+from .MainApp import MainApp
 
-
-class VFRImporter:
+class VFRImporter(object):
 
     def __init__(self, iface):
         self.iface = iface
 
     def initGui(self):
-        self.action = QAction(QIcon(':/icon.png'),u'Nástroj pro práci s daty RUIAN', self.iface.mainWindow())
+        self.action = QAction(QIcon(':/icon.png'),
+                              u'Nástroj pro práci s daty RUIAN',
+                              self.iface.mainWindow())
         self.iface.addToolBarIcon(self.action)
-        QObject.connect(self.action, SIGNAL("triggered()"), self.run)
+        self.action.triggered.connect(self.run)
         
     def unload(self):
         self.iface.removeToolBarIcon(self.action)
