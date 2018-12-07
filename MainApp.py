@@ -42,7 +42,7 @@ except:
     # download
     import requests, zipfile, StringIO
 
-    gdal_vfr_version = '2.0.5'
+    gdal_vfr_version = '2.0.6'
     url = "http://geo.fsv.cvut.cz/geoforall/gdal_vfr/v{}.zip".format(gdal_vfr_version)
     req = requests.get(url, stream=True)
     zipf = zipfile.ZipFile(StringIO.StringIO(req.content))
