@@ -55,7 +55,7 @@ except:
         from StringIO import StringIO as BytesIO
         from urllib import urlopen
 
-    gdal_vfr_version = '2.1.0'
+    gdal_vfr_version = '2.1.2'
     url = "http://geo.fsv.cvut.cz/geoforall/gdal_vfr/v{}.zip".format(gdal_vfr_version)
     resp = urlopen(url)
     with ZipFile(BytesIO(resp.read())) as zipf:
