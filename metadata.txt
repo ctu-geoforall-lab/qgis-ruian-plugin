@@ -9,7 +9,7 @@
 name=RUIAN Plugin
 qgisMinimumVersion=3.0
 description=Nastroj umoznuje stahovat a importovat data RUIAN do vybranych formatu a nasledne s nimi pracovat.
-version=1.1beta
+version=1.1.0
 author=Jan Klima, Lukas Streda, Simon Gajzler, Lukas Kettner, Martin Landa (GeoForAll Lab)
 email=martin.landa@fsv.cvut.cz
 
@@ -19,5 +19,5 @@ homepage=https://ctu-geoforall-lab.github.io/qgis-ruian-plugin
 tracker=https://github.com/ctu-geoforall-lab/qgis-ruian-plugin/issues
 repository=https://github.com/ctu-geoforall-lab/qgis-ruian-plugin
 icon=files/icon.png
-experimental=True
+experimental=False
 deprecated=False
