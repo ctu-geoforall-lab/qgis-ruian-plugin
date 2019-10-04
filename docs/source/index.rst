@@ -10,9 +10,7 @@ je implementován v programovacím jazyku Python s podporou knihoven
 `GDAL <http://gdal.org>`_, resp. projektu GDAL-VFR
 (https://github.com/ctu-geoforall-lab/gdal-vfr.git) a PyQt.
 
-.. important:: V současnosti je dostupný plugin pouze pro verzi **QGIS
-   2.x**. Nová verze pro QGIS 3 je v přípravě, v případě zájmu se
-   nezdráhejte oslovit autory.
+Plugin je dostupný pro verze QGIS 2 a 3.
 
 .. toctree::
    :maxdepth: 2
