@@ -27,7 +27,7 @@ import sphinx_rtd_theme
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 sys.path.append(os.path.abspath('extensions'))
-extensions = ['sphinx.ext.todo', 'sphinx.ext.pngmath', 'sphinx.ext.viewcode',
+extensions = ['sphinx.ext.todo', 'sphinx.ext.imgmath', 'sphinx.ext.viewcode',
               'autoimage', 'numfig']
 
 # Add any paths that contain templates here, relative to this directory.
@@ -44,7 +44,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'QGIS RUIAN Plugin'
-copyright = u'2016-2018, CTU GeoForAll Lab'
+copyright = u'2016-2019, CTU GeoForAll Lab'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
