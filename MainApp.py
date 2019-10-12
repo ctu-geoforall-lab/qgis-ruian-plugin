@@ -233,7 +233,7 @@ class MainApp(QDialog):
         outputName = None
         if driverName in ['SQLite', 'GPKG', 'ESRI Shapefile']:
             sender = '{}-lastUserFilePath'.format(self.sender().objectName())
-            lastUsedFilePath = self.settings.value(sender, '')
+            lastUsedFilePath = self.settings.value(sender, os.path.expanduser("~"))
 
             if driverName == 'ESRI Shapefile':
                 outputName = QFileDialog.getExistingDirectory(
