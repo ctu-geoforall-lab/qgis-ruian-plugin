@@ -24,9 +24,9 @@ V dalším kroku zvolíme formát a cestu k výstupní souboru:
 .. note:: V současné době zásuvný modul podporuje tři výstupní
           formáty:
 
-          * `Esri Shapefile <http://gdal.org/drv_shapefile.html>`__
           * `SQLite <http://gdal.org/drv_sqlite.html>`__
           * `OGC GeoPackage <http://gdal.org/drv_geopackage.html>`__
+          * `Esri Shapefile <http://gdal.org/drv_shapefile.html>`__
 
           Podpora pro další formáty může být přidána na vyžádání.
           
@@ -39,3 +39,6 @@ Příklad vizualizace stažených dat:
 
 .. image:: images/visualization.png
    :width: 1000
+
+.. note:: Od měřítka 1:2500 se zobrazují názvy ulic, od 1:1000
+          parcelní čísla a domovní čísla u adresních bodů.
