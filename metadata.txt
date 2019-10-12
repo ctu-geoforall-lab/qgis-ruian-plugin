@@ -8,7 +8,8 @@
 [general]
 name=RUIAN Plugin
 qgisMinimumVersion=3.0
-description=Nástroj umožňuje stahovat a importovat data registru RUIAN do vybraných GIS formatů a následně s nimi pracovat.<br><br>This plugin allows downloding and importing data from Czech RUIAN dataset into selected GIS data formats.
+description=Stažení a import dat RÚIAN<br><br>Download and import Czech RUIAN data
+about=Nástroj umožňuje stahovat a importovat data registru RÚIAN do vybraných GIS formatů a následně s nimi pracovat.<br><br>This plugin allows downloding and importing data from Czech RUIAN data into selected GIS data formats.
 version=1.1beta
 author=Jan Klima, Lukas Streda, Simon Gajzler, Lukas Kettner, Martin Landa (GeoForAll Lab)
 email=martin.landa@fsv.cvut.cz
