@@ -6,11 +6,12 @@
 # This file should be included when you package your plugin.# Mandatory items:
 
 [general]
-name=RUIAN Plugin (DEV)
-qgisMinimumVersion=2.14
-description=Nastroj umoznuje stahovat a importovat data RUIAN do vybranych formatu a nasledne s nimi pracovat. Pozadovana je verze knihovny GDAL 1.11 a vyssi.
-version=1.1
-author=Jan Klima, Lukas Streda, Simon Gajzler, Lukas Kettner, Martin Landa (supervisor)
+name=RUIAN Plugin
+qgisMinimumVersion=3.0
+description=Stažení a import dat RÚIAN<br><br>Download and import Czech RUIAN data
+about=Nástroj umožňuje stahovat a importovat data registru RÚIAN do vybraných GIS formatů a následně s nimi pracovat.<br><br>This plugin allows downloding and importing data from Czech RUIAN data into selected GIS data formats.
+version=1.1beta
+author=Jan Klima, Lukas Streda, Simon Gajzler, Lukas Kettner, Martin Landa (GeoForAll Lab)
 email=martin.landa@fsv.cvut.cz
 
 # changelog=

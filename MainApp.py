@@ -19,6 +19,11 @@
  *                                                                         *
  ***************************************************************************/
 """
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+# from builtins import str
+from builtins import range
 # Import the PyQt, QGIS libraries and classes
 import os
 import sys
@@ -26,42 +31,50 @@ import tempfile
 import time
 from collections import OrderedDict
 
-from PyQt4 import QtCore, QtGui
+from qgis.PyQt.QtCore import QSortFilterProxyModel, QThread, pyqtSignal, qDebug, QObject, QSettings, Qt, QRegExp, QSortFilterProxyModel
+from qgis.PyQt.QtGui import QStandardItem, QColor, QStandardItemModel
+from qgis.PyQt.QtWidgets import QDialog, QAbstractItemView, QFileDialog, QProgressDialog, QMessageBox
 
-from qgis.core import *
+from qgis.core import QgsProject, QgsVectorLayer, QgsGeometry, QgsMessageLog
 from qgis.gui import QgsMessageBar
+from qgis.utils import Qgis
 
 from osgeo import ogr, gdal
 
-from Connection import Connection
-from ui_MainApp import Ui_MainApp
+from .ui_MainApp import Ui_MainApp
 
 try:
     from .gdal_vfr.vfr4ogr import VfrOgr
 except:
     # download
-    import requests, zipfile, StringIO
+    from zipfile import ZipFile
 
-    gdal_vfr_version = '2.0.5'
+    if (sys.version_info > (3, 0)):
+        from io import BytesIO
+        from urllib.request import urlopen
+    else:
+        from StringIO import StringIO as BytesIO
+        from urllib import urlopen
+
+    gdal_vfr_version = '2.1.3'
     url = "http://geo.fsv.cvut.cz/geoforall/gdal_vfr/v{}.zip".format(gdal_vfr_version)
-    req = requests.get(url, stream=True)
-    zipf = zipfile.ZipFile(StringIO.StringIO(req.content))
-    zipf.extractall(os.path.join(os.path.dirname(__file__)))
-    os.rename(os.path.join(os.path.dirname(__file__), 'gdal-vfr-{}'.format(gdal_vfr_version)),
-              os.path.join(os.path.dirname(__file__), 'gdal_vfr'))
-    zipf.close()
+    resp = urlopen(url)
+    with ZipFile(BytesIO(resp.read())) as zipf:
+        zipf.extractall(os.path.join(os.path.dirname(__file__)))
+        os.rename(os.path.join(os.path.dirname(__file__), 'gdal-vfr-{}'.format(gdal_vfr_version)),
+                  os.path.join(os.path.dirname(__file__), 'gdal_vfr'))
 
     from .gdal_vfr.vfr4ogr import VfrOgr
 
 class RuianError(Exception):
     pass
 
-class TextOutputSignal(QtCore.QObject):
-    textWritten = QtCore.pyqtSignal(str)
+class TextOutputSignal(QObject):
+    textWritten = pyqtSignal(str)
     def write(self, text):
         self.textWritten.emit(str(text))
 
-class AccessProxyModel(QtGui.QSortFilterProxyModel):
+class AccessProxyModel(QSortFilterProxyModel):
     def __init__(self):
         super(AccessProxyModel, self).__init__()
 
@@ -79,12 +92,12 @@ class AccessProxyModel(QtGui.QSortFilterProxyModel):
 
         return -1
 
-class MainApp(QtGui.QDialog):
+class MainApp(QDialog):
 
     def __init__(self, iface, parent=None):
-        QtGui.QDialog.__init__(self)
+        QDialog.__init__(self)
 
-        self.settings = QtCore.QSettings()
+        self.settings = QSettings()
 
         # sys.stdout = TextOutputSignal(textWritten=self.normalOutputWritten)
         sys.stderr = TextOutputSignal(textWritten=self.errorOutputWritten)
@@ -130,15 +143,15 @@ class MainApp(QtGui.QDialog):
         path = os.path.join(os.path.dirname(__file__), 'files','obce_cr.csv')
         self.model, self.proxy, self.geometry, self.mproxy = self.create_model(path)
         self.ui.dataView.setModel(self.proxy)
-        self.ui.dataView.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
+        self.ui.dataView.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.ui.dataView.setCornerButtonEnabled(False)
         self.ui.dataView.setSortingEnabled(True)
         self.ui.dataView.sortByColumn(2,0)
-        self.ui.dataView.horizontalHeader().setDefaultAlignment(QtCore.Qt.AlignLeft)
-        self.ui.dataView.horizontalHeader().setResizeMode(0,2)
+        self.ui.dataView.horizontalHeader().setDefaultAlignment(Qt.AlignLeft)
+        self.ui.dataView.horizontalHeader().setSectionResizeMode(0,2)
         self.ui.dataView.horizontalHeader().resizeSection(0,28)
         self.ui.dataView.horizontalHeader().setStretchLastSection(True)
-        self.ui.dataView.verticalHeader().setResizeMode(2)
+        self.ui.dataView.verticalHeader().setSectionResizeMode(2)
         self.ui.dataView.verticalHeader().setDefaultSectionSize(23)
         self.ui.dataView.verticalHeader().hide()
 
@@ -152,7 +165,7 @@ class MainApp(QtGui.QDialog):
         self.ui.advancedButton.clicked.connect(self.show_advanced)
         self.ui.importButton.clicked.connect(self.get_options)
         self.ui.buttonBox.rejected.connect(self.close)
-	self.ui.selectMapBox.clicked.connect(self.select_items_by_map)
+        self.ui.selectMapBox.clicked.connect(self.select_items_by_map)
 
     def errorOutputWritten(self, text):
         # self.iface.messageBar().pushMessage(u"Chyba: {}".format(text),
@@ -164,12 +177,12 @@ class MainApp(QtGui.QDialog):
         """Set GDAL drivers combo box.
         """
         model = self.ui.driverBox.model()
-        for driver, metadata in self.driverTypes.items():
-            item = QtGui.QStandardItem(str(metadata['alias']))
+        for driver, metadata in list(self.driverTypes.items()):
+            item = QStandardItem(str(metadata['alias']))
             ogrdriver = ogr.GetDriverByName(driver)
             if ogrdriver is None:
                 self.missDrivers.append(str(metadata['alias']))
-                item.setForeground(QtGui.QColor(180,180,180,100))
+                item.setForeground(QColor(180,180,180,100))
                 model.appendRow(item)
             else:
                 model.appendRow(item)
@@ -182,7 +195,7 @@ class MainApp(QtGui.QDialog):
 
         :return model, proxy
         """
-        model = QtGui.QStandardItemModel(self)
+        model = QStandardItemModel(self)
         header = ['']
         geometry = {}
 
@@ -192,43 +205,43 @@ class MainApp(QtGui.QDialog):
                 line = line.replace('\n','')
                 if first_line:
                     for word in line.split(',')[:5]: # ignore last item (extent)
-                        word = u'{}'.format(word.decode('utf-8'))
+                        word = u'{}'.format(word)
                         header.append(word)
                     first_line = False
                 else:
                     items = []
                     code = None
-		    name = []
-                    item = QtGui.QStandardItem()
+                    name = []
+                    item = QStandardItem()
                     item.setCheckable(True)
                     item.setSelectable(False)
                     items.append(item)
                     for word in line.split(',')[:5]: # ignore last item (extent)
-			word = u'{}'.format(word.decode('utf-8'))
-                        item = QtGui.QStandardItem(word)
+                        word = u'{}'.format(word)
+                        item = QStandardItem(word)
                         item.setSelectable(False)
                         items.append(item)
-			if len(items) == 2:
+                        if len(items) == 2:
                             code = word
-			elif len(items) == 3:
-			    name = word
+                        elif len(items) == 3:
+                            name = word
                     model.appendRow(items)
                     wkt = line[line.find('POLYGON(('):-1]
-		    if len(wkt) != 0:
-			geom = QgsGeometry.fromWkt(wkt)
+                    if len(wkt) != 0:
+                        geom = QgsGeometry.fromWkt(wkt)
                         geometry[code] = geom
-		    else:
+                    else:
                         QgsMessageLog.logMessage(
                             u"Obec ({}) nema definovanu geometrii".format(code), 'Ruian Plugin',
-                            level=QgsMessageLog.INFO
+                            level=Qgis.Info
                         )
 
         model.setHorizontalHeaderLabels(header)
-        proxy = QtGui.QSortFilterProxyModel()
+        proxy = QSortFilterProxyModel()
         proxy.setFilterKeyColumn(2)
         proxy.setSourceModel(model)
-	mproxy = AccessProxyModel()
-	mproxy.setSourceModel(model)
+        mproxy = AccessProxyModel()
+        mproxy.setSourceModel(model)
         return model, proxy, geometry, mproxy
 
     def set_datasource(self, driverName):
@@ -242,7 +255,7 @@ class MainApp(QtGui.QDialog):
         if self.ui.importButton.isEnabled():
             self.ui.importButton.setEnabled(False)
 
-        for driver, metadata in self.driverTypes.items():
+        for driver, metadata in list(self.driverTypes.items()):
             if metadata['alias'] == driverName:
                 driverName = driver
                 driverAlias = metadata['alias']
@@ -258,18 +271,21 @@ class MainApp(QtGui.QDialog):
         outputName = None
         if driverName in ['SQLite', 'GPKG', 'ESRI Shapefile']:
             sender = '{}-lastUserFilePath'.format(self.sender().objectName())
-            lastUsedFilePath = self.settings.value(sender, '')
+            lastUsedFilePath = self.settings.value(sender, os.path.expanduser("~"))
 
             if driverName == 'ESRI Shapefile':
-                outputName = QtGui.QFileDialog.getExistingDirectory(self,
-                                                                    u'Vybrat/vytvořit výstupní adresář',
-                                                                    lastUsedFilePath)
+                outputName = QFileDialog.getExistingDirectory(
+                    self,
+                    u'Vybrat/vytvořit výstupní adresář',
+                    lastUsedFilePath)
             else:
-                outputName = QtGui.QFileDialog.getSaveFileName(self,
-                                                               u'Vybrat/vytvořit výstupní soubor',
-                                                               '{}{}ruian.{}'.format(lastUsedFilePath, os.path.sep, driverExtension),
-                                                               '{} (*.{})'.format(driverAlias, driverExtension),
-                                                               QtGui.QFileDialog.DontConfirmOverwrite)
+                outputName, filter = QFileDialog.getSaveFileName(
+                    self,
+                    u'Vybrat/vytvořit výstupní soubor',
+                    '{}{}ruian.{}'.format(lastUsedFilePath, os.path.sep, driverExtension),
+                    '{} (*.{})'.format(driverAlias, driverExtension),
+                    options=QFileDialog.DontConfirmOverwrite)
+            print (outputName)
             if not outputName:
                 self.ui.driverBox.setCurrentIndex(0)
                 return
@@ -283,7 +299,7 @@ class MainApp(QtGui.QDialog):
 
                 self.settings.setValue(sender, os.path.dirname(outputName))
 
-                driver = ogr.GetDriverByName(str(driverName))
+                driver = ogr.GetDriverByName(driverName)
                 capability = driver.TestCapability(ogr._ogr.ODrCCreateDataSource)
                 
                 if capability:
@@ -332,18 +348,18 @@ class MainApp(QtGui.QDialog):
             self.ui.selectionComboBox.setEnabled(True)
 
     def select_items_by_map(self):
-	"""Select items from model based on visibility in mapCanvas.
-	"""
-	qper_idx = []
-	if self.ui.selectMapBox.isChecked():
-	    ext = self.iface.mapCanvas().extent()
-	    for (key, value) in self.geometry.items():
-	        if value.intersects(ext):
-		    qper_idx.append(int(key))
+        """Select items from model based on visibility in mapCanvas.
+        """
+        qper_idx = []
+        if self.ui.selectMapBox.isChecked():
+            ext = self.iface.mapCanvas().extent()
+            for (key, value) in self.geometry.items():
+                if value.intersects(ext):
+                    qper_idx.append(int(key))
             if not qper_idx:
                 self.iface.messageBar().pushMessage(
                     u"V mapové okně nebyla nalezena žádná obec",
-                    level=QgsMessageBar.INFO
+                    level=Qgis.Info
                 )
                 return
 
@@ -352,7 +368,7 @@ class MainApp(QtGui.QDialog):
                 model_idx = self.mproxy.mapToSource(mdx_item)
                 item = self.model.itemFromIndex(model_idx)
                 item.setCheckState(QtCore.Qt.Checked)
-	else:
+        else:
             self.set_checkstate(1)
 
     def set_searching(self, column):
@@ -370,7 +386,7 @@ class MainApp(QtGui.QDialog):
         """
         if searchName not in ['Obec', 'ORP', 'Okres', 'Kraj']:
             self.proxy.setFilterRegExp(
-                QtCore.QRegExp(searchName, QtCore.Qt.CaseInsensitive)
+                QRegExp(searchName, QtCore.Qt.CaseInsensitive)
             )
 
     def set_checkstate(self, state):
@@ -379,23 +395,23 @@ class MainApp(QtGui.QDialog):
         :param state: state (true/false)
         """
         rows = self.proxy.rowCount()
-        for row in xrange(0,rows):
+        for row in range(0,rows):
             proxyIdx = self.proxy.index(row,0)
             modelIdx = self.proxy.mapToSource(proxyIdx)
             item = self.model.itemFromIndex(modelIdx)
             if state == 0:
-               item.setCheckState(QtCore.Qt.Checked)
+               item.setCheckState(Qt.Checked)
             elif state == 1:
-               item.setCheckState(QtCore.Qt.Unchecked)
+               item.setCheckState(Qt.Unchecked)
 
     def show_advanced(self):
         """Show advanced options.
         """
         if self.ui.advancedButton.arrowType() == 4:
-            self.ui.advancedButton.setArrowType(QtCore.Qt.DownArrow)
+            self.ui.advancedButton.setArrowType(Qt.DownArrow)
             self.ui.advancedSettings.show()
         elif self.ui.advancedButton.arrowType() == 2:
-            self.ui.advancedButton.setArrowType(QtCore.Qt.RightArrow)
+            self.ui.advancedButton.setArrowType(Qt.RightArrow)
             self.ui.advancedSettings.hide()
 
     def get_options(self):
@@ -403,9 +419,9 @@ class MainApp(QtGui.QDialog):
         """
         self.option['layers'] = []
         self.option['layers_name'] = []
-        for row in xrange(0,self.model.rowCount()):
+        for row in range(0,self.model.rowCount()):
             item = self.model.item(row,0)
-            if item.checkState() == QtCore.Qt.Checked:
+            if item.checkState() == Qt.Checked:
                 code = self.model.item(row,1).text()
                 name = self.model.item(row,2).text()
                 self.option['layers'].append(code)
@@ -449,10 +465,10 @@ class MainApp(QtGui.QDialog):
         self.option['overwriteOutput'] = self.ui.overwriteCheckbox.isChecked()
 
         # create progress dialog
-        self.progress = QtGui.QProgressDialog(u'Probíhá import ...', u'Ukončit',
-                                              0, 0, self)
+        self.progress = QProgressDialog(u'Probíhá import ...', u'Ukončit',
+                                        0, 0, self)
         self.progress.setParent(self)
-        self.progress.setWindowModality(QtCore.Qt.WindowModal)
+        self.progress.setWindowModality(Qt.WindowModal)
         self.progress.setWindowTitle(u'Import dat RÚIAN')
         self.progress.canceled.connect(self.import_close)
         self.progress.setAutoClose(False)
@@ -475,9 +491,9 @@ class MainApp(QtGui.QDialog):
     def import_close(self):
         """Terminate import.
         """
-        reply = QtGui.QMessageBox.question(self, u'Ukončit', u"Opravdu chcete ukončit import dat?",
-                                           QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.Yes)
-        if reply == QtGui.QMessageBox.Yes:
+        reply = QMessageBox.question(self, u'Ukončit', u"Opravdu chcete ukončit import dat?",
+                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+        if reply == QMessageBox.Yes:
             self.importThread.terminate()
         else:
             self.progress.resize(400, 50)
@@ -490,11 +506,11 @@ class MainApp(QtGui.QDialog):
         if self.importThread.aborted:
             return
 
-        reply  = QtGui.QMessageBox.question(self, u'Import', u"Import dat proběhl úspěšně. "
-                                            u"Přejete si vytvořené vrtsvy do mapového okna?",
-                                            QtGui.QMessageBox.Yes | QtGui.QMessageBox.No,
-                                            QtGui.QMessageBox.Yes)
-        if reply == QtGui.QMessageBox.Yes:
+        reply  = QMessageBox.question(self, u'Import', u"Import dat proběhl úspěšně. "
+                                      u"Přejete si vytvořené vrtsvy do mapového okna?",
+                                      QMessageBox.Yes | QMessageBox.No,
+                                      QMessageBox.Yes)
+        if reply == QMessageBox.Yes:
             self.add_layers()
 
     def close(self):
@@ -527,7 +543,7 @@ class MainApp(QtGui.QDialog):
             if os.path.exists(layer_style):
                 vlayer.loadNamedStyle(layer_style)
 
-            QgsMapLayerRegistry.instance().addMapLayer(vlayer, addToLegend=False)
+            QgsProject.instance().addMapLayer(vlayer, addToLegend=False)
             group.addLayer(vlayer)
 
             return True
@@ -579,12 +595,12 @@ class MainApp(QtGui.QDialog):
 
         del datasource # close datasource
 
-class ImportThread(QtCore.QThread):
-    importEnd = QtCore.pyqtSignal()
-    importStat = QtCore.pyqtSignal(int,int,str,str)
+class ImportThread(QThread):
+    importEnd = pyqtSignal()
+    importStat = pyqtSignal(int,int,str,str)
 
     def __init__(self, option):
-        QtCore.QThread.__init__(self)
+        QThread.__init__(self)
         self.driver = option['driver']
         self.datasource = option['datasource']
         self.layers = option['layers']
@@ -598,7 +614,7 @@ class ImportThread(QtCore.QThread):
         # define temporary directory for downloading VFR data
         data_dir = os.path.join(tempfile.gettempdir(),
                                 'ruian_plugin_{}'.format(os.getpid()))
-        QtCore.qDebug('\n (VFR) data dir: {}'.format(data_dir))
+        qDebug('\n (VFR) data dir: {}'.format(data_dir))
         os.environ['DATA_DIR'] = data_dir
         if not os.path.exists(data_dir):
             os.makedirs(data_dir)
@@ -615,7 +631,7 @@ class ImportThread(QtCore.QThread):
             i = 1
             for l in self.layers:
                 filename = 'OB_{}_{}'.format(l, self.file_type)
-                QtCore.qDebug('\n (VFR) Processing file: {}'.format(filename))
+                qDebug('\n (VFR) Processing file: {}'.format(filename))
                 # download
                 ogr.reset()
                 self.importStat.emit(i, n, l, "Download")

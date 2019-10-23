@@ -20,7 +20,8 @@
  *                                                                         *
  ***************************************************************************/
 """
+from __future__ import absolute_import
 
 def classFactory(iface):
-    from vfrimporter import VFRImporter
+    from .vfrimporter import VFRImporter
     return VFRImporter(iface)

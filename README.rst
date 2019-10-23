@@ -1,5 +1,10 @@
-QGIS plugin pro práci s daty RUIÁN
+QGIS plugin pro práci s daty RÚIAN
 ==================================
+
+Co je RÚIAN
+-----------
+
+Registr územní identifikace, adres a nemovitostí, http://ruian.cz
 
 Dokumentace
 -----------
