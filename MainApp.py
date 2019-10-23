@@ -82,7 +82,7 @@ class AccessProxyModel(QSortFilterProxyModel):
         values = []
         rows = self.rowCount()
         if len(value) > 0:
-            for row in xrange(0, rows):
+            for row in range(0, rows):
                 mdx = self.index(row,1)
                 if mdx.isValid():
                    qvar = int(self.data(mdx))
@@ -367,7 +367,7 @@ class MainApp(QDialog):
             for mdx_item in mdx:
                 model_idx = self.mproxy.mapToSource(mdx_item)
                 item = self.model.itemFromIndex(model_idx)
-                item.setCheckState(QtCore.Qt.Checked)
+                item.setCheckState(Qt.Checked)
         else:
             self.set_checkstate(1)
 
