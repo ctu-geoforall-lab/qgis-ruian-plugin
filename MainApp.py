@@ -19,12 +19,7 @@
  *                                                                         *
  ***************************************************************************/
 """
-from __future__ import absolute_import
-from future import standard_library
-standard_library.install_aliases()
-# from builtins import str
-from builtins import range
-# Import the PyQt, QGIS libraries and classes
+
 import os
 import sys
 import tempfile
@@ -35,8 +30,7 @@ from qgis.PyQt.QtCore import QSortFilterProxyModel, QThread, pyqtSignal, qDebug,
 from qgis.PyQt.QtGui import QStandardItem, QColor, QStandardItemModel
 from qgis.PyQt.QtWidgets import QDialog, QAbstractItemView, QFileDialog, QProgressDialog, QMessageBox
 
-from qgis.core import QgsProject, QgsVectorLayer
-from qgis.gui import QgsMessageBar
+from qgis.core import QgsProject, QgsVectorLayer, Qgis
 
 from osgeo import ogr, gdal
 
@@ -107,7 +101,7 @@ class MainApp(QDialog):
         version = gdal.__version__.split('.', 2)
         if not (int(version[0]) > 1 or int(version[1]) >= 11):
             self.iface.messageBar().pushMessage(u"GDAL/OGR: požadována verze 1.11 nebo vyšší (nainstalována {}.{})".format(
-                version[0],version[1]), level=QgsMessageBar.CRITICAL, duration=5
+                version[0],version[1]), level=Qgis.Critical, duration=5
             )
 
         # set up widgets
@@ -149,7 +143,7 @@ class MainApp(QDialog):
 
     def errorOutputWritten(self, text):
         # self.iface.messageBar().pushMessage(u"Chyba: {}".format(text),
-        #                                     level=QgsMessageBar.CRITICAL)
+        #                                     level=Qgis.Critical)
         # QgsMessageLog.logMessage('Ruian plugin: {}'.format(text), level=QgsMessageLog.WARNING)
         pass
 
@@ -227,7 +221,7 @@ class MainApp(QDialog):
             # selected driver is not supported by installed GDAL
             self.ui.driverBox.setCurrentIndex(0)
             self.iface.messageBar().pushMessage(u"Nainstalovaná verze GDAL nepodporuje ovladač {}".format(driverAlias),
-                                                level=QgsMessageBar.CRITICAL, duration=5)
+                                                level=Qgis.Critical, duration=5)
             return
 
         outputName = None
@@ -276,11 +270,11 @@ class MainApp(QDialog):
                 self.ui.outputPath.setText(outputName)
             except RuianError as e:
                 self.iface.messageBar().pushMessage(u'{}'.format(e),
-                                                    level=QgsMessageBar.CRITICAL, duration=5)
+                                                    level=Qgis.Critical, duration=5)
                 self.ui.driverBox.setCurrentIndex(0)
         else:
             self.iface.messageBar().pushMessage(u"Ovladač {} není podporován".format(driverName),
-                                                level=QgsMessageBar.CRITICAL, duration=5)
+                                                level=Qgis.Critical, duration=5)
 
         # elif driverName in ['PostgreSQL','MSSQLSpatial']:
         #     self.connection = Connection(self.iface, driverName, self)
@@ -391,12 +385,12 @@ class MainApp(QDialog):
 
         if not self.option['driver'] or not self.option['datasource']:
             self.iface.messageBar().pushMessage(u"Není vybrán žádný výstup.",
-                                                level=QgsMessageBar.CRITICAL, duration=5)
+                                                level=Qgis.Critical, duration=5)
             return
 
         if not self.option['layers']:
             self.iface.messageBar().pushMessage(u"Nejsou vybrána žádná data pro import.",
-                                                level=QgsMessageBar.CRITICAL, duration=5)
+                                                level=Qgis.Critical, duration=5)
             return
         self.option['overwriteOutput'] = self.ui.overwriteCheckbox.isChecked()
 
@@ -488,7 +482,7 @@ class MainApp(QDialog):
         datasource = driver.Open(self.option['datasource'], False)
         if not datasource:
             self.iface.messageBar().pushMessage(u"Soubor {} nelze načíst".format(self.option['datasource']),
-                                                level=QgsMessageBar.CRITICAL, duration=5)
+                                                level=Qgis.Critical, duration=5)
             return
 
         style_path = os.path.join(os.path.dirname(__file__), "styles")
