@@ -574,6 +574,7 @@ class ImportThread(QThread):
             i = 1
             for l in self.layers:
                 filename = 'OB_{}_{}'.format(l, self.file_type)
+                # filename = 'ST_{}'.format(self.file_type)
                 qDebug('\n (VFR) Processing file: {}'.format(filename))
                 # download
                 ogr.reset()
