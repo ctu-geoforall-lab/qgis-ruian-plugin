@@ -559,8 +559,9 @@ class ImportThread(QThread):
         """Run download/import thread.
         """
         # define temporary directory for downloading VFR data
-        data_dir = os.path.join(tempfile.gettempdir(),
-                                'ruian_plugin_{}'.format(os.getpid()))
+        # data_dir = os.path.join(tempfile.gettempdir(),
+        #                         'ruian_plugin_{}'.format(os.getpid()))
+        data_dir = os.environ["HOMEPATH"] + r"\Documents\GitHub\2021-c-qgis-ruain-plugin\gdal_vfr\data"
         qDebug('\n (VFR) data dir: {}'.format(data_dir))
         os.environ['DATA_DIR'] = data_dir
         if not os.path.exists(data_dir):
@@ -582,9 +583,9 @@ class ImportThread(QThread):
             i = 1
             for l in self.layers:
                 # if l == -1:
-                # filename = 'ST_{}'.format(self.file_type)
+                filename = 'ST_{}'.format(self.file_type)
                 # else:
-                filename = 'OB_{}_{}'.format(l, self.file_type)
+                # filename = 'OB_{}_{}'.format(l, self.file_type)
                 
                 qDebug('\n (VFR) Processing file: {}'.format(filename))
                 # download
