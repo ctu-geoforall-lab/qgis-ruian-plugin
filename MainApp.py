@@ -349,6 +349,10 @@ class MainApp(QDialog):
         """
         self.option['layers'] = []
         self.option['layers_name'] = []
+        #pridani vusc pokud zaskrtnuto
+        if self.ui.downloadCheckbox.isChecked():
+            self.option['layers'].append(-1)
+
         for row in range(0,self.model.rowCount()):
             item = self.model.item(row,0)
             if item.checkState() == Qt.Checked:
@@ -394,8 +398,7 @@ class MainApp(QDialog):
             return
         self.option['overwriteOutput'] = self.ui.overwriteCheckbox.isChecked()
 
-        # VUSC
-        # self.option["vusc"] = ...
+
         
         # create progress dialog
         self.progress = QProgressDialog(u'Probíhá import ...', u'Ukončit',
@@ -540,7 +543,6 @@ class ImportThread(QThread):
         self.file_type = option['file_type']
         #add information about the checkbox state
         self.overwrite = option['overwriteOutput']
-        # self.vusc = option['vusc']
 
     def run(self):
         """Run download/import thread.
@@ -562,17 +564,13 @@ class ImportThread(QThread):
             # create convertor
             ogr = VfrOgr(frmt=self.driver, dsn=self.datasource, overwrite=self.overwrite, geom_name='OriginalniHranice')
 
-            # add VUSC if requested
-            # if self.vusc is True:
-            #     self.layers.append(-1)
-            
             n = len(self.layers)         
             i = 1
             for l in self.layers:
-                # if l == -1:
-                filename = 'ST_{}'.format(self.file_type)
-                # else:
-                # filename = 'OB_{}_{}'.format(l, self.file_type)
+                if l == -1:
+                    filename = 'ST_{}'.format(self.file_type)
+                else:
+                    filename = 'OB_{}_{}'.format(l, self.file_type)
                 
                 qDebug('\n (VFR) Processing file: {}'.format(filename))
                 # download
