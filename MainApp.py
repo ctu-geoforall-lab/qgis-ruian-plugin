@@ -106,9 +106,10 @@ class MainApp(QDialog):
 
         # set up widgets
         self.ui.driverBox.setToolTip(u'Zvolte typ výstupního souboru/databáze')
-        self.ui.driverBox.addItem('--Vybrat--')
+        # self.ui.driverBox.addItem('--Vybrat--')
         self.set_comboDrivers()
-        self.ui.driverBox.insertSeparator(4)  
+        # self.set_comboDrivers('GPKG')
+        # self.ui.driverBox.insertSeparator(4)
         self.ui.searchComboBox.addItems(['Obec', 'ORP', 'Okres', 'Kraj'])
         self.ui.searchComboBox.setEditable(True)
         self.ui.searchComboBox.clearEditText()
@@ -131,8 +132,7 @@ class MainApp(QDialog):
         self.ui.dataView.verticalHeader().hide()
 
         # signal/slots connections
-        self.ui.driverBox.activated['QString'].connect(self.set_datasource)              
-        self.ui.driverBox.currentIndexChanged['QString'].connect(self.enable_import)     
+        self.ui.driverBox.activated['QString'].connect(self.set_datasource)            
         self.ui.searchComboBox.activated.connect(self.set_searching)
         self.ui.searchComboBox.editTextChanged.connect(self.start_searching)
         self.ui.checkButton.clicked.connect(lambda: self.set_checkstate(0))
@@ -161,6 +161,8 @@ class MainApp(QDialog):
             else:
                 model.appendRow(item)
 
+        # set default format
+        self.ui.driverBox.setCurrentIndex(1) # replace magic number with GPKG
 
     def create_model(self, file_path):
         """Create model-view from file.
@@ -281,17 +283,6 @@ class MainApp(QDialog):
         #     self.connection.setModal(True)
         #     self.connection.show()
         #     self.connection.setWindowTitle(u'Připojení k databázi {}'.format(driverName))
-
-    def enable_import(self, driverName):
-        """Enable/disable import widgets.
-
-        :param driverName: selected GDAL driver
-        """
-        if driverName == '--Vybrat--':
-            self.ui.driverBox.setToolTip(u'Zvolte typ výstupního souboru/databáze')
-            self.ui.importButton.setEnabled(False)
-        else:
-            self.ui.importButton.setEnabled(True)
 
     def data_select(self, data_box):
         """Enable/disable data selection widgets.
