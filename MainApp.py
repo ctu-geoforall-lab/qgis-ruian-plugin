@@ -241,7 +241,7 @@ class MainApp(QDialog):
                     '{}{}ruian.{}'.format(lastUsedFilePath, os.path.sep, driverExtension),
                     '{} (*.{})'.format(driverAlias, driverExtension),
                     options=QFileDialog.DontConfirmOverwrite)
-            print (outputName)
+
             if not outputName:
                 self.ui.driverBox.setCurrentIndex(0)
                 return
