@@ -351,7 +351,7 @@ class MainApp(QDialog):
         self.option['layers_name'] = []
         #pridani vusc pokud zaskrtnuto
         if self.ui.downloadCheckbox.isChecked():
-            self.option['layers'].append('VUSC')
+            self.option['layers'].append(-1)
 
         for row in range(0,self.model.rowCount()):
             item = self.model.item(row,0)
@@ -567,7 +567,7 @@ class ImportThread(QThread):
             n = len(self.layers)         
             i = 1
             for l in self.layers:
-                if l == 'VUSC':
+                if l == -1:
                     filename = 'ST_{}'.format(self.file_type)
                 else:
                     filename = 'OB_{}_{}'.format(l, self.file_type)
