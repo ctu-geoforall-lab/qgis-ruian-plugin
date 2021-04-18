@@ -350,7 +350,7 @@ class MainApp(QDialog):
         self.option['layers'] = []
         self.option['layers_name'] = []
         #pridani vusc pokud zaskrtnuto
-        if self.ui.downloadCheckbox.isChecked():
+        if self.ui.vuscCheckbox.isChecked():
             self.option['layers'].append('VUSC')
 
         for row in range(0,self.model.rowCount()):

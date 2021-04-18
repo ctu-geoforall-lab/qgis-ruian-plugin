@@ -63,7 +63,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="downloadCheckbox">
+      <widget class="QCheckBox" name="vuscCheckbox">
        <property name="enabled">
         <bool>true</bool>
        </property>
