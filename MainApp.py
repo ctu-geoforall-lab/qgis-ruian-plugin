@@ -32,6 +32,8 @@ from qgis.PyQt.QtWidgets import QDialog, QAbstractItemView, QFileDialog, QProgre
 
 from qgis.core import QgsProject, QgsVectorLayer, Qgis
 
+from qgis.gui import QgsFileWidget  #import qgisfilewidget
+
 from osgeo import ogr, gdal
 
 from .ui_MainApp import Ui_MainApp
@@ -114,6 +116,7 @@ class MainApp(QDialog):
         self.ui.searchComboBox.setEditable(True)
         self.ui.searchComboBox.clearEditText()
         self.ui.advancedSettings.hide()
+        self.ui.QgsFileWidget.setStorageMode(QgsFileWidget.SaveFile)
 
         # set up the table view
         path = os.path.join(os.path.dirname(__file__), 'files','obce_cr.csv')
@@ -132,7 +135,8 @@ class MainApp(QDialog):
         self.ui.dataView.verticalHeader().hide()
 
         # signal/slots connections
-        self.ui.driverBox.activated['QString'].connect(self.set_datasource)            
+        self.ui.driverBox.activated['QString'].connect(self.set_datasource)
+        #self.ui.QgsFileWidget.activated.connect(self.set_storagelocation)
         self.ui.searchComboBox.activated.connect(self.set_searching)
         self.ui.searchComboBox.editTextChanged.connect(self.start_searching)
         self.ui.checkButton.clicked.connect(lambda: self.set_checkstate(0))
@@ -202,30 +206,12 @@ class MainApp(QDialog):
 
         return model, proxy
 
-    def set_datasource(self, driverName):
+
+    def set_storagelocation(self, driverName):
         """Set GDAL driver and datasource.
 
         :param driverName: GDAL driver
-        """
-        if self.ui.driverBox.currentIndex() == 0:
-            return
-
-        if self.ui.importButton.isEnabled():
-            self.ui.importButton.setEnabled(False)
-
-        for driver, metadata in list(self.driverTypes.items()):
-            if metadata['alias'] == driverName:
-                driverName = driver
-                driverAlias = metadata['alias']
-                driverExtension = metadata['ext']
-
-        if driverName in self.missDrivers:
-            # selected driver is not supported by installed GDAL
-            self.ui.driverBox.setCurrentIndex(0)
-            self.iface.messageBar().pushMessage(u"Nainstalovaná verze GDAL nepodporuje ovladač {}".format(driverAlias),
-                                                level=Qgis.Critical, duration=5)
-            return
-
+                """
         outputName = None
         if driverName in ['SQLite', 'GPKG', 'ESRI Shapefile']:
             sender = '{}-lastUserFilePath'.format(self.sender().objectName())
@@ -259,7 +245,7 @@ class MainApp(QDialog):
 
                 driver = ogr.GetDriverByName(driverName)
                 capability = driver.TestCapability(ogr._ogr.ODrCCreateDataSource)
-                
+
                 if capability:
                     self.ui.driverBox.setToolTip(outputName)
                     self.option['driver'] = str(driverName)
@@ -283,6 +269,32 @@ class MainApp(QDialog):
         #     self.connection.setModal(True)
         #     self.connection.show()
         #     self.connection.setWindowTitle(u'Připojení k databázi {}'.format(driverName))
+
+    def set_datasource(self, driverName):
+        """Set GDAL driver and datasource.
+
+        :param driverName: GDAL driver
+        """
+        if self.ui.driverBox.currentIndex() == 0:
+            return
+
+        if self.ui.importButton.isEnabled():
+            self.ui.importButton.setEnabled(False)
+
+        for driver, metadata in list(self.driverTypes.items()):
+            if metadata['alias'] == driverName:
+                driverName = driver
+                driverAlias = metadata['alias']
+                driverExtension = metadata['ext']
+
+        if driverName in self.missDrivers:
+            # selected driver is not supported by installed GDAL
+            self.ui.driverBox.setCurrentIndex(0)
+            self.iface.messageBar().pushMessage(u"Nainstalovaná verze GDAL nepodporuje ovladač {}".format(driverAlias),
+                                                level=Qgis.Critical, duration=5)
+            return
+
+
 
     def data_select(self, data_box):
         """Enable/disable data selection widgets.
