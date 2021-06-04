@@ -255,19 +255,16 @@ class MainApp(QDialog):
             if metadata['alias'] == sdriver:
                 sdriver = driver
                 driverAlias = metadata['alias']
-                driverExtension = metadata['ext']            #'sqlite'#'gpkg'
-
+                driverExtension = metadata['ext']
 
 
         #if driverName in ['SQLite', 'GPKG', 'ESRI Shapefile']:
         if sdriver in ['SQLite', 'GPKG', 'ESRI Shapefile']:
-        #if sdriver in ['SQLite DB', 'OGC GeoPackage', 'Esri Shapefile']:
             sender = '{}-lastUserFilePath'.format(self.sender().objectName())
             lastUsedFilePath = self.settings.value(sender, os.path.expanduser("~"))
 
             #if driverName == 'ESRI Shapefile':
             if sdriver == 'ESRI Shapefile':
-            #if sdriver == 'Esri Shapefile':
                 outputName = QFileDialog.getExistingDirectory(
                     self,
                     u'Vybrat/vytvořit výstupní adresář',
@@ -293,12 +290,12 @@ class MainApp(QDialog):
 
                 self.settings.setValue(sender, os.path.dirname(outputName))
 
-                driver = ogr.GetDriverByName(driverName)
+                driver = ogr.GetDriverByName(sdriver)
                 capability = driver.TestCapability(ogr._ogr.ODrCCreateDataSource)
 
                 if capability:
                     self.ui.driverBox.setToolTip(outputName)
-                    self.option['driver'] = str(driverName)
+                    self.option['driver'] = str(sdriver)
                     self.option['datasource'] = outputName
                     if not self.ui.importButton.isEnabled():
                         self.ui.importButton.setEnabled(True)
