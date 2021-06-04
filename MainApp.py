@@ -136,7 +136,7 @@ class MainApp(QDialog):
 
         # signal/slots connections
         self.ui.driverBox.activated['QString'].connect(self.set_datasource)
-        #self.ui.QgsFileWidget.activated.connect(self.set_storagelocation)
+        self.ui.QgsFileWidget.fileChanged.connect(self.set_storagelocation)
         self.ui.searchComboBox.activated.connect(self.set_searching)
         self.ui.searchComboBox.editTextChanged.connect(self.start_searching)
         self.ui.checkButton.clicked.connect(lambda: self.set_checkstate(0))
@@ -206,18 +206,68 @@ class MainApp(QDialog):
 
         return model, proxy
 
-
-    def set_storagelocation(self, driverName):
+    def set_datasource(self, driverName):
         """Set GDAL driver and datasource.
 
         :param driverName: GDAL driver
-                """
+        """
+        if self.ui.driverBox.currentIndex() == 0:
+            return
+
+        if self.ui.importButton.isEnabled():
+            self.ui.importButton.setEnabled(False)
+
+        for driver, metadata in list(self.driverTypes.items()):
+            if metadata['alias'] == driverName:
+                driverName = driver
+                driverAlias = metadata['alias']
+                driverExtension = metadata['ext']
+
+        if driverName in self.missDrivers:
+            # selected driver is not supported by installed GDAL
+            self.ui.driverBox.setCurrentIndex(0)
+            self.iface.messageBar().pushMessage(u"Nainstalovaná verze GDAL nepodporuje ovladač {}".format(driverAlias),
+                                                level=Qgis.Critical, duration=5)
+            return
+
+
+    def data_select(self, data_box):
+        """Enable/disable data selection widgets.
+
+        :param data_box: group box
+        """
+        if currentIndex() == 1:
+            self.ui.selectionComboBox.setEnabled(False)
+        else:
+            self.ui.selectionComboBox.setEnabled(True)
+
+
+    def set_storagelocation(self):
+        """Set GDAL driver and datasource.
+
+        :param driverName: GDAL driver
+        """
         outputName = None
-        if driverName in ['SQLite', 'GPKG', 'ESRI Shapefile']:
+
+        sdriver = self.ui.driverBox.currentText()
+
+        for driver, metadata in list(self.driverTypes.items()):
+            if metadata['alias'] == sdriver:
+                sdriver = driver
+                driverAlias = metadata['alias']
+                driverExtension = metadata['ext']            #'sqlite'#'gpkg'
+
+
+
+        #if driverName in ['SQLite', 'GPKG', 'ESRI Shapefile']:
+        if sdriver in ['SQLite', 'GPKG', 'ESRI Shapefile']:
+        #if sdriver in ['SQLite DB', 'OGC GeoPackage', 'Esri Shapefile']:
             sender = '{}-lastUserFilePath'.format(self.sender().objectName())
             lastUsedFilePath = self.settings.value(sender, os.path.expanduser("~"))
 
-            if driverName == 'ESRI Shapefile':
+            #if driverName == 'ESRI Shapefile':
+            if sdriver == 'ESRI Shapefile':
+            #if sdriver == 'Esri Shapefile':
                 outputName = QFileDialog.getExistingDirectory(
                     self,
                     u'Vybrat/vytvořit výstupní adresář',
@@ -270,41 +320,6 @@ class MainApp(QDialog):
         #     self.connection.show()
         #     self.connection.setWindowTitle(u'Připojení k databázi {}'.format(driverName))
 
-    def set_datasource(self, driverName):
-        """Set GDAL driver and datasource.
-
-        :param driverName: GDAL driver
-        """
-        if self.ui.driverBox.currentIndex() == 0:
-            return
-
-        if self.ui.importButton.isEnabled():
-            self.ui.importButton.setEnabled(False)
-
-        for driver, metadata in list(self.driverTypes.items()):
-            if metadata['alias'] == driverName:
-                driverName = driver
-                driverAlias = metadata['alias']
-                driverExtension = metadata['ext']
-
-        if driverName in self.missDrivers:
-            # selected driver is not supported by installed GDAL
-            self.ui.driverBox.setCurrentIndex(0)
-            self.iface.messageBar().pushMessage(u"Nainstalovaná verze GDAL nepodporuje ovladač {}".format(driverAlias),
-                                                level=Qgis.Critical, duration=5)
-            return
-
-
-
-    def data_select(self, data_box):
-        """Enable/disable data selection widgets.
-
-        :param data_box: group box
-        """
-        if self.ui.datasetComboBox.currentIndex() == 1:
-            self.ui.selectionComboBox.setEnabled(False)
-        else:
-            self.ui.selectionComboBox.setEnabled(True)
 
     def set_searching(self, column):
         """Set filtering.
