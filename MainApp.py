@@ -242,10 +242,10 @@ class MainApp(QDialog):
             self.ui.selectionComboBox.setEnabled(True)
 
 
-    def set_storagelocation(self):
-        """Set GDAL driver and datasource.
+    def set_storagelocation(self,sdriver):
+        """Set selected GDAL driver and datasource from combobox.
 
-        :param driverName: GDAL driver
+        :param sdriver: GDAL driver
         """
         outputName = None
 
@@ -308,7 +308,7 @@ class MainApp(QDialog):
                                                     level=Qgis.Critical, duration=5)
                 self.ui.driverBox.setCurrentIndex(0)
         else:
-            self.iface.messageBar().pushMessage(u"Ovladač {} není podporován".format(driverName),
+            self.iface.messageBar().pushMessage(u"Ovladač {} není podporován".format(sdriver),
                                                 level=Qgis.Critical, duration=5)
 
         # elif driverName in ['PostgreSQL','MSSQLSpatial']:
