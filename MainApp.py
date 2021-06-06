@@ -344,6 +344,51 @@ class MainApp(QDialog):
             self.ui.advancedButton.setArrowType(Qt.RightArrow)
             self.ui.advancedSettings.hide()
 
+    def add_vusc(self):
+        dir_vusc = os.path.expandvars(r"%userprofile%\Documents\GitHub\2021-c-qgis-ruain-plugin\gdal_vfr\vusc.gpkg")
+        vusc_layername = 'VUSC'
+
+        data_source = ds = ogr.GetDriverByName('GPKG').Open(dir_vusc, 1)
+        root = QgsProject.instance().layerTreeRoot()
+        group_name = 'VUSC'
+        layerGroup = root.addGroup(group_name)
+
+        layers_added = []
+        for layer_name, layer_alias in [('obce', u'Obce'),
+                                        ('spravniobvody', u'Správní obvody'),
+                                        ('mop', u'Městské obvody v Praze'),
+                                        ('momc', u'Městský obvod/část'),
+                                        ('castiobci', u'Části obcí'),
+                                        ('kraje', u'Kraje'),
+                                        ('okresy', u'Okresy'),
+                                        ('orp', u'ORP'),
+                                        ('pou', u'POU'),
+                                        ('staty', u'Staty'),
+                                        ('vusc', u'VUSC'),
+                                        ('regionysoudrznosti', u'Regiony soudrznosti'),
+                                        ('katastralniuzemi', u'Katastrální území'),
+                                        ('zsj', u'Základní sídelní jednotky')]:
+            layer = data_source.GetLayerByName(layer_name)
+            if layer:
+                vlayer = QgsVectorLayer(f'{dir_vusc}|layername={layer_name}', layer_name, 'ogr')
+                crs = vlayer.crs()
+                crs.createFromId(5514)
+                vlayer.setCrs(crs)
+                vlayer.setProviderEncoding(u'UTF-8')
+                QgsProject.instance().addMapLayer(vlayer, addToLegend=False)
+                layerGroup.addLayer(vlayer)
+                layers_added.append(layer_name)
+
+        for idx in range(data_source.GetLayerCount()):
+            layer = data_source.GetLayerByIndex(idx)
+            layer_name = layer.GetName()
+            if layer_name in layers_added:
+                # skip already added layers
+                continue
+            layers_added.append(layer_name)
+
+        del data_source
+
     def get_options(self):
         """Start importing data.
         """
@@ -447,6 +492,9 @@ class MainApp(QDialog):
                                       QMessageBox.Yes | QMessageBox.No,
                                       QMessageBox.Yes)
         if reply == QMessageBox.Yes:
+            # if 'VSUC' in self.option['layers']:
+            if self.ui.vuscCheckbox.isChecked():
+                self.add_vusc()
             self.add_layers()
 
     def close(self):
