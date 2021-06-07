@@ -59,3 +59,4 @@ target/
 # Custom
 gdal_vfr
 qgis-ruian-plugin.zip
+.idea/
