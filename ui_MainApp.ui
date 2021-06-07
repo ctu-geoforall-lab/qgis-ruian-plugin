@@ -381,6 +381,11 @@ QGroupBox::title {
               <string>základní + originální hranice</string>
              </property>
             </item>
+            <item>
+             <property name="text">
+              <string>základní + generalizované hranice</string>
+             </property>
+            </item>
            </widget>
           </item>
          </layout>
