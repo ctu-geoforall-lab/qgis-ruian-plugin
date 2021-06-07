@@ -116,7 +116,6 @@ class MainApp(QDialog):
         self.ui.searchComboBox.setEditable(True)
         self.ui.searchComboBox.clearEditText()
         self.ui.advancedSettings.hide()
-        self.ui.QgsFileWidget.setStorageMode(QgsFileWidget.SaveFile)
 
         # set up the table view
         path = os.path.join(os.path.dirname(__file__), 'files','obce_cr.csv')
@@ -136,7 +135,7 @@ class MainApp(QDialog):
 
         # signal/slots connections
         self.ui.driverBox.activated['QString'].connect(self.set_datasource)
-        self.ui.QgsFileWidget.fileChanged.connect(self.set_storagelocation)
+        self.ui.browseButton.clicked.connect(self.set_storagelocation)
         self.ui.searchComboBox.activated.connect(self.set_searching)
         self.ui.searchComboBox.editTextChanged.connect(self.start_searching)
         self.ui.checkButton.clicked.connect(lambda: self.set_checkstate(0))

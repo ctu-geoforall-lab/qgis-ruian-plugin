@@ -63,7 +63,14 @@
       </widget>
      </item>
      <item>
-      <widget class="QgsFileWidget" name="QgsFileWidget"/>
+      <widget class="QLineEdit" name="nametext"/>
+     </item>
+     <item>
+      <widget class="QPushButton" name="browseButton">
+       <property name="text">
+        <string>Browse</string>
+       </property>
+      </widget>
      </item>
      <item>
       <spacer name="horizontalSpacer">
@@ -503,13 +510,6 @@ QGroupBox::title {
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>QgsFileWidget</class>
-   <extends>QWidget</extends>
-   <header>qgsfilewidget.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>
