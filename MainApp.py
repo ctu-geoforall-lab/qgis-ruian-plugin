@@ -345,10 +345,11 @@ class MainApp(QDialog):
             self.ui.advancedSettings.hide()
 
     def add_vusc(self):
-        dir_vusc = os.path.expandvars(r"%userprofile%\Documents\GitHub\2021-c-qgis-ruain-plugin\gdal_vfr\vusc.gpkg")
-        vusc_layername = 'VUSC'
+        dir_vusc = self.option['datasource'] # os.path.expandvars(r"%userprofile%\Documents\GitHub\2021-c-qgis-ruain-plugin\gdal_vfr\vusc.gpkg")
 
-        data_source = ds = ogr.GetDriverByName('GPKG').Open(dir_vusc, 1)
+        driver = ogr.GetDriverByName(str(self.option['driver']))
+        data_source = driver.Open(self.option['datasource'], False)
+        print(self.option['datasource'])
         root = QgsProject.instance().layerTreeRoot()
         group_name = 'VUSC'
         layerGroup = root.addGroup(group_name)
@@ -359,7 +360,6 @@ class MainApp(QDialog):
                                         ('mop', u'Městské obvody v Praze'),
                                         ('momc', u'Městský obvod/část'),
                                         ('castiobci', u'Části obcí'),
-                                        ('kraje', u'Kraje'),
                                         ('okresy', u'Okresy'),
                                         ('orp', u'ORP'),
                                         ('pou', u'POU'),
@@ -598,7 +598,7 @@ class ImportThread(QThread):
         # define temporary directory for downloading VFR data
         # data_dir = os.path.join(tempfile.gettempdir(),
         #                         'ruian_plugin_{}'.format(os.getpid()))
-        data_dir = os.environ["HOMEPATH"] + r"\Documents\GitHub\2021-c-qgis-ruain-plugin\gdal_vfr\data"
+        data_dir = os.path.join(os.path.dirname(__file__), "gdal_vfr", "data")
         qDebug('\n (VFR) data dir: {}'.format(data_dir))
         os.environ['DATA_DIR'] = data_dir
         if not os.path.exists(data_dir):
