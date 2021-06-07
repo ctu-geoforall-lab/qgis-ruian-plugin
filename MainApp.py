@@ -28,11 +28,9 @@ from collections import OrderedDict
 
 from qgis.PyQt.QtCore import QSortFilterProxyModel, QThread, pyqtSignal, qDebug, QObject, QSettings, Qt, QRegExp
 from qgis.PyQt.QtGui import QStandardItem, QColor, QStandardItemModel
-from qgis.PyQt.QtWidgets import QDialog, QAbstractItemView, QFileDialog, QProgressDialog, QMessageBox
+from qgis.PyQt.QtWidgets import QDialog, QAbstractItemView, QFileDialog, QProgressDialog, QMessageBox, QLineEdit
 
 from qgis.core import QgsProject, QgsVectorLayer, Qgis
-
-from qgis.gui import QgsFileWidget  #import qgisfilewidget
 
 from osgeo import ogr, gdal
 
@@ -108,6 +106,8 @@ class MainApp(QDialog):
 
         # set up widgets
         self.ui.driverBox.setToolTip(u'Zvolte typ výstupního souboru/databáze')
+        self.ui.filenameSet.setToolTip(u'Vyberte nazev pro SQLite DB / OGC GeoPackage')
+        self.ui.browseButton.setToolTip(u'Vyberte uložiště')
         # self.ui.driverBox.addItem('--Vybrat--')
         self.set_comboDrivers()
         # self.set_comboDrivers('GPKG')
@@ -219,8 +219,6 @@ class MainApp(QDialog):
         for driver, metadata in list(self.driverTypes.items()):
             if metadata['alias'] == driverName:
                 driverName = driver
-                driverAlias = metadata['alias']
-                driverExtension = metadata['ext']
 
         if driverName in self.missDrivers:
             # selected driver is not supported by installed GDAL
@@ -247,7 +245,7 @@ class MainApp(QDialog):
         :param sdriver: GDAL driver
         """
         outputName = None
-
+        fileName = self.ui.filenameSet.text()
         sdriver = self.ui.driverBox.currentText()
 
         for driver, metadata in list(self.driverTypes.items()):
@@ -272,7 +270,7 @@ class MainApp(QDialog):
                 outputName, filter = QFileDialog.getSaveFileName(
                     self,
                     u'Vybrat/vytvořit výstupní soubor',
-                    '{}{}ruian.{}'.format(lastUsedFilePath, os.path.sep, driverExtension),
+                    '{}{}{}.{}'.format(lastUsedFilePath, os.path.sep, fileName, driverExtension),
                     '{} (*.{})'.format(driverAlias, driverExtension),
                     options=QFileDialog.DontConfirmOverwrite)
 
