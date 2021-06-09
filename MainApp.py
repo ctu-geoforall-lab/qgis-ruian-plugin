@@ -275,7 +275,7 @@ class MainApp(QDialog):
                     options=QFileDialog.DontConfirmOverwrite)
 
             if not outputName:
-                self.ui.driverBox.setCurrentIndex(0)
+                self.ui.driverBox.setCurrentIndex(1)
                 return
 
             try:
@@ -299,11 +299,11 @@ class MainApp(QDialog):
                 else:
                     raise RuianError(u"Nelze vytvořit {}".format(outputName))
 
-                self.ui.outputPath.setText(outputName)
+                self.ui.filenameSet.setText(outputName)
             except RuianError as e:
                 self.iface.messageBar().pushMessage(u'{}'.format(e),
                                                     level=Qgis.Critical, duration=5)
-                self.ui.driverBox.setCurrentIndex(0)
+                self.ui.driverBox.setCurrentIndex(1)
         else:
             self.iface.messageBar().pushMessage(u"Ovladač {} není podporován".format(sdriver),
                                                 level=Qgis.Critical, duration=5)
