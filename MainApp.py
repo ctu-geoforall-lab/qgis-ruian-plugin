@@ -106,7 +106,7 @@ class MainApp(QDialog):
 
         # set up widgets
         self.ui.driverBox.setToolTip(u'Zvolte typ výstupního souboru/databáze')
-        self.ui.filenameSet.setToolTip(u'Vyberte nazev pro SQLite DB / OGC GeoPackage')
+        self.ui.filenameSet.setToolTip(u'Vyberte cestu/nazev pro SQLite DB / OGC GeoPackage')
         self.ui.browseButton.setToolTip(u'Vyberte uložiště')
         # self.ui.driverBox.addItem('--Vybrat--')
         self.set_comboDrivers()
@@ -258,19 +258,20 @@ class MainApp(QDialog):
         #if driverName in ['SQLite', 'GPKG', 'ESRI Shapefile']:
         if sdriver in ['SQLite', 'GPKG', 'ESRI Shapefile']:
             sender = '{}-lastUserFilePath'.format(self.sender().objectName())
-            lastUsedFilePath = self.settings.value(sender, os.path.expanduser("~"))
+            #lastUsedFilePath = self.settings.value(sender, os.path.expanduser("~"))
 
             #if driverName == 'ESRI Shapefile':
             if sdriver == 'ESRI Shapefile':
                 outputName = QFileDialog.getExistingDirectory(
                     self,
                     u'Vybrat/vytvořit výstupní adresář',
-                    lastUsedFilePath)
+                    fileName)
             else:
                 outputName, filter = QFileDialog.getSaveFileName(
                     self,
                     u'Vybrat/vytvořit výstupní soubor',
-                    '{}{}{}.{}'.format(lastUsedFilePath, os.path.sep, fileName, driverExtension),
+                    #'{}{}{}.{}'.format(lastUsedFilePath, os.path.sep, fileName, driverExtension),
+                    '{}.{}'.format(fileName, driverExtension),
                     '{} (*.{})'.format(driverAlias, driverExtension),
                     options=QFileDialog.DontConfirmOverwrite)
 
