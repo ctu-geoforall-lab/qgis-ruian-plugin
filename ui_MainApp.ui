@@ -69,8 +69,14 @@
       <widget class="QPushButton" name="browseButton">
        <property name="minimumSize">
         <size>
-         <width>82</width>
+         <width>35</width>
          <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>35</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="text">
