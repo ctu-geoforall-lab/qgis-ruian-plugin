@@ -364,9 +364,9 @@ class MainApp(QDialog):
                      'zgho': 'H'
         }
         # not supported yet
-        # selectionIndex = self.ui.selectionComboBox.currentIndex()
-        # if selectionIndex == 1:
-        #     vfr_type['zgho'] = 'G'
+        selectionIndex = self.ui.selectionComboBox.currentIndex()
+        if selectionIndex == 1:
+            vfr_type['zgho'] = 'G'
         # elif selectionIndex == 2:
         #     vfr_type['zgho'] = 'Z'
         # elif selectionIndex == 3:
