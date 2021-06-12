@@ -411,7 +411,7 @@ QGroupBox::title {
              <string>Pouze u kompletní datové sady.</string>
             </property>
             <property name="text">
-             <string>Výběr z údajů:</string>
+             <string>Výběr z údajů (VUSC):</string>
             </property>
            </widget>
           </item>
