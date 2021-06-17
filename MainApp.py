@@ -360,14 +360,15 @@ class MainApp(QDialog):
                                         ('mop', u'Městské obvody v Praze'),
                                         ('momc', u'Městský obvod/část'),
                                         ('castiobci', u'Části obcí'),
+                                        ('katastralniuzemi', u'Katastrální území'),
+                                        ('zsj', u'Základní sídelní jednotky'),
+                                        ('staty', u'Staty'),
+                                        ('regionysoudrznosti', u'Regiony soudrznosti'),
+                                        ('vusc', u'VUSC'),
                                         ('okresy', u'Okresy'),
                                         ('orp', u'ORP'),
-                                        ('pou', u'POU'),
-                                        ('staty', u'Staty'),
-                                        ('vusc', u'VUSC'),
-                                        ('regionysoudrznosti', u'Regiony soudrznosti'),
-                                        ('katastralniuzemi', u'Katastrální území'),
-                                        ('zsj', u'Základní sídelní jednotky')]:
+                                        ('pou', u'POU')]:
+
             layer = data_source.GetLayerByName(layer_name)
             if layer:
                 vlayer = QgsVectorLayer(f'{dir_vusc}|layername={layer_name}', layer_name, 'ogr')
@@ -375,9 +376,14 @@ class MainApp(QDialog):
                 crs.createFromId(5514)
                 vlayer.setCrs(crs)
                 vlayer.setProviderEncoding(u'UTF-8')
+                style_path = os.path.join(os.path.dirname(__file__), "styles")
+                layer_style = os.path.join(style_path, layer_name + '.qml')
+                if os.path.exists(layer_style):
+                    vlayer.loadNamedStyle(layer_style)
                 QgsProject.instance().addMapLayer(vlayer, addToLegend=False)
                 layerGroup.addLayer(vlayer)
                 layers_added.append(layer_name)
+
 
         for idx in range(data_source.GetLayerCount()):
             layer = data_source.GetLayerByIndex(idx)
