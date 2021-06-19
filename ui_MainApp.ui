@@ -389,7 +389,7 @@ QGroupBox::title {
              <string>Pouze u kompletní datové sady.</string>
             </property>
             <property name="text">
-             <string>Výběr z údajů:</string>
+             <string>Výběr z údajů (VUSC):</string>
             </property>
            </widget>
           </item>
@@ -398,6 +398,11 @@ QGroupBox::title {
             <item>
              <property name="text">
               <string>základní + originální hranice</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>základní + generalizované hranice</string>
              </property>
             </item>
            </widget>
