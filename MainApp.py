@@ -59,13 +59,80 @@ except:
 
     from .gdal_vfr.vfr4ogr import VfrOgr
 
+
 class RuianError(Exception):
     pass
 
+
 class TextOutputSignal(QObject):
     textWritten = pyqtSignal(str)
+
     def write(self, text):
         self.textWritten.emit(str(text))
+
+
+class ImportThread(QThread):
+    importEnd = pyqtSignal()
+    importStat = pyqtSignal(int, int, str, str)
+
+    def __init__(self, option):
+        QThread.__init__(self)
+        self.driver = option['driver']
+        self.datasource = option['datasource']
+        self.layers = option['layers']
+        self.file_type = option['file_type']
+        # add information about the checkbox state
+        self.overwrite = option['overwriteOutput']
+
+    def run(self):
+        """Run download/import thread.
+        """
+        # define temporary directory for downloading VFR data
+        # data_dir = os.path.join(tempfile.gettempdir(),
+        #                         'ruian_plugin_{}'.format(os.getpid()))
+        data_dir = os.path.join(os.path.dirname(__file__), "gdal_vfr", "data")
+        qDebug('\n (VFR) data dir: {}'.format(data_dir))
+        os.environ['DATA_DIR'] = data_dir
+        if not os.path.exists(data_dir):
+            os.makedirs(data_dir)
+
+        # logs will be stored also in data directory
+        os.environ['LOG_DIR'] = data_dir
+        self.aborted = False
+
+        try:
+            # create convertor
+            ogr = VfrOgr(frmt=self.driver, dsn=self.datasource, overwrite=self.overwrite, geom_name='OriginalniHranice')
+
+            n = len(self.layers)
+            i = 1
+            for l in self.layers:
+                if l == 'VUSC':
+                    filename = 'ST_{}'.format(self.file_type)
+                else:
+                    filename = 'OB_{}_{}'.format(l, self.file_type)
+
+                qDebug('\n (VFR) Processing file: {}'.format(filename))
+                # download
+                ogr.reset()
+                self.importStat.emit(i, n, l, "Download")
+                ogr.download([filename])
+                # import
+                self.importStat.emit(i, n, l, "Import")
+                ogr.run(True if self.overwrite is False or i > 1 else False)
+                i += 1
+
+            ogr.__del__()
+            del os.environ['DATA_DIR']
+        except:
+            (type, value, traceback) = sys.exc_info()
+            sys.excepthook(type, value, traceback)
+            sys.stderr.write('{}'.format(value))
+            self.aborted = True
+            self.terminate()
+
+        self.importEnd.emit()
+
 
 class MainApp(QDialog):
 
@@ -79,19 +146,19 @@ class MainApp(QDialog):
 
         self.iface = iface
         self.driverTypes = OrderedDict()
-        self.driverTypes['SQLite'] = { 'alias': 'SQLite DB', 'ext': 'sqlite' }
-        self.driverTypes['GPKG'] = { 'alias': 'OGC GeoPackage', 'ext': 'gpkg' }
-        self.driverTypes['ESRI Shapefile'] = { 'alias': 'Esri Shapefile', 'ext': 'shp' }
+        self.driverTypes['SQLite'] = {'alias': 'SQLite DB', 'ext': 'sqlite'}
+        self.driverTypes['GPKG'] = {'alias': 'OGC GeoPackage', 'ext': 'gpkg'}
+        self.driverTypes['ESRI Shapefile'] = {'alias': 'Esri Shapefile', 'ext': 'shp'}
 
-        self.missDrivers = [] # list of missing drivers
+        self.missDrivers = []  # list of missing drivers
 
         # internal settings
-        self.option = {'driver'     : None,
-                       'datasource' : None,
-                       'layers'     : [],
+        self.option = {'driver': None,
+                       'datasource': None,
+                       'layers': [],
                        'layers_name': [],
                        'overwriteOutput': False
-        }
+                       }
 
         # set up the user interface from designed
         self.ui = Ui_MainApp()
@@ -100,39 +167,40 @@ class MainApp(QDialog):
         # test GDAL version
         version = gdal.__version__.split('.', 2)
         if not (int(version[0]) > 1 or int(version[1]) >= 11):
-            self.iface.messageBar().pushMessage(u"GDAL/OGR: požadována verze 1.11 nebo vyšší (nainstalována {}.{})".format(
-                version[0],version[1]), level=Qgis.Critical, duration=5
+            self.iface.messageBar().pushMessage(
+                u"GDAL/OGR: požadována verze 1.11 nebo vyšší (nainstalována {}.{})".format(
+                    version[0], version[1]), level=Qgis.Critical, duration=5
             )
 
         # set up widgets
         self.ui.driverBox.setToolTip(u'Zvolte typ výstupního souboru/databáze')
         self.ui.driverBox.addItem('--Vybrat--')
         self.set_comboDrivers()
-        self.ui.driverBox.insertSeparator(4)  
+        self.ui.driverBox.insertSeparator(4)
         self.ui.searchComboBox.addItems(['Obec', 'ORP', 'Okres', 'Kraj'])
         self.ui.searchComboBox.setEditable(True)
         self.ui.searchComboBox.clearEditText()
         self.ui.advancedSettings.hide()
 
         # set up the table view
-        path = os.path.join(os.path.dirname(__file__), 'files','obce_cr.csv')
+        path = os.path.join(os.path.dirname(__file__), 'files', 'obce_cr.csv')
         self.model, self.proxy = self.create_model(path)
         self.ui.dataView.setModel(self.proxy)
         self.ui.dataView.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.ui.dataView.setCornerButtonEnabled(False)
         self.ui.dataView.setSortingEnabled(True)
-        self.ui.dataView.sortByColumn(2,0)
+        self.ui.dataView.sortByColumn(2, 0)
         self.ui.dataView.horizontalHeader().setDefaultAlignment(Qt.AlignLeft)
-        self.ui.dataView.horizontalHeader().setSectionResizeMode(0,2)
-        self.ui.dataView.horizontalHeader().resizeSection(0,28)
+        self.ui.dataView.horizontalHeader().setSectionResizeMode(0, 2)
+        self.ui.dataView.horizontalHeader().resizeSection(0, 28)
         self.ui.dataView.horizontalHeader().setStretchLastSection(True)
         self.ui.dataView.verticalHeader().setSectionResizeMode(2)
         self.ui.dataView.verticalHeader().setDefaultSectionSize(23)
         self.ui.dataView.verticalHeader().hide()
 
         # signal/slots connections
-        self.ui.driverBox.activated['QString'].connect(self.set_datasource)              
-        self.ui.driverBox.currentIndexChanged['QString'].connect(self.enable_import)     
+        self.ui.driverBox.activated['QString'].connect(self.set_datasource)
+        self.ui.driverBox.currentIndexChanged['QString'].connect(self.enable_import)
         self.ui.searchComboBox.activated.connect(self.set_searching)
         self.ui.searchComboBox.editTextChanged.connect(self.start_searching)
         self.ui.checkButton.clicked.connect(lambda: self.set_checkstate(0))
@@ -156,11 +224,10 @@ class MainApp(QDialog):
             ogrdriver = ogr.GetDriverByName(driver)
             if ogrdriver is None:
                 self.missDrivers.append(str(metadata['alias']))
-                item.setForeground(QColor(180,180,180,100))
+                item.setForeground(QColor(180, 180, 180, 100))
                 model.appendRow(item)
             else:
                 model.appendRow(item)
-
 
     def create_model(self, file_path):
         """Create model-view from file.
@@ -176,7 +243,7 @@ class MainApp(QDialog):
 
         with open(file_path, 'r') as f:
             for line in f:
-                line = line.replace('\n','')
+                line = line.replace('\n', '')
                 if firts_line:
                     for word in line.split(','):
                         header.append(word)
@@ -191,7 +258,7 @@ class MainApp(QDialog):
                         item = QStandardItem(word)
                         item.setSelectable(False)
                         items.append(item)
-                    model.appendRow(items)        
+                    model.appendRow(items)
 
         model.setHorizontalHeaderLabels(header)
         proxy = QSortFilterProxyModel()
@@ -241,7 +308,7 @@ class MainApp(QDialog):
                     '{}{}ruian.{}'.format(lastUsedFilePath, os.path.sep, driverExtension),
                     '{} (*.{})'.format(driverAlias, driverExtension),
                     options=QFileDialog.DontConfirmOverwrite)
-            print (outputName)
+            print(outputName)
             if not outputName:
                 self.ui.driverBox.setCurrentIndex(0)
                 return
@@ -257,7 +324,7 @@ class MainApp(QDialog):
 
                 driver = ogr.GetDriverByName(driverName)
                 capability = driver.TestCapability(ogr._ogr.ODrCCreateDataSource)
-                
+
                 if capability:
                     self.ui.driverBox.setToolTip(outputName)
                     self.option['driver'] = str(driverName)
@@ -325,8 +392,8 @@ class MainApp(QDialog):
         :param state: state (true/false)
         """
         rows = self.proxy.rowCount()
-        for row in range(0,rows):
-            proxyIdx = self.proxy.index(row,0)
+        for row in range(0, rows):
+            proxyIdx = self.proxy.index(row, 0)
             modelIdx = self.proxy.mapToSource(proxyIdx)
             item = self.model.itemFromIndex(modelIdx)
             if state == 0:
@@ -344,80 +411,29 @@ class MainApp(QDialog):
             self.ui.advancedButton.setArrowType(Qt.RightArrow)
             self.ui.advancedSettings.hide()
 
-    def add_vusc(self):
-        dir_vusc = self.option['datasource'] # os.path.expandvars(r"%userprofile%\Documents\GitHub\2021-c-qgis-ruain-plugin\gdal_vfr\vusc.gpkg")
-
-        driver = ogr.GetDriverByName(str(self.option['driver']))
-        data_source = driver.Open(self.option['datasource'], False)
-        print(self.option['datasource'])
-        root = QgsProject.instance().layerTreeRoot()
-        group_name = 'VUSC'
-        layerGroup = root.addGroup(group_name)
-
-        layers_added = []
-        for layer_name, layer_alias in [('obce', u'Obce'),
-                                        ('spravniobvody', u'Správní obvody'),
-                                        ('mop', u'Městské obvody v Praze'),
-                                        ('momc', u'Městský obvod/část'),
-                                        ('castiobci', u'Části obcí'),
-                                        ('katastralniuzemi', u'Katastrální území'),
-                                        ('zsj', u'Základní sídelní jednotky'),
-                                        ('staty', u'Staty'),
-                                        ('regionysoudrznosti', u'Regiony soudrznosti'),
-                                        ('vusc', u'VUSC'),
-                                        ('okresy', u'Okresy'),
-                                        ('orp', u'ORP'),
-                                        ('pou', u'POU')]:
-
-            layer = data_source.GetLayerByName(layer_name)
-            if layer:
-                vlayer = QgsVectorLayer(f'{dir_vusc}|layername={layer_name}', layer_name, 'ogr')
-                crs = vlayer.crs()
-                crs.createFromId(5514)
-                vlayer.setCrs(crs)
-                vlayer.setProviderEncoding(u'UTF-8')
-                style_path = os.path.join(os.path.dirname(__file__), "styles")
-                layer_style = os.path.join(style_path, layer_name + '.qml')
-                if os.path.exists(layer_style):
-                    vlayer.loadNamedStyle(layer_style)
-                QgsProject.instance().addMapLayer(vlayer, addToLegend=False)
-                layerGroup.addLayer(vlayer)
-                layers_added.append(layer_name)
-
-
-        for idx in range(data_source.GetLayerCount()):
-            layer = data_source.GetLayerByIndex(idx)
-            layer_name = layer.GetName()
-            if layer_name in layers_added:
-                # skip already added layers
-                continue
-            layers_added.append(layer_name)
-
-        del data_source
-
     def get_options(self):
         """Start importing data.
         """
         self.option['layers'] = []
         self.option['layers_name'] = []
-        #pridani vusc pokud zaskrtnuto
+        # pridani vusc pokud zaskrtnuto
         if self.ui.vuscCheckbox.isChecked():
             self.option['layers'].append('VUSC')
 
-        for row in range(0,self.model.rowCount()):
-            item = self.model.item(row,0)
+        for row in range(0, self.model.rowCount()):
+            item = self.model.item(row, 0)
             if item.checkState() == Qt.Checked:
-                code = self.model.item(row,1).text()
-                name = self.model.item(row,2).text()
+                code = self.model.item(row, 1).text()
+                name = self.model.item(row, 2).text()
                 self.option['layers'].append(code)
                 self.option['layers_name'].append(name)
 
         # build RUIAN type
-        vfr_type = { 'up'  : 'U',
-                     'zk'  : 'K',
-                     'sh'  : 'S',
-                     'zgho': 'H'
-        }
+        vfr_type = {'up': 'U',
+                    'zk': 'K',
+                    'sh': 'S',
+                    'zgho': 'H'
+                    }
         # not supported yet
         # selectionIndex = self.ui.selectionComboBox.currentIndex()
         # if selectionIndex == 1:
@@ -436,7 +452,8 @@ class MainApp(QDialog):
         # not supported yet (allows only 'Z' dataset)
         # if self.ui.validityComboBox.currentIndex() == 1:
         #     vfr_type['sh'] = 'H'
-        self.option['file_type'] = u'{0}{1}{2}{3}'.format(vfr_type['up'], vfr_type['zk'], vfr_type['sh'], vfr_type['zgho'])
+        self.option['file_type'] = u'{0}{1}{2}{3}'.format(vfr_type['up'], vfr_type['zk'], vfr_type['sh'],
+                                                          vfr_type['zgho'])
 
         if not self.option['driver'] or not self.option['datasource']:
             self.iface.messageBar().pushMessage(u"Není vybrán žádný výstup.",
@@ -449,8 +466,6 @@ class MainApp(QDialog):
             return
         self.option['overwriteOutput'] = self.ui.overwriteCheckbox.isChecked()
 
-
-        
         # create progress dialog
         self.progress = QProgressDialog(u'Probíhá import ...', u'Ukončit',
                                         0, 0, self)
@@ -493,14 +508,11 @@ class MainApp(QDialog):
         if self.importThread.aborted:
             return
 
-        reply  = QMessageBox.question(self, u'Import', u"Import dat proběhl úspěšně. "
-                                      u"Přejete si vytvořené vrtsvy do mapového okna?",
-                                      QMessageBox.Yes | QMessageBox.No,
-                                      QMessageBox.Yes)
+        reply = QMessageBox.question(self, u'Import', u"Import dat proběhl úspěšně. "
+                                                      u"Přejete si vytvořené vrtsvy do mapového okna?",
+                                     QMessageBox.Yes | QMessageBox.No,
+                                     QMessageBox.Yes)
         if reply == QMessageBox.Yes:
-            # if 'VSUC' in self.option['layers']:
-            if self.ui.vuscCheckbox.isChecked():
-                self.add_vusc()
             self.add_layers()
 
     def close(self):
@@ -510,6 +522,7 @@ class MainApp(QDialog):
     def add_layers(self):
         """Add created layers to map display.
         """
+
         def add_layer(group, layer):
             if layer.GetFeatureCount() < 1:
                 # skip empty layers
@@ -520,9 +533,10 @@ class MainApp(QDialog):
             # uri.setDatabase(self.option['datasource'])
             # schema = ''
             # geom_column = 'GEOMETRY'
-            #uri.setDataSource(schema, layer_name, geom_column)
+            # uri.setDataSource(schema, layer_name, geom_column)
 
-            vlayer = QgsVectorLayer('{0}|layername={1}'.format(self.option['datasource'], layer_name), layer_name, 'ogr')
+            vlayer = QgsVectorLayer('{0}|layername={1}'.format(self.option['datasource'], layer_name), layer_name,
+                                    'ogr')
             # force EPSG:5514 and UTF-8 encoding (make sense especially for Esri Shapefile)
             crs = vlayer.crs()
             crs.createFromId(5514)
@@ -566,10 +580,16 @@ class MainApp(QDialog):
                                         ('castiobci', u'Části obcí'),
                                         ('katastralniuzemi', u'Katastrální území'),
                                         ('zsj', u'Základní sídelní jednotky'),
-                                        ('ulice', u'Ulice'),
                                         ('parcely', u'Parcely'),
                                         ('stavebniobjekty', u'Stavební objekty'),
-                                        ('adresnimista', u'Adresní místa')]:
+                                        ('adresnimista', u'Adresní místa'),
+                                        ('staty', u'Staty'),
+                                        ('ulice', u'Ulice'),
+                                        ('regionysoudrznosti', u'Regiony soudrznosti'),
+                                        ('vusc', u'VUSC'),
+                                        ('okresy', u'Okresy'),
+                                        ('orp', u'ORP'),
+                                        ('pou', u'POU')]:
             layer = datasource.GetLayerByName(layer_name)
             if layer:
                 if add_layer(layerGroup, layer):
@@ -583,66 +603,4 @@ class MainApp(QDialog):
                 continue
             layers_added.append(layer_name)
 
-        del datasource # close datasource
-
-class ImportThread(QThread):
-    importEnd = pyqtSignal()
-    importStat = pyqtSignal(int,int,str,str)
-
-    def __init__(self, option):
-        QThread.__init__(self)
-        self.driver = option['driver']
-        self.datasource = option['datasource']
-        self.layers = option['layers']
-        self.file_type = option['file_type']
-        #add information about the checkbox state
-        self.overwrite = option['overwriteOutput']
-
-    def run(self):
-        """Run download/import thread.
-        """
-        # define temporary directory for downloading VFR data
-        # data_dir = os.path.join(tempfile.gettempdir(),
-        #                         'ruian_plugin_{}'.format(os.getpid()))
-        data_dir = os.path.join(os.path.dirname(__file__), "gdal_vfr", "data")
-        qDebug('\n (VFR) data dir: {}'.format(data_dir))
-        os.environ['DATA_DIR'] = data_dir
-        if not os.path.exists(data_dir):
-            os.makedirs(data_dir)
-
-        # logs will be stored also in data directory
-        os.environ['LOG_DIR'] = data_dir
-        self.aborted = False
-
-        try:
-            # create convertor
-            ogr = VfrOgr(frmt=self.driver, dsn=self.datasource, overwrite=self.overwrite, geom_name='OriginalniHranice')
-
-            n = len(self.layers)         
-            i = 1
-            for l in self.layers:
-                if l == 'VUSC':
-                    filename = 'ST_{}'.format(self.file_type)
-                else:
-                    filename = 'OB_{}_{}'.format(l, self.file_type)
-                
-                qDebug('\n (VFR) Processing file: {}'.format(filename))
-                # download
-                ogr.reset()
-                self.importStat.emit(i, n, l, "Download")
-                ogr.download([filename])
-                # import
-                self.importStat.emit(i, n, l, "Import")
-                ogr.run(True if self.overwrite is False or i > 1 else False)
-                i += 1
-
-            ogr.__del__()
-            del os.environ['DATA_DIR']
-        except:
-            (type, value, traceback) = sys.exc_info()
-            sys.excepthook(type, value, traceback)
-            sys.stderr.write('{}'.format(value))
-            self.aborted = True
-            self.terminate()
-
-        self.importEnd.emit()
+        del datasource  # close datasource
