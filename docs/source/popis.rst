@@ -37,6 +37,16 @@ V dalším kroku zvolíme formát a cestu k výstupní souboru:
  
 .. figure:: images/select-storagelocation.png
       :width: 600
+
+Možnost dalšího nastavení nalezneme pod rozbalovacím seznamem Pokročilé nastavení
+
+.. figure:: images/advanced.png
+      :width: 600
+
+Tady nalezneme možnost výběru hranic dat VUSC.
+
+.. figure:: images/advanced-vusc.png
+      :width: 600
           
 Data můžeme v QGISu rovnou zobrazit:
 
