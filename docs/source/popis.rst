@@ -19,7 +19,7 @@ Pokud je zaškrtnuto Data VUSC, budou staženy i vyšší územě správní celk
    .. figure:: images/select-type.png
       :width: 600
 
-V dalším kroku zvolíme formát a cestu k výstupní souboru:
+V dalším kroku zvolíme formát výstupního souboru:
 
 .. figure:: images/select-output.png
       :width: 600
