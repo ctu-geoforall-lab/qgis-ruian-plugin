@@ -210,6 +210,9 @@ class MainApp(QDialog):
 
         :param driverName: GDAL driver
         """
+
+        self.ui.filenameSet.clear()
+
         if self.ui.driverBox.currentIndex() == 0:
             return
 
@@ -253,7 +256,6 @@ class MainApp(QDialog):
                 sdriver = driver
                 driverAlias = metadata['alias']
                 driverExtension = metadata['ext']
-
 
         #if driverName in ['SQLite', 'GPKG', 'ESRI Shapefile']:
         if sdriver in ['SQLite', 'GPKG', 'ESRI Shapefile']:
