@@ -30,7 +30,7 @@ from qgis.PyQt.QtCore import QSortFilterProxyModel, QThread, pyqtSignal, qDebug,
 from qgis.PyQt.QtGui import QStandardItem, QColor, QStandardItemModel
 from qgis.PyQt.QtWidgets import QDialog, QAbstractItemView, QFileDialog, QProgressDialog, QMessageBox, QLineEdit
 
-from qgis.core import QgsProject, QgsVectorLayer, Qgis, QgsMessageLog, QgsProcessingUtils
+from qgis.core import QgsProject, QgsVectorLayer, Qgis, QgsMessageLog, QgsProcessingUtils, QgsCoordinateReferenceSystem
 
 from osgeo import ogr, gdal
 
@@ -477,9 +477,7 @@ class MainApp(QDialog):
                                     layer_alias, 'ogr')
 
             # force EPSG:5514 and UTF-8 encoding (make sense especially for Esri Shapefile)
-            crs = vlayer.crs()
-            crs.fromEpsgId(5514)
-            vlayer.setCrs(crs)
+            vlayer.setCrs(QgsCoordinateReferenceSystem("EPSG:5514"))
             vlayer.setProviderEncoding('UTF-8')
 
             layer_style = os.path.join(style_path, layer_name.lower() + '.qml')
