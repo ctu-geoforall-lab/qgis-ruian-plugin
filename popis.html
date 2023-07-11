@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Návod k použití &#8212; Dokumentace pro QGIS RUIAN Plugin 1.1</title>
+    <title>Návod k použití &#8212; Dokumentace pro QGIS RUIAN Plugin 1.2</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
     
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="instalace.html" title="Instalace"
              accesskey="P">předchozí</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Dokumentace pro QGIS RUIAN Plugin 1.1</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Dokumentace pro QGIS RUIAN Plugin 1.2</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Návod k použití</a></li> 
       </ul>
     </div>  
@@ -50,6 +50,9 @@
 <h1>Návod k použití<a class="headerlink" href="#navod-k-pouziti" title="Permalink to this heading">¶</a></h1>
 <p>Vybereme obec či obce, které chceme stáhnout:</p>
 <a class="reference internal image-reference" href="_images/select.png"><img alt="_images/select.png" src="_images/select.png" style="width: 600px;" /></a>
+<p>Pokud je zaškrtnuto <code class="docutils literal notranslate"><span class="pre">Vyšší</span> <span class="pre">uzemně</span> <span class="pre">správní</span> <span class="pre">celky</span> <span class="pre">(VUSC)</span></code>, budou
+staženy i vyšší územě správní celky. Lze je stahovat samostatně nebo i
+se zvolenou obcí.</p>
 <div class="admonition important">
 <p class="admonition-title">Důležité</p>
 <p>Je vhodné zvolit menší objem dat maximálně ve velikosti
@@ -61,24 +64,37 @@ objemu dat.</p>
 <p>Vyhledávat lze podle názvu obce, obce s rozšířenou
 působností, okresu či kraje.</p>
 <figure class="align-center">
-<a class="reference internal image-reference" href="_images/select-type.png"><img alt="_images/select-type.png" src="_images/select-type.png" style="width: 600px;" /></a>
+<a class="reference internal image-reference" href="_images/select-type.gif"><img alt="_images/select-type.gif" src="_images/select-type.gif" style="width: 600px;" /></a>
 </figure>
 </div>
-<p>V dalším kroku zvolíme formát a cestu k výstupní souboru:</p>
+<p>V dalším kroku zvolíme formát výstupního souboru:</p>
 <figure class="align-center">
 <a class="reference internal image-reference" href="_images/select-output.png"><img alt="_images/select-output.png" src="_images/select-output.png" style="width: 600px;" /></a>
 </figure>
 <div class="admonition note">
 <p class="admonition-title">Poznámka</p>
-<p>V současné době zásuvný modul podporuje tři výstupní
-formáty:</p>
-<ul class="simple">
-<li><p><a class="reference external" href="http://gdal.org/drv_sqlite.html">SQLite</a></p></li>
-<li><p><a class="reference external" href="http://gdal.org/drv_geopackage.html">OGC GeoPackage</a></p></li>
-<li><p><a class="reference external" href="http://gdal.org/drv_shapefile.html">Esri Shapefile</a></p></li>
+<p>V současné době zásuvný modul podporuje tři výstupní formáty:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference external" href="https://gdal.org/drv_sqlite.html">SQLite</a></p></li>
+<li><p><a class="reference external" href="https://gdal.org/drv_geopackage.html">OGC GeoPackage</a></p></li>
+<li><p><a class="reference external" href="https://gdal.org/drv_shapefile.html">Esri Shapefile</a></p></li>
 </ul>
+</div></blockquote>
 <p>Podpora pro další formáty může být přidána na vyžádání.</p>
 </div>
+<p>Pro volbu cesty k výstupnímu souboru můžeme využít textového okna k zadání cesty či názvu a nebo grafické rozhraní.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/select-storagelocation.png"><img alt="_images/select-storagelocation.png" src="_images/select-storagelocation.png" style="width: 600px;" /></a>
+</figure>
+<p>Možnost dalšího nastavení nalezneme pod rozbalovacím seznamem Pokročilé nastavení</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/advanced.png"><img alt="_images/advanced.png" src="_images/advanced.png" style="width: 600px;" /></a>
+</figure>
+<p>Tady nalezneme možnost výběru generalizovaných hranic dat VUSC.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/advanced-vusc.png"><img alt="_images/advanced-vusc.png" src="_images/advanced-vusc.png" style="width: 600px;" /></a>
+</figure>
 <p>Data můžeme v QGISu rovnou zobrazit:</p>
 <a class="reference internal image-reference" href="_images/ruian-add.png"><img alt="_images/ruian-add.png" src="_images/ruian-add.png" style="width: 400px;" /></a>
 <p>Příklad vizualizace stažených dat:</p>
@@ -133,12 +149,12 @@ parcelní čísla a domovní čísla u adresních bodů.</p>
         <li class="right" >
           <a href="instalace.html" title="Instalace"
              >předchozí</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Dokumentace pro QGIS RUIAN Plugin 1.1</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Dokumentace pro QGIS RUIAN Plugin 1.2</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Návod k použití</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2016-2019, CTU GeoForAll Lab.
+        &#169; Copyright 2016-2023, CTU GeoForAll Lab.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
     </div>
   </body>

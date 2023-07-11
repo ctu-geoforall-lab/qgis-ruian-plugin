@@ -5,12 +5,18 @@ Autoři
 * Lukáš Středa
 * Šimon Gajzler
 * Lukáš Kettner
+* Vajner, Kuzmanov, Kličková (podpora VUSC - 2021)
 
-`Laboratoř GeoForAll
-<http://geomatics.fsv.cvut.cz/research/geoforall/>`__ Fakulta
-stavební, České vysoké učení technické v Praze
+GeoForAll Lab, Fakulta stavební, České vysoké učení technické v Praze
 
 Vedoucí projektu: Martin Landa
+
+
+.. note:: Projekt navazuje na semestrální práce předmětu `Free Software GIS
+   <http://geo.fsv.cvut.cz/gwiki/155FGIS>`__ vyučovaného na `Fakultě
+   stavební ČVUT v Praze <http://www.fsv.cvut.cz>`__ z akademického roku
+   2014/1015 (https://github.com/ctu-yfsg/2015-c-qgis-vfr) a 2015/2016
+   (https://github.com/ctu-yfsg/2016-c-qgis-vfr).
 
 Licence
 ^^^^^^^
