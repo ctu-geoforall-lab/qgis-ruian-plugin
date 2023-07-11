@@ -7,7 +7,9 @@ Vybereme obec či obce, které chceme stáhnout:
    :width: 600
    
    
-Pokud je zaškrtnuto Data VUSC, budou staženy i vyšší územě správní celky. Lze je stahovat samostatně nebo i se zvolenou obcí.
+Pokud je zaškrtnuto ``Vyšší uzemně správní celky (VUSC)``, budou
+staženy i vyšší územě správní celky. Lze je stahovat samostatně nebo i
+se zvolenou obcí.
 
 .. important:: Je vhodné zvolit menší objem dat maximálně ve velikosti
              okresu. Zásuvný modul není navržen pro stahování většího
@@ -16,7 +18,7 @@ Pokud je zaškrtnuto Data VUSC, budou staženy i vyšší územě správní celk
 .. tip:: Vyhledávat lze podle názvu obce, obce s rozšířenou
    působností, okresu či kraje.
    
-   .. figure:: images/select-type.png
+   .. figure:: images/select-type.gif
       :width: 600
 
 V dalším kroku zvolíme formát výstupního souboru:
@@ -24,16 +26,15 @@ V dalším kroku zvolíme formát výstupního souboru:
 .. figure:: images/select-output.png
       :width: 600
 
-.. note:: V současné době zásuvný modul podporuje tři výstupní
-          formáty:
+.. note:: V současné době zásuvný modul podporuje tři výstupní formáty:
 
-          * `SQLite <http://gdal.org/drv_sqlite.html>`__
-          * `OGC GeoPackage <http://gdal.org/drv_geopackage.html>`__
-          * `Esri Shapefile <http://gdal.org/drv_shapefile.html>`__
+          * `SQLite <https://gdal.org/drv_sqlite.html>`__
+          * `OGC GeoPackage <https://gdal.org/drv_geopackage.html>`__
+          * `Esri Shapefile <https://gdal.org/drv_shapefile.html>`__
 
-          Podpora pro další formáty může být přidána na vyžádání.
+   Podpora pro další formáty může být přidána na vyžádání.
           
- Pro volbu cesty k výstupnímu souboru můžeme využít textového okna k zadání cesty či názvu a nebo grafické rozhraní.
+Pro volbu cesty k výstupnímu souboru můžeme využít textového okna k zadání cesty či názvu a nebo grafické rozhraní.
  
 .. figure:: images/select-storagelocation.png
       :width: 600
@@ -43,7 +44,7 @@ Možnost dalšího nastavení nalezneme pod rozbalovacím seznamem Pokročilé n
 .. figure:: images/advanced.png
       :width: 600
 
-Tady nalezneme možnost výběru hranic dat VUSC.
+Tady nalezneme možnost výběru generalizovaných hranic dat VUSC.
 
 .. figure:: images/advanced-vusc.png
       :width: 600
