@@ -2,26 +2,28 @@
 
 <!doctype html>
 
-<html xmlns="http://www.w3.org/1999/xhtml" lang="cs">
+<html lang="cs">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>Zásuvný modul QGIS pro stahování datových vrstev RÚIAN &#8212; Dokumentace pro QGIS RUIAN Plugin 1.1</title>
-    <link rel="stylesheet" href="_static/bizstyle.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
     
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
-    <script type="text/javascript" src="_static/translations.js"></script>
-    <script type="text/javascript" src="_static/bizstyle.js"></script>
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/translations.js"></script>
+    <script src="_static/bizstyle.js"></script>
     <link rel="search" title="Vyhledávání" href="search.html" />
     <link rel="next" title="Instalace" href="instalace.html" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <!--[if lt IE 9]>
-    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <script src="_static/css3-mediaqueries.js"></script>
     <![endif]-->
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -30,39 +32,18 @@
         <li class="right" style="margin-right: 10px">
           <a href="instalace.html" title="Instalace"
              accesskey="N">další</a></li>
-        <li class="nav-item nav-item-0"><a href="#">Dokumentace pro QGIS RUIAN Plugin 1.1</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="#">Dokumentace pro QGIS RUIAN Plugin 1.1</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Zásuvný modul QGIS pro stahování datových vrstev RÚIAN</a></li> 
       </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-            <p class="logo"><a href="#">
-              <img class="logo" src="_static/icon.png" alt="Logo"/>
-            </a></p>
-  <h4>Další téma</h4>
-  <p class="topless"><a href="instalace.html"
-                        title="další kapitola">Instalace</a></p>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Rychlé vyhledávání</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="OK" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-    </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="zasuvny-modul-qgis-pro-stahovani-datovych-vrstev-ruian">
-<h1>Zásuvný modul QGIS pro stahování datových vrstev RÚIAN<a class="headerlink" href="#zasuvny-modul-qgis-pro-stahovani-datovych-vrstev-ruian" title="Trvalý odkaz na tento nadpis">¶</a></h1>
+  <section id="zasuvny-modul-qgis-pro-stahovani-datovych-vrstev-ruian">
+<h1>Zásuvný modul QGIS pro stahování datových vrstev RÚIAN<a class="headerlink" href="#zasuvny-modul-qgis-pro-stahovani-datovych-vrstev-ruian" title="Permalink to this heading">¶</a></h1>
 <p>Tento zásuvný modul QGIS umožňuje automaticky stahovat data <strong>Registru
 územní identifikace, adres a nemovitostí</strong> (<a class="reference external" href="http://ruian.cz">RÚIAN</a>) dostupných v rámci <a class="reference external" href="http://vdp.cuzk.cz/">Veřejného dálkového přístupu</a>. Grafické uživatelské rozhraní je navrženo
 tak, aby uživateli nabídlo jednoduchý výběr požadovaných dat. Plugin
@@ -82,16 +63,39 @@ je implementován v programovacím jazyku Python s podporou knihoven
 </ul>
 </div>
 <div class="admonition note">
-<p class="first admonition-title">Poznámka</p>
-<p class="last">Projekt navazuje na semestrální práce předmětu <a class="reference external" href="http://geo.fsv.cvut.cz/gwiki/155YFSG">Free Software GIS</a> vyučovaného na <a class="reference external" href="http://www.fsv.cvut.cz">Fakultě
+<p class="admonition-title">Poznámka</p>
+<p>Projekt navazuje na semestrální práce předmětu <a class="reference external" href="http://geo.fsv.cvut.cz/gwiki/155YFSG">Free Software GIS</a> vyučovaného na <a class="reference external" href="http://www.fsv.cvut.cz">Fakultě
 stavební ČVUT v Praze</a> z akademického roku
 2014/1015 (<a class="reference external" href="https://github.com/ctu-yfsg/2015-c-qgis-vfr">https://github.com/ctu-yfsg/2015-c-qgis-vfr</a>) a 2015/2016
 (<a class="reference external" href="https://github.com/ctu-yfsg/2016-c-qgis-vfr">https://github.com/ctu-yfsg/2016-c-qgis-vfr</a>).</p>
 </div>
-</div>
+</section>
 
 
+            <div class="clearer"></div>
           </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="#">
+              <img class="logo" src="_static/icon.png" alt="Logo"/>
+            </a></p>
+  <div>
+    <h4>Další téma</h4>
+    <p class="topless"><a href="instalace.html"
+                          title="další kapitola">Instalace</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Rychlé vyhledávání</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="OK" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -102,12 +106,13 @@ stavební ČVUT v Praze</a> z akademického roku
         <li class="right" style="margin-right: 10px">
           <a href="instalace.html" title="Instalace"
              >další</a></li>
-        <li class="nav-item nav-item-0"><a href="#">Dokumentace pro QGIS RUIAN Plugin 1.1</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="#">Dokumentace pro QGIS RUIAN Plugin 1.1</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Zásuvný modul QGIS pro stahování datových vrstev RÚIAN</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2016-2019, CTU GeoForAll Lab.
-      Vytvořeno pomocí <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
     </div>
   </body>
 </html>
