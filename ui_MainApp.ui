@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>601</width>
+    <width>614</width>
     <height>493</height>
    </rect>
   </property>
@@ -117,6 +117,16 @@
       </spacer>
      </item>
     </layout>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="vuscCheckbox">
+     <property name="text">
+      <string>Vyšší územní samosprávné celky (VUSC)</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
    </item>
    <item>
     <spacer name="verticalSpacer">
@@ -411,7 +421,7 @@ QGroupBox::title {
              <string>Pouze u kompletní datové sady.</string>
             </property>
             <property name="text">
-             <string>Výběr z údajů:</string>
+             <string>Výběr z údajů (VUSC):</string>
             </property>
            </widget>
           </item>
@@ -420,6 +430,11 @@ QGroupBox::title {
             <item>
              <property name="text">
               <string>základní + originální hranice</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>základní + generalizované hranice</string>
              </property>
             </item>
            </widget>
