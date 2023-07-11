@@ -28,9 +28,9 @@ from collections import OrderedDict
 
 from qgis.PyQt.QtCore import QSortFilterProxyModel, QThread, pyqtSignal, qDebug, QObject, QSettings, Qt, QRegExp
 from qgis.PyQt.QtGui import QStandardItem, QColor, QStandardItemModel
-from qgis.PyQt.QtWidgets import QDialog, QAbstractItemView, QFileDialog, QProgressDialog, QMessageBox
+from qgis.PyQt.QtWidgets import QDialog, QAbstractItemView, QFileDialog, QProgressDialog, QMessageBox, QLineEdit
 
-from qgis.core import QgsProject, QgsVectorLayer, Qgis, QgsCoordinateReferenceSystem
+from qgis.core import QgsProject, QgsVectorLayer, Qgis, QgsMessageLog, QgsProcessingUtils, QgsCoordinateReferenceSystem
 
 from osgeo import ogr, gdal
 
@@ -100,15 +100,18 @@ class MainApp(QDialog):
         # test GDAL version
         version = gdal.__version__.split('.', 2)
         if not (int(version[0]) > 1 or int(version[1]) >= 11):
-            self.iface.messageBar().pushMessage(u"GDAL/OGR: požadována verze 1.11 nebo vyšší (nainstalována {}.{})".format(
+            self.iface.messageBar().pushMessage("GDAL/OGR: požadována verze 1.11 nebo vyšší (nainstalována {}.{})".format(
                 version[0],version[1]), level=Qgis.Critical, duration=5
             )
 
         # set up widgets
-        self.ui.driverBox.setToolTip(u'Zvolte typ výstupního souboru/databáze')
-        self.ui.driverBox.addItem('--Vybrat--')
+        self.ui.driverBox.setToolTip('Zvolte typ výstupního souboru/databáze')
+        self.ui.filenameSet.setToolTip('Vyberte cestu/nazev pro SQLite DB / OGC GeoPackage')
+        self.ui.browseButton.setToolTip('Vyberte uložiště')
+        # self.ui.driverBox.addItem('--Vybrat--')
         self.set_comboDrivers()
-        self.ui.driverBox.insertSeparator(4)  
+        # self.set_comboDrivers('GPKG')
+        # self.ui.driverBox.insertSeparator(4)
         self.ui.searchComboBox.addItems(['Obec', 'ORP', 'Okres', 'Kraj'])
         self.ui.searchComboBox.setEditable(True)
         self.ui.searchComboBox.clearEditText()
@@ -131,8 +134,8 @@ class MainApp(QDialog):
         self.ui.dataView.verticalHeader().hide()
 
         # signal/slots connections
-        self.ui.driverBox.activated['QString'].connect(self.set_datasource)              
-        self.ui.driverBox.currentIndexChanged['QString'].connect(self.enable_import)     
+        self.ui.driverBox.activated['QString'].connect(self.set_datasource)
+        self.ui.browseButton.clicked.connect(self.set_storagelocation)
         self.ui.searchComboBox.activated.connect(self.set_searching)
         self.ui.searchComboBox.editTextChanged.connect(self.start_searching)
         self.ui.checkButton.clicked.connect(lambda: self.set_checkstate(0))
@@ -142,7 +145,7 @@ class MainApp(QDialog):
         self.ui.buttonBox.rejected.connect(self.close)
 
     def errorOutputWritten(self, text):
-        # self.iface.messageBar().pushMessage(u"Chyba: {}".format(text),
+        # self.iface.messageBar().pushMessage("Chyba: {}".format(text),
         #                                     level=Qgis.Critical)
         # QgsMessageLog.logMessage('Ruian plugin: {}'.format(text), level=QgsMessageLog.WARNING)
         pass
@@ -161,6 +164,8 @@ class MainApp(QDialog):
             else:
                 model.appendRow(item)
 
+        # set default format
+        self.ui.driverBox.setCurrentIndex(1) # replace magic number with GPKG
 
     def create_model(self, file_path):
         """Create model-view from file.
@@ -214,94 +219,100 @@ class MainApp(QDialog):
         for driver, metadata in list(self.driverTypes.items()):
             if metadata['alias'] == driverName:
                 driverName = driver
-                driverAlias = metadata['alias']
-                driverExtension = metadata['ext']
 
         if driverName in self.missDrivers:
             # selected driver is not supported by installed GDAL
             self.ui.driverBox.setCurrentIndex(0)
-            self.iface.messageBar().pushMessage(u"Nainstalovaná verze GDAL nepodporuje ovladač {}".format(driverAlias),
+            self.iface.messageBar().pushMessage("Nainstalovaná verze GDAL nepodporuje ovladač {}".format(driverAlias),
                                                 level=Qgis.Critical, duration=5)
             return
 
-        outputName = None
-        if driverName in ['SQLite', 'GPKG', 'ESRI Shapefile']:
-            sender = '{}-lastUserFilePath'.format(self.sender().objectName())
-            lastUsedFilePath = self.settings.value(sender, os.path.expanduser("~"))
-
-            if driverName == 'ESRI Shapefile':
-                outputName = QFileDialog.getExistingDirectory(
-                    self,
-                    u'Vybrat/vytvořit výstupní adresář',
-                    lastUsedFilePath)
-            else:
-                outputName, filter = QFileDialog.getSaveFileName(
-                    self,
-                    u'Vybrat/vytvořit výstupní soubor',
-                    '{}{}ruian.{}'.format(lastUsedFilePath, os.path.sep, driverExtension),
-                    '{} (*.{})'.format(driverAlias, driverExtension),
-                    options=QFileDialog.DontConfirmOverwrite)
-            print (outputName)
-            if not outputName:
-                self.ui.driverBox.setCurrentIndex(0)
-                return
-
-            try:
-                # check if target is writable
-                if not os.access(os.path.dirname(outputName), os.W_OK):
-                    raise RuianError(u"Nelze vytvořit {}, chybí právo zápisu".format(
-                        outputName
-                    ))
-
-                self.settings.setValue(sender, os.path.dirname(outputName))
-
-                driver = ogr.GetDriverByName(driverName)
-                capability = driver.TestCapability(ogr._ogr.ODrCCreateDataSource)
-                
-                if capability:
-                    self.ui.driverBox.setToolTip(outputName)
-                    self.option['driver'] = str(driverName)
-                    self.option['datasource'] = outputName
-                    if not self.ui.importButton.isEnabled():
-                        self.ui.importButton.setEnabled(True)
-                else:
-                    raise RuianError(u"Nelze vytvořit {}".format(outputName))
-
-                self.ui.outputPath.setText(outputName)
-            except RuianError as e:
-                self.iface.messageBar().pushMessage(u'{}'.format(e),
-                                                    level=Qgis.Critical, duration=5)
-                self.ui.driverBox.setCurrentIndex(0)
-        else:
-            self.iface.messageBar().pushMessage(u"Ovladač {} není podporován".format(driverName),
-                                                level=Qgis.Critical, duration=5)
-
-        # elif driverName in ['PostgreSQL','MSSQLSpatial']:
-        #     self.connection = Connection(self.iface, driverName, self)
-        #     self.connection.setModal(True)
-        #     self.connection.show()
-        #     self.connection.setWindowTitle(u'Připojení k databázi {}'.format(driverName))
-
-    def enable_import(self, driverName):
-        """Enable/disable import widgets.
-
-        :param driverName: selected GDAL driver
-        """
-        if driverName == '--Vybrat--':
-            self.ui.driverBox.setToolTip(u'Zvolte typ výstupního souboru/databáze')
-            self.ui.importButton.setEnabled(False)
-        else:
-            self.ui.importButton.setEnabled(True)
 
     def data_select(self, data_box):
         """Enable/disable data selection widgets.
 
         :param data_box: group box
         """
-        if self.ui.datasetComboBox.currentIndex() == 1:
+        if currentIndex() == 1:
             self.ui.selectionComboBox.setEnabled(False)
         else:
             self.ui.selectionComboBox.setEnabled(True)
+
+
+    def set_storagelocation(self,sdriver):
+        """Set selected GDAL driver and datasource from combobox.
+
+        :param sdriver: GDAL driver
+        """
+        outputName = None
+        fileName = self.ui.filenameSet.text()
+        sdriver = self.ui.driverBox.currentText()
+
+        for driver, metadata in list(self.driverTypes.items()):
+            if metadata['alias'] == sdriver:
+                sdriver = driver
+                driverAlias = metadata['alias']
+                driverExtension = metadata['ext']
+
+
+        if sdriver in ['SQLite', 'GPKG', 'ESRI Shapefile']:
+            sender = '{}-lastUserFilePath'.format(self.sender().objectName())
+            lastUsedFilePath = self.settings.value(sender, os.path.expanduser("~"))
+
+            if sdriver == 'ESRI Shapefile':
+                outputName = QFileDialog.getExistingDirectory(
+                    self,
+                    'Vybrat/vytvořit výstupní adresář',
+                    fileName)
+            else:
+                outputName, filter = QFileDialog.getSaveFileName(
+                    self,
+                    'Vybrat/vytvořit výstupní soubor',
+                    '{}{}{}.{}'.format(lastUsedFilePath, os.path.sep, fileName, driverExtension),
+                    # '{}.{}'.format(fileName, driverExtension),
+                    '{} (*.{})'.format(driverAlias, driverExtension),
+                    options=QFileDialog.DontConfirmOverwrite)
+
+            if not outputName:
+                self.ui.driverBox.setCurrentIndex(1)
+                return
+
+            try:
+                # check if target is writable
+                if not os.access(os.path.dirname(outputName), os.W_OK):
+                    raise RuianError("Nelze vytvořit {}, chybí právo zápisu".format(
+                        outputName
+                    ))
+
+                self.settings.setValue(sender, os.path.dirname(outputName))
+
+                driver = ogr.GetDriverByName(sdriver)
+                capability = driver.TestCapability(ogr._ogr.ODrCCreateDataSource)
+
+                if capability:
+                    self.ui.driverBox.setToolTip(outputName)
+                    self.option['driver'] = str(sdriver)
+                    self.option['datasource'] = outputName
+                    if not self.ui.importButton.isEnabled():
+                        self.ui.importButton.setEnabled(True)
+                else:
+                    raise RuianError("Nelze vytvořit {}".format(outputName))
+
+                self.ui.filenameSet.setText(outputName)
+            except RuianError as e:
+                self.iface.messageBar().pushMessage('{}'.format(e),
+                                                    level=Qgis.Critical, duration=5)
+                self.ui.driverBox.setCurrentIndex(1)
+        else:
+            self.iface.messageBar().pushMessage("Ovladač {} není podporován".format(sdriver),
+                                                level=Qgis.Critical, duration=5)
+
+        # elif driverName in ['PostgreSQL','MSSQLSpatial']:
+        #     self.connection = Connection(self.iface, driverName, self)
+        #     self.connection.setModal(True)
+        #     self.connection.show()
+        #     self.connection.setWindowTitle('Připojení k databázi {}'.format(driverName))
+
 
     def set_searching(self, column):
         """Set filtering.
@@ -349,6 +360,10 @@ class MainApp(QDialog):
         """
         self.option['layers'] = []
         self.option['layers_name'] = []
+        #pridani vusc pokud zaskrtnuto
+        if self.ui.vuscCheckbox.isChecked():
+            self.option['layers'].append('VUSC')
+
         for row in range(0,self.model.rowCount()):
             item = self.model.item(row,0)
             if item.checkState() == Qt.Checked:
@@ -364,9 +379,9 @@ class MainApp(QDialog):
                      'zgho': 'H'
         }
         # not supported yet
-        # selectionIndex = self.ui.selectionComboBox.currentIndex()
-        # if selectionIndex == 1:
-        #     vfr_type['zgho'] = 'G'
+        selectionIndex = self.ui.selectionComboBox.currentIndex()
+        if selectionIndex == 1:
+            vfr_type['zgho'] = 'G'
         # elif selectionIndex == 2:
         #     vfr_type['zgho'] = 'Z'
         # elif selectionIndex == 3:
@@ -381,25 +396,27 @@ class MainApp(QDialog):
         # not supported yet (allows only 'Z' dataset)
         # if self.ui.validityComboBox.currentIndex() == 1:
         #     vfr_type['sh'] = 'H'
-        self.option['file_type'] = u'{0}{1}{2}{3}'.format(vfr_type['up'], vfr_type['zk'], vfr_type['sh'], vfr_type['zgho'])
+        self.option['file_type'] = '{0}{1}{2}{3}'.format(vfr_type['up'], vfr_type['zk'], vfr_type['sh'], vfr_type['zgho'])
 
         if not self.option['driver'] or not self.option['datasource']:
-            self.iface.messageBar().pushMessage(u"Není vybrán žádný výstup.",
+            self.iface.messageBar().pushMessage("Není vybrán žádný výstup.",
                                                 level=Qgis.Critical, duration=5)
             return
 
         if not self.option['layers']:
-            self.iface.messageBar().pushMessage(u"Nejsou vybrána žádná data pro import.",
+            self.iface.messageBar().pushMessage("Nejsou vybrána žádná data pro import.",
                                                 level=Qgis.Critical, duration=5)
             return
         self.option['overwriteOutput'] = self.ui.overwriteCheckbox.isChecked()
 
+
+        
         # create progress dialog
-        self.progress = QProgressDialog(u'Probíhá import ...', u'Ukončit',
+        self.progress = QProgressDialog('Probíhá import ...', 'Ukončit',
                                         0, 0, self)
         self.progress.setParent(self)
         self.progress.setWindowModality(Qt.WindowModal)
-        self.progress.setWindowTitle(u'Import dat RÚIAN')
+        self.progress.setWindowTitle('Import dat RÚIAN')
         self.progress.canceled.connect(self.import_close)
         self.progress.setAutoClose(False)
         self.progress.resize(400, 50)
@@ -416,12 +433,12 @@ class MainApp(QDialog):
     def set_status(self, num, tot, text, operation):
         """Update progress status.
         """
-        self.progress.setLabelText(u'{0} {1} z {2} ({3})'.format(operation, num, tot, text))
+        self.progress.setLabelText('{0} {1} z {2} ({3})'.format(operation, num, tot, text))
 
     def import_close(self):
         """Terminate import.
         """
-        reply = QMessageBox.question(self, u'Ukončit', u"Opravdu chcete ukončit import dat?",
+        reply = QMessageBox.question(self, 'Ukončit', "Opravdu chcete ukončit import dat?",
                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
         if reply == QMessageBox.Yes:
             self.importThread.terminate()
@@ -436,8 +453,8 @@ class MainApp(QDialog):
         if self.importThread.aborted:
             return
 
-        reply  = QMessageBox.question(self, u'Import', u"Import dat proběhl úspěšně. "
-                                      u"Přejete si vytvořené vrtsvy do mapového okna?",
+        reply  = QMessageBox.question(self, 'Import', "Import dat proběhl úspěšně. "
+                                      "Přejete si vytvořené vrtsvy do mapového okna?",
                                       QMessageBox.Yes | QMessageBox.No,
                                       QMessageBox.Yes)
         if reply == QMessageBox.Yes:
@@ -450,24 +467,20 @@ class MainApp(QDialog):
     def add_layers(self):
         """Add created layers to map display.
         """
-        def add_layer(group, layer):
-            if layer.GetFeatureCount() < 1:
+        def add_layer(group, ogr_layer, layer_alias):
+            if ogr_layer.GetFeatureCount() < 1:
                 # skip empty layers
                 return False
 
-            # TODO: use uri instead of hardcoded datasource for SQLite
-            # uri = QgsDataSourceURI()
-            # uri.setDatabase(self.option['datasource'])
-            # schema = ''
-            # geom_column = 'GEOMETRY'
-            #uri.setDataSource(schema, layer_name, geom_column)
+            layer_name = ogr_layer.GetName()
+            vlayer = QgsVectorLayer('{0}|layername={1}'.format(self.option['datasource'], layer_name),
+                                    layer_alias, 'ogr')
 
-            vlayer = QgsVectorLayer('{0}|layername={1}'.format(self.option['datasource'], layer_name), layer_name, 'ogr')
             # force EPSG:5514 and UTF-8 encoding (make sense especially for Esri Shapefile)
             vlayer.setCrs(QgsCoordinateReferenceSystem("EPSG:5514"))
-            vlayer.setProviderEncoding(u'UTF-8')
+            vlayer.setProviderEncoding('UTF-8')
 
-            layer_style = os.path.join(style_path, layer_name + '.qml')
+            layer_style = os.path.join(style_path, layer_name.lower() + '.qml')
             if os.path.exists(layer_style):
                 vlayer.loadNamedStyle(layer_style)
 
@@ -479,7 +492,7 @@ class MainApp(QDialog):
         driver = ogr.GetDriverByName(str(self.option['driver']))
         datasource = driver.Open(self.option['datasource'], False)
         if not datasource:
-            self.iface.messageBar().pushMessage(u"Soubor {} nelze načíst".format(self.option['datasource']),
+            self.iface.messageBar().pushMessage("Soubor {} nelze načíst".format(self.option['datasource']),
                                                 level=Qgis.Critical, duration=5)
             return
 
@@ -496,30 +509,28 @@ class MainApp(QDialog):
         layerGroup = root.addGroup(groupName)
 
         # first add well-known layers
-        layers_added = []
-        for layer_name, layer_alias in [('obce', u'Obce'),
-                                        ('spravniobvody', u'Správní obvody'),
-                                        ('mop', u'Městské obvody v Praze'),
-                                        ('momc', u'Městský obvod/část'),
-                                        ('castiobci', u'Části obcí'),
-                                        ('katastralniuzemi', u'Katastrální území'),
-                                        ('zsj', u'Základní sídelní jednotky'),
-                                        ('ulice', u'Ulice'),
-                                        ('parcely', u'Parcely'),
-                                        ('stavebniobjekty', u'Stavební objekty'),
-                                        ('adresnimista', u'Adresní místa')]:
+        for layer_name, layer_alias in [('obce', 'Obce'),
+                                        ('spravniobvody', 'Správní obvody'),
+                                        ('mop', 'Městské obvody v Praze'),
+                                        ('momc', 'Městský obvod/část'),
+                                        ('castiobci', 'Části obcí'),
+                                        ('katastralniuzemi', 'Katastrální území'),
+                                        ('zsj', 'Základní sídelní jednotky'),
+                                        ('ulice', 'Ulice'),
+                                        ('parcely', 'Parcely'),
+                                        ('stavebniobjekty', 'Stavební objekty'),
+                                        ('adresnimista', 'Adresní místa'),
+                                        ('staty', 'Stát'),
+                                        ('regionysoudrznosti', 'Regiony soudrznosti'),
+                                        ('vusc', 'VUSC'),
+                                        ('okresy', 'Okresy'),
+                                        ('orp', 'ORP'),
+                                        ('po', 'POU')]:
             layer = datasource.GetLayerByName(layer_name)
             if layer:
-                if add_layer(layerGroup, layer):
-                    layers_added.append(layer_name)
-
-        for idx in range(datasource.GetLayerCount()):
-            layer = datasource.GetLayerByIndex(idx)
-            layer_name = layer.GetName()
-            if layer_name in layers_added:
-                # skip already added layers
-                continue
-            layers_added.append(layer_name)
+                if not add_layer(layerGroup, layer, layer_alias):
+                    QgsMessageLog.logMessage('RUIAN plugin: prázdná vrstva "{}" přeskočena ({})'.format(
+                        layer_name, self.option['datasource']), level=Qgis.Info)
 
         del datasource # close datasource
 
@@ -540,9 +551,9 @@ class ImportThread(QThread):
         """Run download/import thread.
         """
         # define temporary directory for downloading VFR data
-        data_dir = os.path.join(tempfile.gettempdir(),
-                                'ruian_plugin_{}'.format(os.getpid()))
-        qDebug('\n (VFR) data dir: {}'.format(data_dir))
+        data_dir = QgsProcessingUtils().tempFolder()
+        # QgsMessageLog.logMessage('\n (VFR) data dir: {}'.format(data_dir),
+        #                         level=Qgis.Info)
         os.environ['DATA_DIR'] = data_dir
         if not os.path.exists(data_dir):
             os.makedirs(data_dir)
@@ -555,11 +566,15 @@ class ImportThread(QThread):
             # create convertor
             ogr = VfrOgr(frmt=self.driver, dsn=self.datasource, overwrite=self.overwrite, geom_name='OriginalniHranice')
 
-            n = len(self.layers)
+            n = len(self.layers)         
             i = 1
             for l in self.layers:
-                filename = 'OB_{}_{}'.format(l, self.file_type)
-                qDebug('\n (VFR) Processing file: {}'.format(filename))
+                if l == 'VUSC':
+                    filename = 'ST_{}'.format(self.file_type)
+                else:
+                    filename = 'OB_{}_{}'.format(l, self.file_type)
+                
+                # QgsMessageLog.logMessage('\n (VFR) Processing file: {}'.format(filename), level=Qgis.Info)
                 # download
                 ogr.reset()
                 self.importStat.emit(i, n, l, "Download")

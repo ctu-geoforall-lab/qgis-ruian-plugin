@@ -1,7 +1,7 @@
 Instalace
 ---------
 
-Plugin lze nainstalovat jako běžný zásuvný modul z menu :menuselection:`Spravovat a instalovat zásuvné moduly`.
+Plugin lze nainstalovat jako běžný zásuvný modul z menu ``Spravovat a instalovat zásuvné moduly``.
 
 .. image:: images/install.png
    :width: 600
