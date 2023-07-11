@@ -5,6 +5,7 @@ Autoři
 * Lukáš Středa
 * Šimon Gajzler
 * Lukáš Kettner
+* Vajner, Kuzmanov, Kličková (podpora VUSC - 2021)
 
 GeoForAll Lab, Fakulta stavební, České vysoké učení technické v Praze
 
