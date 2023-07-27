@@ -118,7 +118,7 @@ class MainApp(QDialog):
         self.ui.searchComboBox.activated.connect(self.set_searching)
         self.ui.searchComboBox.editTextChanged.connect(self.start_searching)
         self.ui.checkButton.clicked.connect(lambda: self.set_checkstate(0))
-        self.ui.uncheckButton.clicked.connect(laqmbda: self.set_checkstate(1))
+        self.ui.uncheckButton.clicked.connect(lambda: self.set_checkstate(1))
         self.ui.advancedButton.clicked.connect(self.show_advanced)
         self.ui.importButton.clicked.connect(self.get_options)
         self.ui.buttonBox.rejected.connect(self.close)
@@ -550,8 +550,12 @@ class ImportThread(QThread):
 
         try:
             # create convertor
+            if self.file_type.endswith(('G', 'H')):
+                geom_name = ['OriginalniHranice', 'GeneralizovaneHranice']
+            else:
+                geom_name = None
             ogr = VfrOgr(frmt=self.driver, dsn=self.datasource, overwrite=self.overwrite,
-                         geom_name=['OriginalniHranice', 'GeneralizovaneHranice'])
+                         geom_name=geom_name)
 
             n = len(self.layers)         
             i = 1
