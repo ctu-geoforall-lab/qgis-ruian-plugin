@@ -36,28 +36,7 @@ from osgeo import ogr, gdal
 
 from .ui_MainApp import Ui_MainApp
 
-try:
-    from .gdal_vfr.vfr4ogr import VfrOgr
-except:
-    # download
-    from zipfile import ZipFile
-
-    if (sys.version_info > (3, 0)):
-        from io import BytesIO
-        from urllib.request import urlopen
-    else:
-        from StringIO import StringIO as BytesIO
-        from urllib import urlopen
-
-    gdal_vfr_version = '2.1.3'
-    url = "http://geo.fsv.cvut.cz/geoforall/gdal_vfr/v{}.zip".format(gdal_vfr_version)
-    resp = urlopen(url)
-    with ZipFile(BytesIO(resp.read())) as zipf:
-        zipf.extractall(os.path.join(os.path.dirname(__file__)))
-        os.rename(os.path.join(os.path.dirname(__file__), 'gdal-vfr-{}'.format(gdal_vfr_version)),
-                  os.path.join(os.path.dirname(__file__), 'gdal_vfr'))
-
-    from .gdal_vfr.vfr4ogr import VfrOgr
+from .gdal_vfr.vfr4ogr import VfrOgr
 
 class RuianError(Exception):
     pass
