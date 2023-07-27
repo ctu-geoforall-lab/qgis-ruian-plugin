@@ -429,12 +429,12 @@ QGroupBox::title {
            <widget class="QComboBox" name="selectionComboBox">
             <item>
              <property name="text">
-              <string>základní + originální hranice</string>
+              <string>originální hranice</string>
              </property>
             </item>
             <item>
              <property name="text">
-              <string>základní + generalizované hranice</string>
+              <string>generalizované hranice</string>
              </property>
             </item>
            </widget>
