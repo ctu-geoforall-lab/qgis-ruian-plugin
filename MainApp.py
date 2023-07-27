@@ -118,10 +118,11 @@ class MainApp(QDialog):
         self.ui.searchComboBox.activated.connect(self.set_searching)
         self.ui.searchComboBox.editTextChanged.connect(self.start_searching)
         self.ui.checkButton.clicked.connect(lambda: self.set_checkstate(0))
-        self.ui.uncheckButton.clicked.connect(lambda: self.set_checkstate(1))
+        self.ui.uncheckButton.clicked.connect(laqmbda: self.set_checkstate(1))
         self.ui.advancedButton.clicked.connect(self.show_advanced)
         self.ui.importButton.clicked.connect(self.get_options)
         self.ui.buttonBox.rejected.connect(self.close)
+        self.ui.datasetComboBox.currentIndexChanged.connect(self.dataset_changed)
 
     def errorOutputWritten(self, text):
         # self.iface.messageBar().pushMessage("Chyba: {}".format(text),
@@ -359,7 +360,7 @@ class MainApp(QDialog):
         }
         # not supported yet
         selectionIndex = self.ui.selectionComboBox.currentIndex()
-        if selectionIndex == 1:
+        if selectionIndex == 1 and 'VUSC' in self.option['layers']:
             vfr_type['zgho'] = 'G'
         # elif selectionIndex == 2:
         #     vfr_type['zgho'] = 'Z'
@@ -376,7 +377,7 @@ class MainApp(QDialog):
         # if self.ui.validityComboBox.currentIndex() == 1:
         #     vfr_type['sh'] = 'H'
         self.option['file_type'] = '{0}{1}{2}{3}'.format(vfr_type['up'], vfr_type['zk'], vfr_type['sh'], vfr_type['zgho'])
-
+        print(self.option['file_type'])
         if not self.option['driver'] or not self.option['datasource']:
             self.iface.messageBar().pushMessage("Není vybrán žádný výstup.",
                                                 level=Qgis.Critical, duration=5)
@@ -442,6 +443,12 @@ class MainApp(QDialog):
     def close(self):
         """Close application."""
         self.hide()
+
+    def dataset_changed(self, i):
+        if i == 0 and not self.ui.selectionComboBox.isEnabled():
+            self.ui.selectionComboBox.setEnabled(True)
+        elif i == 1 and self.ui.selectionComboBox.isEnabled():
+            self.ui.selectionComboBox.setEnabled(False)
 
     def add_layers(self):
         """Add created layers to map display.
@@ -543,7 +550,8 @@ class ImportThread(QThread):
 
         try:
             # create convertor
-            ogr = VfrOgr(frmt=self.driver, dsn=self.datasource, overwrite=self.overwrite, geom_name='OriginalniHranice')
+            ogr = VfrOgr(frmt=self.driver, dsn=self.datasource, overwrite=self.overwrite,
+                         geom_name=['OriginalniHranice', 'GeneralizovaneHranice'])
 
             n = len(self.layers)         
             i = 1
