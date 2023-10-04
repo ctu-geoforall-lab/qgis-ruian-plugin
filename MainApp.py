@@ -120,6 +120,7 @@ class MainApp(QDialog):
         self.ui.checkButton.clicked.connect(lambda: self.set_checkstate(0))
         self.ui.uncheckButton.clicked.connect(lambda: self.set_checkstate(1))
         self.ui.advancedButton.clicked.connect(self.show_advanced)
+        self.ui.addLayersButton.clicked.connect(self.add_layers)
         self.ui.importButton.clicked.connect(self.get_options)
         self.ui.buttonBox.rejected.connect(self.close)
         self.ui.datasetComboBox.currentIndexChanged.connect(self.dataset_changed)
@@ -474,6 +475,10 @@ class MainApp(QDialog):
             group.addLayer(vlayer)
 
             return True
+
+        if self.option['driver'] is None or self.option['datasource'] is None:
+            self.iface.messageBar().pushMessage("Nelze vytvořit vrstvy bez datového souboru")
+            return
 
         driver = ogr.GetDriverByName(str(self.option['driver']))
         datasource = driver.Open(self.option['datasource'], False)
