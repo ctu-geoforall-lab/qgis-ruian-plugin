@@ -377,7 +377,6 @@ class MainApp(QDialog):
         # if self.ui.validityComboBox.currentIndex() == 1:
         #     vfr_type['sh'] = 'H'
         self.option['file_type'] = '{0}{1}{2}{3}'.format(vfr_type['up'], vfr_type['zk'], vfr_type['sh'], vfr_type['zgho'])
-        print(self.option['file_type'])
         if not self.option['driver'] or not self.option['datasource']:
             self.iface.messageBar().pushMessage("Není vybrán žádný výstup.",
                                                 level=Qgis.Critical, duration=5)
