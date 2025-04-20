@@ -1,6 +1,6 @@
 #!/bin/sh
 
-GDAL_VFR_VERSION=2.2.1
+GDAL_VFR_VERSION=2.2.4
 
 rm -rf gdal_vfr
 wget https://github.com/ctu-geoforall-lab/gdal-vfr/archive/v${GDAL_VFR_VERSION}.tar.gz
