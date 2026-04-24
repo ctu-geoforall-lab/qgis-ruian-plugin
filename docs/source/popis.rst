@@ -59,7 +59,7 @@ Příklad vizualizace stažených dat:
 .. image:: images/visualization.png
    :width: 1000
 
-.. note:: Styly zobrazovaných prvků jsou téměř totožné jako na vizualizaci přes `vzdálený přístup od ČÚZK <https://vdp.cuzk.gov.cz/vdp/ruian/mapa/>`__.
+.. note:: Styly zobrazovaných prvků jsou téměř totožné jako na vizualizaci přes `vzdálený přístup od ČÚZK <https://vdp.cuzk.gov.cz/marushka/?ThemeID=1&InfoURL=https%3A%2F%2Fvdp.cuzk.gov.cz%2Fvdp%2Fruian>`__.
 
 .. note:: Od měřítka 1:10000 se zobrazují ulice, adresní místa, parcely a stavební objekty, od 1:100000
           katastrální území a základní sídelní jednotky, od 1:200000 městské obvody a části a části obcí
