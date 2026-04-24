@@ -589,7 +589,8 @@ class MainApp(QDialog):
             return True
 
         if self.option['driver'] is None or self.option['datasource'] is None:
-            self.iface.messageBar().pushMessage("Nelze vytvořit vrstvy bez datového souboru")
+            self.iface.messageBar().pushMessage("Nelze vytvořit vrstvy bez datového souboru",
+                                                level=Qgis.Critical, duration=5)
             return
 
         driver = ogr.GetDriverByName(str(self.option['driver']))
