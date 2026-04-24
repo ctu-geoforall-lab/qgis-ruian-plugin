@@ -514,6 +514,13 @@ QGroupBox::title {
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="addLayersButton">
+       <property name="text">
+        <string>Přidat vrstvy</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="importButton">
        <property name="text">
         <string>Importovat</string>
