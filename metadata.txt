@@ -19,6 +19,6 @@ tags=VFR, VDP, RUIAN
 homepage=https://ctu-geoforall-lab.github.io/qgis-ruian-plugin
 tracker=https://github.com/ctu-geoforall-lab/qgis-ruian-plugin/issues
 repository=https://github.com/ctu-geoforall-lab/qgis-ruian-plugin
-icon=files/icon.png
+icon=icons/icon.png
 experimental=True
 deprecated=False
