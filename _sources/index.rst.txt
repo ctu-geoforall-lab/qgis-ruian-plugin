@@ -12,15 +12,12 @@ je implementován v programovacím jazyku Python s podporou knihoven
 
 Plugin je dostupný pro verze QGIS 2 a 3.
 
+.. image:: images/plugin.png
+   :width: 600
+           
 .. toctree::
    :maxdepth: 2
 
    instalace
    popis
    dodatek
-
-.. note:: Projekt navazuje na semestrální práce předmětu `Free Software GIS
-   <http://geo.fsv.cvut.cz/gwiki/155YFSG>`__ vyučovaného na `Fakultě
-   stavební ČVUT v Praze <http://www.fsv.cvut.cz>`__ z akademického roku
-   2014/1015 (https://github.com/ctu-yfsg/2015-c-qgis-vfr) a 2015/2016
-   (https://github.com/ctu-yfsg/2016-c-qgis-vfr).

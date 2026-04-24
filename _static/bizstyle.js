@@ -17,7 +17,7 @@ const initialiseBizStyle = () => {
 }
 
 window.addEventListener("resize",
-  () => (document.querySelector("li.nav-item-0 a").innerText = (window.innerWidth <= 776) ? "Top" : "Dokumentace pro QGIS RUIAN Plugin 1.1")
+  () => (document.querySelector("li.nav-item-0 a").innerText = (window.innerWidth <= 776) ? "Top" : "Dokumentace pro QGIS RUIAN Plugin 1.4")
 )
 
 if (document.readyState !== "loading") initialiseBizStyle()
