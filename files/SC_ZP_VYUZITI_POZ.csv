@@ -1,0 +1,31 @@
+KOD;NAZEV;PLATNOST_OD;PLATNOST_DO;TYPPPD_KOD;ZKRATKA
+1;skleník, paøeništì;01.01.1993;;;skleník-paøeniš.
+2;školka;01.01.1993;;;školka
+3;plantáž døevin;15.10.1998;;;plantáž døevin
+4;les jiný než hospodáøský;01.01.1993;;;les(ne hospodáø)
+5;lesní pozemek, na kterém je budova;01.01.1993;;;les s budovou
+6;rybník;01.01.1993;;803;rybník
+7;koryto vodního toku pøirozené nebo upravené;01.01.1993;;802;tok pøirozený
+8;koryto vodního toku umìlé;01.01.1993;;802;tok umìlý
+9;vodní nádrž pøírodní;01.01.1993;;803;nádrž pøírodní
+10;vodní nádrž umìlá;01.01.1993;;803;nádrž umìlá
+11;zamokøená plocha;01.01.1993;;804;zamokøená pl.
+12;spoleèný dvùr;01.01.1993;;319;spoleèný dvùr
+13;zboøeništì;01.01.1993;;319;zboøeništì
+14;dráha;01.01.1993;;;dráha
+15;dálnice;01.01.1993;;;dálnice
+16;silnice;01.01.1993;;;silnice
+17;ostatní komunikace;01.01.1993;;;ostat.komunikace
+18;ostatní dopravní plocha;01.01.1993;;;ost.dopravní pl.
+19;zeleò;01.01.1993;;314;zeleò
+20;sportovištì a rekreaèní plocha;01.01.1993;;;sport.a rekr.pl.
+21;pohøebištì;01.01.1993;;315;pohøeb.
+22;kulturní a osvìtová plocha;01.01.1993;;;kult.a osvìt.pl.
+23;manipulaèní plocha;01.01.1993;;;manipulaèní pl.
+24;dobývací prostor;01.01.1993;;701;dobývací prost.
+25;skládka;01.01.1993;;;skládka
+26;jiná plocha;01.01.1993;;;jiná plocha
+27;neplodná pùda;01.01.1993;;316;neplodná pùda
+28;vodní plocha, na které je budova;01.03.2007;;;vod.pl.s budovou
+29;fotovoltaická elektrárna;01.01.2014;;;foto. elektrárna
+30;mez, stráò;01.04.2017;;;mez, stráò

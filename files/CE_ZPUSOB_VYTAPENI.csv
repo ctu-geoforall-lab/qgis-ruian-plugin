@@ -1,0 +1,33 @@
+KOD;NAZEV;POPIS;ZKRACENY_NAZEV;ZACATEK_PLATNOSTI;KONEC_PLATNOSTI
+1;Centrální domovní (kotel ve stavbì);Centrální domovní (kotel ve stavbì);Centrální domovní – bez rozlišení;01.01.1900 00:00:00;01.07.2024 00:00:00
+2;Centrální dálkové (kotel mimo stavbu);Centrální dálkové (kotel mimo stavbu);Centrální dálkové – bez rozlišení;01.01.1900 00:00:00;01.07.2024 00:00:00
+3;Lokální (kamna nebo jiné topidlo v bytì);Lokální (kamna nebo jiné topidlo v bytì);Lokální – bez rozlišení;01.01.1900 00:00:00;01.07.2024 00:00:00
+4;Jiné (i bez topení);Jiné (i bez topení);Jiné (i bez topení);01.01.1900 00:00:00;
+9;Nezjištìno;Nezjištìno;Nezjištìno;01.01.1900 00:00:00;
+11;Centrální domovní- zemní plyn;;Domovní - zemní plyn;01.01.1900 00:00:00;
+12;Centrální domovní  -  uhlí;;Domovní - uhlí;01.07.2024 00:00:00;
+13;Centrální domovní - døevo a biomasa;;Domovní - døevo a biomasa;01.07.2024 00:00:00;
+14;Centrální domovní - døevìné rostlinné pelety;;Domovní - døevìné rostlinné pelety;01.07.2024 00:00:00;
+15;Centrální domovní - elektøina;;Domovní - elektøina;01.07.2024 00:00:00;
+16;Centrální domovní - tepelné èerpadlo;;Domovní - tepelné èerpadlo;01.07.2024 00:00:00;
+17;Centrální domovní - solární a fotovoltaické systémy;;Domovní - solární a fotovolt. systémy;01.07.2024 00:00:00;
+18;Centrální domovní - kapalná paliva;;Domovní - kapalná paliva;01.07.2024 00:00:00;
+19;Centrální domovní - jiné;;Domovní - jiné;01.07.2024 00:00:00;
+21;Centrální dálkové- zemní plyn;;Dálkové - zemní plyn;01.07.2024 00:00:00;
+22;Centrální dálkové  -  uhlí;;Dálkové - uhlí;01.07.2024 00:00:00;
+23;Centrální dálkové - døevo a biomasa;;Dálkové - døevo a biomasa;01.07.2024 00:00:00;
+24;Centrální dálkové - døevìné rostlinné pelety;;Dálkové - døevìné rostlinné pelety;01.07.2024 00:00:00;
+25;Centrální dálkové - elektøina;;Dálkové - elektøina;01.07.2024 00:00:00;
+26;Centrální dálkové - tepelné èerpadlo;;Dálkové - tepelné èerpadlo;01.07.2024 00:00:00;
+27;Centrální dálkové - solární a fotovoltaické systémy;;Dálkové - solární a fotovolt. systémy;01.07.2024 00:00:00;
+28;Centrální dálkové - kapalná paliva;;Dálkové - kapalná paliva;01.07.2024 00:00:00;
+29;Centrální dálkové - jiné;;Dálkové - jiné;01.07.2024 00:00:00;
+31;Lokální- zemní plyn;;Lokální - zemní plyn;01.07.2024 00:00:00;
+32;Lokální - uhlí;;Lokální - uhlí;01.07.2024 00:00:00;
+33;Lokální - døevo a biomasa;;Lokální - døevo a biomasa;01.07.2024 00:00:00;
+34;Lokální - døevìné rostlinné pelety;;Lokální - døevìné rostlinné pelety;01.07.2024 00:00:00;
+35;Lokální - elektøina;;Lokální - elektøina;01.07.2024 00:00:00;
+36;Lokální - tepelné èerpadlo;;Lokální - tepelné èerpadlo;01.07.2024 00:00:00;
+37;Lokální - solární a fotovoltaické systémy;;Lokální - solární a fotovolt. systémy;01.07.2024 00:00:00;
+38;Lokální - kapalná paliva;;Lokální - kapalná paliva;01.07.2024 00:00:00;
+39;Lokální - jiné;;Lokální - jiné;01.07.2024 00:00:00;
