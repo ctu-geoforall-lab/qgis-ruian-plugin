@@ -92,7 +92,7 @@ class MainApp(QDialog):
         self.ui.advancedSettings.hide()
 
         # set up the table view
-        path = os.path.join(os.path.dirname(__file__), 'files','obce_cr.csv')
+        path = os.path.join(os.path.dirname(__file__), 'coding_tables','obce_cr.csv')
         self.model, self.proxy = self.create_model(path)
         self.ui.dataView.setModel(self.proxy)
         self.ui.dataView.setEditTriggers(QAbstractItemView.NoEditTriggers)
@@ -436,11 +436,11 @@ class MainApp(QDialog):
         elif i == 1 and self.ui.selectionComboBox.isEnabled():
             self.ui.selectionComboBox.setEnabled(False)
 
-    def add_dial(self, vlayer, csv_filename, col_code):
+    def add_coding_table(self, vlayer, csv_filename, col_code):
         """Add code (number) value meaning in words according to specified CUZK dial
         
         :param vlayer: QgsVectorLayer, in which string attribute is added.
-        :param csv_filename: Name of csv file in 'files' folder.
+        :param csv_filename: Name of csv file in 'coding_tables' folder.
         :param col_code: Column name in which the code numbers are.
         """
         # Name of the new column
@@ -449,7 +449,7 @@ class MainApp(QDialog):
         else:
             col_name = col_code + 'Nazev'
             
-        csv_path = os.path.join(os.path.dirname(__file__), 'files', csv_filename)
+        csv_path = os.path.join(os.path.dirname(__file__), 'coding_tables', csv_filename)
         
         dial = {}
         try:
@@ -488,7 +488,7 @@ class MainApp(QDialog):
 
         return (idx_code, idx_name)
 
-    def reorder_dials(self, vlayer, new_columns):
+    def reorder_coding_tables(self, vlayer, new_columns):
         """Reorder added columns by dials.
 
         :param QgsVectorMapLayer: vector layer to be modified
@@ -551,43 +551,43 @@ class MainApp(QDialog):
             dial_columns = []
             if layer_name == 'stavebniobjekty':
                 dial_columns.append(
-                    self.add_dial(vlayer,'CE_ZPUSOB_VYUZITI_OBJEKTU.csv','TypStavebnihoObjektuKod'))
+                    self.add_coding_table(vlayer,'CE_ZPUSOB_VYUZITI_OBJEKTU.csv','TypStavebnihoObjektuKod'))
                 dial_columns.append(
-                    self.add_dial(vlayer,'CS_TYP_STAVEBNIHO_OBJEKTU.csv','ZpusobVyuzitiKod'))
+                    self.add_coding_table(vlayer,'CS_TYP_STAVEBNIHO_OBJEKTU.csv','ZpusobVyuzitiKod'))
                 dial_columns.append(
-                    self.add_dial(vlayer,'CE_DRUH_KONSTRUKCE.csv','DruhKonstrukceKod'))
+                    self.add_coding_table(vlayer,'CE_DRUH_KONSTRUKCE.csv','DruhKonstrukceKod'))
                 dial_columns.append(
-                    self.add_dial(vlayer,'CE_PRIPOJENI_KANAL.csv','PripojeniKanalizaceKod'))
+                    self.add_coding_table(vlayer,'CE_PRIPOJENI_KANAL.csv','PripojeniKanalizaceKod'))
                 dial_columns.append(
-                    self.add_dial(vlayer,'CE_PRIPOJENI_PLYNU.csv','PripojeniPlynKod'))
+                    self.add_coding_table(vlayer,'CE_PRIPOJENI_PLYNU.csv','PripojeniPlynKod'))
                 dial_columns.append(
-                    self.add_dial(vlayer,'CE_PRIPOJENI_VODY.csv','PripojeniVodovodKod'))
+                    self.add_coding_table(vlayer,'CE_PRIPOJENI_VODY.csv','PripojeniVodovodKod'))
                 dial_columns.append(
-                    self.add_dial(vlayer,'CE_VYBAVENI_VYTAHEM.csv','VybaveniVytahemKod'))
+                    self.add_coding_table(vlayer,'CE_VYBAVENI_VYTAHEM.csv','VybaveniVytahemKod'))
                 dial_columns.append(
-                    self.add_dial(vlayer,'CE_ZPUSOB_VYTAPENI.csv','ZpusobVytapeniKod'))
+                    self.add_coding_table(vlayer,'CE_ZPUSOB_VYTAPENI.csv','ZpusobVytapeniKod'))
 
             if layer_name == 'parcely':
                 dial_columns.append(
-                    self.add_dial(vlayer,'SC_ZP_VYUZITI_POZ.csv','ZpusobyVyuzitiPozemku'))
+                    self.add_coding_table(vlayer,'SC_ZP_VYUZITI_POZ.csv','ZpusobyVyuzitiPozemku'))
                 dial_columns.append(
-                    self.add_dial(vlayer,'CS_DRUH_CISLOVANI_PARCEL.csv','DruhCislovaniKod'))
+                    self.add_coding_table(vlayer,'CS_DRUH_CISLOVANI_PARCEL.csv','DruhCislovaniKod'))
                 dial_columns.append(
-                    self.add_dial(vlayer,'SC_D_POZEMKU.csv','DruhPozemkuKod'))
+                    self.add_coding_table(vlayer,'SC_D_POZEMKU.csv','DruhPozemkuKod'))
 
             if layer_name == 'zsj':
                 dial_columns.append(
-                    self.add_dial(vlayer,'CE_CHARAKTER_ZSJ.csv','CharakterZsjKod'))
+                    self.add_coding_table(vlayer,'CE_CHARAKTER_ZSJ.csv','CharakterZsjKod'))
     
             if layer_name == 'obce':
                 dial_columns.append(
-                    self.add_dial(vlayer,'CS_STATUS_OBCE.csv','StatusKod'))
+                    self.add_coding_table(vlayer,'CS_STATUS_OBCE.csv','StatusKod'))
                 dial_columns.append(
-                    self.add_dial(vlayer,'CS_CLENENI_SM_ROZSAH.csv','CleneniSMRozsahKod'))
+                    self.add_coding_table(vlayer,'CS_CLENENI_SM_ROZSAH.csv','CleneniSMRozsahKod'))
                 dial_columns.append(
-                    self.add_dial(vlayer,'CS_CLENENI_SM_TYP.csv','CleneniSMTypKod'))
+                    self.add_coding_table(vlayer,'CS_CLENENI_SM_TYP.csv','CleneniSMTypKod'))
 
-            self.reorder_dials(vlayer, dial_columns)
+            self.reorder_coding_tables(vlayer, dial_columns)
 
             return True
 
