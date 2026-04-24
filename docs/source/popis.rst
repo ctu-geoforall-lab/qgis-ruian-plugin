@@ -7,9 +7,9 @@ Vybereme obec či obce, které chceme stáhnout:
    :width: 600
    
    
-Pokud je zaškrtnuto ``Vyšší uzemní prvky (VUP)`` (v dokumentaci ještě nazváno ``Vyšší územní samosprávné celky (VÚSC)``), budou
-staženy i vyšší územní prvky (v hierarchii nad obcemi). Lze je stahovat samostatně nebo i
-se zvolenou obcí.
+Pokud je zaškrtnuto ``Vyšší uzemní prvky (VUP)``, budou staženy i
+vyšší územní prvky (v hierarchii nad obcemi). Lze je stahovat
+samostatně nebo i se zvolenou obcí.
 
 .. important:: Je vhodné zvolit menší objem dat maximálně ve velikosti
              okresu. Zásuvný modul není navržen pro stahování většího
@@ -34,12 +34,12 @@ V dalším kroku zvolíme formát výstupního souboru:
 
    Podpora pro další formáty může být přidána na vyžádání.
           
-Pro volbu cesty k výstupnímu souboru můžeme využít textového okna k zadání cesty či názvu a nebo grafické rozhraní.
+Definujeme cestu k výstupnímu souboru, kam se uloží stažená data.
  
 .. figure:: images/select-storagelocation.png
       :width: 600
 
-Možnost dalšího nastavení nalezneme pod rozbalovacím seznamem Pokročilé nastavení
+Možnost dalšího nastavení nalezneme pod rozbalovacím seznamem ``Pokročilé nastavení``.
 
 .. figure:: images/advanced.png
       :width: 600
@@ -59,8 +59,10 @@ Příklad vizualizace stažených dat:
 .. image:: images/visualization.png
    :width: 1000
 
-.. note:: Styly zobrazovaných prvků jsou téměř totožné jako na vizualizaci přes `vzdálený přístup od ČÚZK <https://vdp.cuzk.gov.cz/vdp/ruian/mapa/>`__.
+.. note:: Styly zobrazovaných prvků jsou téměř totožné jako na vizualizaci přes `vzdálený přístup od ČÚZK <https://vdp.cuzk.gov.cz/marushka/?ThemeID=1&InfoURL=https%3A%2F%2Fvdp.cuzk.gov.cz%2Fvdp%2Fruian>`__.
 
 .. note:: Od měřítka 1:10000 se zobrazují ulice, adresní místa, parcely a stavební objekty, od 1:100000
           katastrální území a základní sídelní jednotky, od 1:200000 městské obvody a části a části obcí
           a od 1:500000 obce a městské a správní obvody Prahy. U všech prvků je též zobrazeno jejich jméno nebo číslo.
+
+.. tip:: Již stažená data lze načíst z disku po zadání cesty k souboru a stisknutí tlačítka ``Přidat vrtsvy``.

@@ -13,11 +13,13 @@ GeoForAll Lab, Fakulta stavební, České vysoké učení technické v Praze
 Vedoucí projektu: Martin Landa
 
 
-.. note:: Projekt navazuje na semestrální práce předmětu `Free Software GIS
-   <http://geo.fsv.cvut.cz/gwiki/155FGIS>`__ vyučovaného na `Fakultě
-   stavební ČVUT v Praze <http://www.fsv.cvut.cz>`__ z akademického roku
-   2014/1015 (https://github.com/ctu-yfsg/2015-c-qgis-vfr) a 2015/2016
-   (https://github.com/ctu-yfsg/2016-c-qgis-vfr).
+.. note:: Projekt navazuje na semestrální práce předmětu `Free
+   Software GIS <http://geo.fsv.cvut.cz/gwiki/155FGIS>`__ vyučovaného
+   na `Fakultě stavební ČVUT v Praze <http://www.fsv.cvut.cz>`__ z
+   akademického roku 2014/1015
+   (https://github.com/ctu-yfsg/2015-c-qgis-vfr, 2015/2016
+   (https://github.com/ctu-yfsg/2016-c-qgis-vfr) a 2024/2025
+   (https://github.com/ctu-fgis/2025-a-qgis-ruian-plugin).
 
 Licence
 ^^^^^^^
