@@ -1,0 +1,12 @@
+KOD;NAZEV;ZEMEDELSKA_KULTURA;PLATNOST_OD;PLATNOST_DO;ZKRATKA;TYPPPD_KOD;STAVEBNI_PARCELA;POVINNA_OCHRANA_POZ;POVINNY_ZPUSOB_VYUZ
+2;orná pùda;a;01.01.1993;;orná pùda;;n;27;n
+3;chmelnice;a;01.01.1993;;chmelnice;302;n;27;n
+4;vinice;a;01.01.1993;;vinice;303;n;27;n
+5;zahrada;a;01.01.1993;;zahrada;304;n;27;n
+6;ovocný sad;a;01.01.1993;;ovoc. sad;305;n;27;n
+7;trvalý travní porost;a;01.01.1993;;travní p.;306;n;27;n
+8;trvalý travní porost;a;01.01.1993;01.09.2000;travní p.;307;n;27;n
+10;lesní pozemek;n;01.01.1993;;lesní poz;308;n;26;n
+11;vodní plocha;n;01.01.1993;;vodní pl.;;n;;a
+13;zastavìná plocha a nádvoøí;n;01.01.1993;;zast. pl.;;a;;n
+14;ostatní plocha;n;01.01.1993;;ostat.pl.;;n;;a

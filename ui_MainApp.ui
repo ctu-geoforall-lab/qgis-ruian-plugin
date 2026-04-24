@@ -119,9 +119,9 @@
     </layout>
    </item>
    <item>
-    <widget class="QCheckBox" name="vuscCheckbox">
+    <widget class="QCheckBox" name="vupCheckbox">
      <property name="text">
-      <string>Vyšší územní samosprávné celky (VUSC)</string>
+      <string>Vyšší územní prvky a územně evidenční jednotky (VÚP)</string>
      </property>
      <property name="checked">
       <bool>false</bool>
@@ -421,7 +421,7 @@ QGroupBox::title {
              <string>Pouze u kompletní datové sady.</string>
             </property>
             <property name="text">
-             <string>Výběr z údajů (VUSC):</string>
+             <string>Výběr z údajů (VÚP):</string>
             </property>
            </widget>
           </item>

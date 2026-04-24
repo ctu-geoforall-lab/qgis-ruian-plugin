@@ -33,15 +33,27 @@ class VFRImporter(object):
 
     def __init__(self, iface):
         self.iface = iface
+        self.actions = []
+        self.menu = u'RUIAN Plugin'
 
     def initGui(self):
-        self.action = QAction(QIcon(':/icon.png'),
-                              u'Nástroj pro práci s daty RUIAN',
-                              self.iface.mainWindow())
+        self.action = QAction(
+            QIcon(':/icon.png'),
+            u'Nástroj pro práci s daty RUIAN',
+            self.iface.mainWindow())
         self.iface.addToolBarIcon(self.action)
+        self.action.setObjectName(u'spustitRUIANPlugin')
+        self.action.setWhatsThis(u'Spustí RUIAN Plugin')
+        self.action.setStatusTip(u'Toto spustí RUIAN Plugin')
         self.action.triggered.connect(self.run)
+        self.iface.addPluginToMenu(self.menu,self.action)
+        self.actions.append(self.action)
         
     def unload(self):
+        for action in self.actions:
+            self.iface.removePluginMenu(
+                u'RUIAN Plugin',
+                action)
         self.iface.removeToolBarIcon(self.action)
 
     def run(self):

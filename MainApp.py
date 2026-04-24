@@ -6,7 +6,7 @@
                              -------------------
         begin                : 2015-03-16
         git sha              : $Format:%
-        copyright            : (C) 2015-2016 by CTU GeoForAll Lab
+        copyright            : (C) 2015-2025 by CTU GeoForAll Lab
         email                : martin.landa@fsv.cvut.cz
  ***************************************************************************/
 
@@ -24,18 +24,14 @@ import os
 import sys
 import tempfile
 import time
+import csv
 from collections import OrderedDict
-
-from qgis.PyQt.QtCore import QSortFilterProxyModel, QThread, pyqtSignal, qDebug, QObject, QSettings, Qt, QRegExp
+from qgis.PyQt.QtCore import QSortFilterProxyModel, QThread, pyqtSignal, qDebug, QObject, QSettings, Qt, QRegExp, QVariant
 from qgis.PyQt.QtGui import QStandardItem, QColor, QStandardItemModel
 from qgis.PyQt.QtWidgets import QDialog, QAbstractItemView, QFileDialog, QProgressDialog, QMessageBox, QLineEdit
-
-from qgis.core import QgsProject, QgsVectorLayer, Qgis, QgsMessageLog, QgsProcessingUtils, QgsCoordinateReferenceSystem
-
+from qgis.core import QgsProject, QgsVectorLayer, Qgis, QgsWkbTypes, QgsFeature, QgsGeometry, QgsMessageLog, QgsProcessingUtils, QgsCoordinateReferenceSystem, QgsField, edit, QgsAttributeTableConfig
 from osgeo import ogr, gdal
-
 from .ui_MainApp import Ui_MainApp
-
 from .gdal_vfr.vfr4ogr import VfrOgr
 
 class RuianError(Exception):
@@ -47,7 +43,6 @@ class TextOutputSignal(QObject):
         self.textWritten.emit(str(text))
 
 class MainApp(QDialog):
-
     def __init__(self, iface, parent=None):
         QDialog.__init__(self)
 
@@ -97,7 +92,7 @@ class MainApp(QDialog):
         self.ui.advancedSettings.hide()
 
         # set up the table view
-        path = os.path.join(os.path.dirname(__file__), 'files','obce_cr.csv')
+        path = os.path.join(os.path.dirname(__file__), 'coding_tables','obce_cr.csv')
         self.model, self.proxy = self.create_model(path)
         self.ui.dataView.setModel(self.proxy)
         self.ui.dataView.setEditTriggers(QAbstractItemView.NoEditTriggers)
@@ -131,8 +126,7 @@ class MainApp(QDialog):
         pass
 
     def set_comboDrivers(self):
-        """Set GDAL drivers combo box.
-        """
+        """Set GDAL drivers combo box"""
         model = self.ui.driverBox.model()
         for driver, metadata in list(self.driverTypes.items()):
             item = QStandardItem(str(metadata['alias']))
@@ -326,8 +320,7 @@ class MainApp(QDialog):
                 item.setCheckState(Qt.Unchecked)
 
     def show_advanced(self):
-        """Show advanced options.
-        """
+        """Show advanced options"""
         if self.ui.advancedButton.arrowType() == 4:
             self.ui.advancedButton.setArrowType(Qt.DownArrow)
             self.ui.advancedSettings.show()
@@ -336,13 +329,12 @@ class MainApp(QDialog):
             self.ui.advancedSettings.hide()
 
     def get_options(self):
-        """Start importing data.
-        """
+        """Start importing data"""
         self.option['layers'] = []
         self.option['layers_name'] = []
-        #pridani vusc pokud zaskrtnuto
-        if self.ui.vuscCheckbox.isChecked():
-            self.option['layers'].append('VUSC')
+        #pridani VUP pokud zaskrtnuto
+        if self.ui.vupCheckbox.isChecked():
+            self.option['layers'].append('VUP')
 
         for row in range(0,self.model.rowCount()):
             item = self.model.item(row,0)
@@ -360,7 +352,7 @@ class MainApp(QDialog):
         }
         # not supported yet
         selectionIndex = self.ui.selectionComboBox.currentIndex()
-        if selectionIndex == 1 and 'VUSC' in self.option['layers']:
+        if selectionIndex == 1 and 'VUP' in self.option['layers']:
             vfr_type['zgho'] = 'G'
         # elif selectionIndex == 2:
         #     vfr_type['zgho'] = 'Z'
@@ -387,8 +379,6 @@ class MainApp(QDialog):
                                                 level=Qgis.Critical, duration=5)
             return
         self.option['overwriteOutput'] = self.ui.overwriteCheckbox.isChecked()
-
-
         
         # create progress dialog
         self.progress = QProgressDialog('Probíhá import ...', 'Ukončit',
@@ -410,13 +400,11 @@ class MainApp(QDialog):
             self.importThread.start()
 
     def set_status(self, num, tot, text, operation):
-        """Update progress status.
-        """
+        """Update progress status"""
         self.progress.setLabelText('{0} {1} z {2} ({3})'.format(operation, num, tot, text))
 
     def import_close(self):
-        """Terminate import.
-        """
+        """Terminate import"""
         reply = QMessageBox.question(self, 'Ukončit', "Opravdu chcete ukončit import dat?",
                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
         if reply == QMessageBox.Yes:
@@ -426,8 +414,7 @@ class MainApp(QDialog):
             self.progress.show()
 
     def import_end(self):
-        """Inform about successfull import.
-        """
+        """Inform about successfull import"""
         self.progress.cancel()
         if self.importThread.aborted:
             return
@@ -449,9 +436,93 @@ class MainApp(QDialog):
         elif i == 1 and self.ui.selectionComboBox.isEnabled():
             self.ui.selectionComboBox.setEnabled(False)
 
-    def add_layers(self):
-        """Add created layers to map display.
+    def add_coding_table(self, vlayer, csv_filename, col_code):
+        """Add code (number) value meaning in words according to specified CUZK dial
+        
+        :param vlayer: QgsVectorLayer, in which string attribute is added.
+        :param csv_filename: Name of csv file in 'coding_tables' folder.
+        :param col_code: Column name in which the code numbers are.
         """
+        # Name of the new column
+        if col_code.endswith('Kod'):
+            col_name = col_code[:-3] + 'Nazev'
+        else:
+            col_name = col_code + 'Nazev'
+            
+        csv_path = os.path.join(os.path.dirname(__file__), 'coding_tables', csv_filename)
+        
+        dial = {}
+        try:
+            with open(csv_path, 'r', encoding='cp1250') as f:
+                reader = csv.DictReader(f, delimiter=';')
+                for column in reader:
+                    if 'KOD' in column and 'NAZEV' in column:
+                        dial[int(column['KOD'])] = column['NAZEV']
+                    else:
+                        QgsMessageLog.logMessage(f"Číselník {csv_filename} má nesprávné hlavičky (neobsahuje KOD a NAZEV).", level=Qgis.Warning)
+                        return
+        except FileNotFoundError:
+            QgsMessageLog.logMessage(f"Číselník nebyl nalezen: {csv_path}", level=Qgis.Critical)
+            return
+        except Exception as e:
+            QgsMessageLog.logMessage(f"Chyba při čtení číselníku: {e}", level=Qgis.Critical)
+        
+        col_code_index = vlayer.fields().indexFromName(col_code)
+        if col_code_index == -1:
+            QgsMessageLog.logMessage(f"Zdrojový sloupec '{col_code}' nebyl ve vrstvě nalezen.", level=Qgis.Critical)
+            return
+
+        if col_name not in vlayer.fields().names():
+            vlayer.dataProvider().addAttributes([QgsField(col_name, QVariant.String, len=254)])
+            vlayer.updateFields()
+
+        with edit(vlayer):
+            idx_code = vlayer.fields().indexFromName(col_code)
+            idx_name = vlayer.fields().indexFromName(col_name)
+            for feature in vlayer.getFeatures():
+                kod = feature.attributes()[idx_code]
+                if kod is not None:
+                    name = dial.get(kod)
+                    feature[idx_name] = name
+                    vlayer.updateFeature(feature)
+
+        return (idx_code, idx_name)
+
+    def reorder_coding_tables(self, vlayer, new_columns):
+        """Reorder added columns by dials.
+
+        :param QgsVectorMapLayer: vector layer to be modified
+        :param tuple new_columns: tuple (idx_code, idx_name)
+        """
+        config = vlayer.attributeTableConfig()
+        columns = config.columns()
+
+        desired_order = [f.name() for f in vlayer.fields()]
+        offset = 0
+        for idx_code, idx_name in new_columns:
+            item = desired_order.pop(idx_name)
+            desired_order.insert(idx_code+offset+1, item)
+            offset += 1
+
+        new_columns = []
+        for name in desired_order:
+            idx = vlayer.fields().indexOf(name)
+            if idx != -1:
+                col = QgsAttributeTableConfig.ColumnConfig()
+                col.name = name
+                col.hidden = False
+                new_columns.append(col)
+
+        config.setColumns(new_columns)
+        config.setActionWidgetVisible(False)
+
+        vlayer.setAttributeTableConfig(config)
+        vlayer.triggerRepaint()
+
+        self.iface.layerTreeView().refreshLayerSymbology(vlayer.id())
+
+    def add_layers(self):
+        """Add created layers to map display"""
         def add_layer(group, ogr_layer, layer_alias):
             if ogr_layer.GetFeatureCount() < 1:
                 # skip empty layers
@@ -471,6 +542,48 @@ class MainApp(QDialog):
 
             QgsProject.instance().addMapLayer(vlayer, addToLegend=False)
             group.addLayer(vlayer)
+
+            # adding description to number codes based on CUZK dials
+            dial_columns = []
+            if layer_name == 'stavebniobjekty':
+                dial_columns.append(
+                    self.add_coding_table(vlayer,'CE_ZPUSOB_VYUZITI_OBJEKTU.csv','TypStavebnihoObjektuKod'))
+                dial_columns.append(
+                    self.add_coding_table(vlayer,'CS_TYP_STAVEBNIHO_OBJEKTU.csv','ZpusobVyuzitiKod'))
+                dial_columns.append(
+                    self.add_coding_table(vlayer,'CE_DRUH_KONSTRUKCE.csv','DruhKonstrukceKod'))
+                dial_columns.append(
+                    self.add_coding_table(vlayer,'CE_PRIPOJENI_KANAL.csv','PripojeniKanalizaceKod'))
+                dial_columns.append(
+                    self.add_coding_table(vlayer,'CE_PRIPOJENI_PLYNU.csv','PripojeniPlynKod'))
+                dial_columns.append(
+                    self.add_coding_table(vlayer,'CE_PRIPOJENI_VODY.csv','PripojeniVodovodKod'))
+                dial_columns.append(
+                    self.add_coding_table(vlayer,'CE_VYBAVENI_VYTAHEM.csv','VybaveniVytahemKod'))
+                dial_columns.append(
+                    self.add_coding_table(vlayer,'CE_ZPUSOB_VYTAPENI.csv','ZpusobVytapeniKod'))
+
+            if layer_name == 'parcely':
+                dial_columns.append(
+                    self.add_coding_table(vlayer,'SC_ZP_VYUZITI_POZ.csv','ZpusobyVyuzitiPozemku'))
+                dial_columns.append(
+                    self.add_coding_table(vlayer,'CS_DRUH_CISLOVANI_PARCEL.csv','DruhCislovaniKod'))
+                dial_columns.append(
+                    self.add_coding_table(vlayer,'SC_D_POZEMKU.csv','DruhPozemkuKod'))
+
+            if layer_name == 'zsj':
+                dial_columns.append(
+                    self.add_coding_table(vlayer,'CE_CHARAKTER_ZSJ.csv','CharakterZsjKod'))
+    
+            if layer_name == 'obce':
+                dial_columns.append(
+                    self.add_coding_table(vlayer,'CS_STATUS_OBCE.csv','StatusKod'))
+                dial_columns.append(
+                    self.add_coding_table(vlayer,'CS_CLENENI_SM_ROZSAH.csv','CleneniSMRozsahKod'))
+                dial_columns.append(
+                    self.add_coding_table(vlayer,'CS_CLENENI_SM_TYP.csv','CleneniSMTypKod'))
+
+            self.reorder_coding_tables(vlayer, dial_columns)
 
             return True
 
@@ -494,23 +607,23 @@ class MainApp(QDialog):
         layerGroup = root.addGroup(groupName)
 
         # first add well-known layers
-        for layer_name, layer_alias in [('obce', 'Obce'),
-                                        ('spravniobvody', 'Správní obvody'),
-                                        ('mop', 'Městské obvody v Praze'),
-                                        ('momc', 'Městský obvod/část'),
+        for layer_name, layer_alias in [('adresnimista', 'Adresní místa'),
+                                        ('stavebniobjekty', 'Stavební objekty'),
+                                        ('parcely', 'Parcely'),
+                                        ('ulice', 'Ulice'),
+                                        ('zsj', 'Základní sídelní jednotky'),
                                         ('castiobci', 'Části obcí'),
                                         ('katastralniuzemi', 'Katastrální území'),
-                                        ('zsj', 'Základní sídelní jednotky'),
-                                        ('ulice', 'Ulice'),
-                                        ('parcely', 'Parcely'),
-                                        ('stavebniobjekty', 'Stavební objekty'),
-                                        ('adresnimista', 'Adresní místa'),
-                                        ('staty', 'Stát'),
-                                        ('regionysoudrznosti', 'Regiony soudrznosti'),
-                                        ('vusc', 'VUSC'),
-                                        ('okresy', 'Okresy'),
+                                        ('momc', 'Městské obvody/části'),
+                                        ('spravniobvody', 'Správní obvody v Praze'),
+                                        ('mop', 'Obvody v Praze'),
+                                        ('obce', 'Obec'),
+                                        ('pou', 'Obce s POÚ'),
                                         ('orp', 'ORP'),
-                                        ('po', 'POU')]:
+                                        ('okresy', 'Okresy'),
+                                        ('vusc', 'VÚSC (nové kraje)'),
+                                        ('regionysoudrznosti', 'Regiony soudržnosti'),
+                                        ('staty', 'Stát')]:
             layer = datasource.GetLayerByName(layer_name)
             if layer:
                 if not add_layer(layerGroup, layer, layer_alias):
@@ -533,8 +646,7 @@ class ImportThread(QThread):
         self.overwrite = option['overwriteOutput']
 
     def run(self):
-        """Run download/import thread.
-        """
+        """Run download/import thread"""
         # define temporary directory for downloading VFR data
         data_dir = QgsProcessingUtils().tempFolder()
         # QgsMessageLog.logMessage('\n (VFR) data dir: {}'.format(data_dir),
@@ -559,7 +671,7 @@ class ImportThread(QThread):
             n = len(self.layers)         
             i = 1
             for l in self.layers:
-                if l == 'VUSC':
+                if l == 'VUP':
                     filename = 'ST_{}'.format(self.file_type)
                 else:
                     filename = 'OB_{}_{}'.format(l, self.file_type)

@@ -7,8 +7,8 @@ Vybereme obec či obce, které chceme stáhnout:
    :width: 600
    
    
-Pokud je zaškrtnuto ``Vyšší uzemně správní celky (VUSC)``, budou
-staženy i vyšší územě správní celky. Lze je stahovat samostatně nebo i
+Pokud je zaškrtnuto ``Vyšší uzemní prvky (VUP)`` (v dokumentaci ještě nazváno ``Vyšší územní samosprávné celky (VÚSC)``), budou
+staženy i vyšší územní prvky (v hierarchii nad obcemi). Lze je stahovat samostatně nebo i
 se zvolenou obcí.
 
 .. important:: Je vhodné zvolit menší objem dat maximálně ve velikosti
@@ -44,9 +44,9 @@ Možnost dalšího nastavení nalezneme pod rozbalovacím seznamem Pokročilé n
 .. figure:: images/advanced.png
       :width: 600
 
-Tady nalezneme možnost výběru generalizovaných hranic dat VUSC.
+Tady nalezneme možnost výběru generalizovaných hranic dat VÚP.
 
-.. figure:: images/advanced-vusc.png
+.. figure:: images/advanced-vup.png
       :width: 600
           
 Data můžeme v QGISu rovnou zobrazit:
@@ -59,5 +59,8 @@ Příklad vizualizace stažených dat:
 .. image:: images/visualization.png
    :width: 1000
 
-.. note:: Od měřítka 1:2500 se zobrazují názvy ulic, od 1:1000
-          parcelní čísla a domovní čísla u adresních bodů.
+.. note:: Styly zobrazovaných prvků jsou téměř totožné jako na vizualizaci přes `vzdálený přístup od ČÚZK <https://vdp.cuzk.gov.cz/vdp/ruian/mapa/>`__.
+
+.. note:: Od měřítka 1:10000 se zobrazují ulice, adresní místa, parcely a stavební objekty, od 1:100000
+          katastrální území a základní sídelní jednotky, od 1:200000 městské obvody a části a části obcí
+          a od 1:500000 obce a městské a správní obvody Prahy. U všech prvků je též zobrazeno jejich jméno nebo číslo.

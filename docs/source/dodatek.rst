@@ -6,6 +6,7 @@ Autoři
 * Šimon Gajzler
 * Lukáš Kettner
 * Vajner, Kuzmanov, Kličková (podpora VUSC - 2021)
+* Josef Bořík, Marek Hádlík (úpravy stylů a tabulek - 2025)
 
 GeoForAll Lab, Fakulta stavební, České vysoké učení technické v Praze
 
