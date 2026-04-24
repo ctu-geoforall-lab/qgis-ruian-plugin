@@ -500,12 +500,8 @@ class MainApp(QDialog):
         desired_order = [f.name() for f in vlayer.fields()]
         offset = 0
         for idx_code, idx_name in new_columns:
-            print(idx_code, idx_name)
             item = desired_order.pop(idx_name)
-            print('p', item)
-            print(idx_code+offset+1)
             desired_order.insert(idx_code+offset+1, item)
-            print(desired_order)
             offset += 1
 
         new_columns = []
