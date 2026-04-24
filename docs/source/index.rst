@@ -12,7 +12,7 @@ je implementován v programovacím jazyku Python s podporou knihoven
 
 Plugin je dostupný pro verze QGIS 2 a 3.
 
-.. image:: images/plugin.png
+.. image:: images/select.png
    :width: 600
            
 .. toctree::
