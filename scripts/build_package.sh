@@ -7,7 +7,7 @@ wget https://github.com/ctu-geoforall-lab/gdal-vfr/archive/v${GDAL_VFR_VERSION}.
 tar xvzf v${GDAL_VFR_VERSION}.tar.gz
 mkdir gdal_vfr
 mv gdal-vfr-${GDAL_VFR_VERSION}/vfr4ogr gdal-vfr-${GDAL_VFR_VERSION}/vfr4ogr.conf gdal_vfr/
-rm v${GDAL_VFR_VERSION}.tar.gz gdal-vfr-${GDAL_VFR_VERSION}
+rm -r v${GDAL_VFR_VERSION}.tar.gz gdal-vfr-${GDAL_VFR_VERSION}
 echo 'Y' | pb_tool zip
 
 exit 0
